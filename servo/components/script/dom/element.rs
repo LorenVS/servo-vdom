@@ -17,7 +17,6 @@ use dom::bindings::codegen::Bindings::ElementBinding;
 use dom::bindings::codegen::Bindings::ElementBinding::ElementMethods;
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
 use dom::bindings::codegen::Bindings::HTMLInputElementBinding::HTMLInputElementMethods;
-use dom::bindings::codegen::Bindings::HTMLTemplateElementBinding::HTMLTemplateElementMethods;
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::codegen::UnionTypes::NodeOrString;
 use dom::bindings::error::{Error, ErrorResult, Fallible};
@@ -52,7 +51,6 @@ use dom::htmltablecellelement::{HTMLTableCellElement, HTMLTableCellElementLayout
 use dom::htmltableelement::{HTMLTableElement, HTMLTableElementLayoutHelpers};
 use dom::htmltablerowelement::{HTMLTableRowElement, HTMLTableRowElementLayoutHelpers};
 use dom::htmltablesectionelement::{HTMLTableSectionElement, HTMLTableSectionElementLayoutHelpers};
-use dom::htmltemplateelement::HTMLTemplateElement;
 use dom::htmltextareaelement::{HTMLTextAreaElement, LayoutHTMLTextAreaElementHelpers};
 use dom::namednodemap::NamedNodeMap;
 use dom::node::{CLICK_IN_PROGRESS, ChildrenMutation, LayoutNodeHelpers, Node};
@@ -61,10 +59,7 @@ use dom::node::{document_from_node, window_from_node};
 use dom::nodelist::NodeList;
 use dom::text::Text;
 use dom::virtualmethods::{VirtualMethods, vtable_for};
-use html5ever::serialize;
-use html5ever::serialize::SerializeOpts;
 use html5ever::serialize::TraversalScope;
-use html5ever::serialize::TraversalScope::{ChildrenOnly, IncludeNode};
 use html5ever::tree_builder::{LimitedQuirks, NoQuirks, Quirks};
 use ref_filter_map::ref_filter_map;
 use selectors::matching::{DeclarationBlock, ElementFlags, matches};
@@ -774,18 +769,8 @@ impl Element {
         })
     }
 
-    pub fn serialize(&self, traversal_scope: TraversalScope) -> Fallible<DOMString> {
-        let mut writer = vec![];
-        match serialize(&mut writer,
-                        &self.upcast::<Node>(),
-                        SerializeOpts {
-                            traversal_scope: traversal_scope,
-                            ..Default::default()
-                        }) {
-            // FIXME(ajeffrey): Directly convert UTF8 to DOMString
-            Ok(()) => Ok(DOMString::from(String::from_utf8(writer).unwrap())),
-            Err(_) => panic!("Cannot serialize element"),
-        }
+    pub fn serialize(&self, _: TraversalScope) -> Fallible<DOMString> {
+        Ok(DOMString::from(""))
     }
 
     // https://html.spec.whatwg.org/multipage/#root-element
@@ -1449,67 +1434,6 @@ impl ElementMethods for Element {
     // https://drafts.csswg.org/cssom-view/#dom-element-clientheight
     fn ClientHeight(&self) -> i32 {
         self.upcast::<Node>().get_client_rect().size.height
-    }
-
-    /// https://w3c.github.io/DOM-Parsing/#widl-Element-innerHTML
-    fn GetInnerHTML(&self) -> Fallible<DOMString> {
-        // XXX TODO: XML case
-        self.serialize(ChildrenOnly)
-    }
-
-    /// https://w3c.github.io/DOM-Parsing/#widl-Element-innerHTML
-    fn SetInnerHTML(&self, value: DOMString) -> Fallible<()> {
-        let context_node = self.upcast::<Node>();
-        // Step 1.
-        let frag = try!(context_node.parse_fragment(value));
-        // Step 2.
-        // https://github.com/w3c/DOM-Parsing/issues/1
-        let target = if let Some(template) = self.downcast::<HTMLTemplateElement>() {
-            Root::upcast(template.Content())
-        } else {
-            Root::from_ref(context_node)
-        };
-        Node::replace_all(Some(frag.upcast()), &target);
-        Ok(())
-    }
-
-    // https://dvcs.w3.org/hg/innerhtml/raw-file/tip/index.html#widl-Element-outerHTML
-    fn GetOuterHTML(&self) -> Fallible<DOMString> {
-        self.serialize(IncludeNode)
-    }
-
-    // https://dvcs.w3.org/hg/innerhtml/raw-file/tip/index.html#widl-Element-outerHTML
-    fn SetOuterHTML(&self, value: DOMString) -> Fallible<()> {
-        let context_document = document_from_node(self);
-        let context_node = self.upcast::<Node>();
-        // Step 1.
-        let context_parent = match context_node.GetParentNode() {
-            None => {
-                // Step 2.
-                return Ok(());
-            },
-            Some(parent) => parent,
-        };
-
-        let parent = match context_parent.type_id() {
-            // Step 3.
-            NodeTypeId::Document(_) => return Err(Error::NoModificationAllowed),
-
-            // Step 4.
-            NodeTypeId::DocumentFragment => {
-                let body_elem = Element::create(QualName::new(ns!(html), atom!("body")),
-                                                None, context_document.r(),
-                                                ElementCreator::ScriptCreated);
-                Root::upcast(body_elem)
-            },
-            _ => context_node.GetParentNode().unwrap()
-        };
-
-        // Step 5.
-        let frag = try!(parent.parse_fragment(value));
-        // Step 6.
-        try!(context_parent.ReplaceChild(frag.upcast(), context_node));
-        Ok(())
     }
 
     // https://dom.spec.whatwg.org/#dom-nondocumenttypechildnode-previouselementsibling

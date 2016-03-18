@@ -56,10 +56,6 @@ branch = "servo"
 [dependencies.ipc-channel]
 git = "https://github.com/servo/ipc-channel"
 
-[dependencies.xml5ever]
-git = "https://github.com/Ygg01/xml5ever"
-features = ["unstable"]
-
 [dependencies.gfx_traits]
 path = "../gfx_traits"
 

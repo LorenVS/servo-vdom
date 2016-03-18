@@ -355,12 +355,6 @@ impl HTMLScriptElement {
             return NextParserState::Continue;
         }
 
-        // TODO: make this suspension happen automatically.
-        if was_parser_inserted {
-            if let Some(parser) = doc.get_current_parser() {
-                parser.r().suspend();
-            }
-        }
         NextParserState::Suspend
     }
 

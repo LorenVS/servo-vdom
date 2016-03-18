@@ -55,7 +55,6 @@ use html5ever::tree_builder::QuirksMode;
 use js::jsapi::{JSContext, JSObject, JSRuntime};
 use layout_interface::{LayoutChan, Msg};
 use libc::{self, c_void, uintptr_t};
-use parse::html::parse_html_fragment;
 use ref_slice::ref_slice;
 use script_traits::UntrustedNodeAddress;
 use selectors::matching::matches;
@@ -826,19 +825,6 @@ impl Node {
             shortValue: self.GetNodeValue().map(String::from).unwrap_or_default(), //FIXME: truncate
             incompleteValue: false, //FIXME: reflect truncation
         }
-    }
-
-    // https://dvcs.w3.org/hg/innerhtml/raw-file/tip/index.html#dfn-concept-parse-fragment
-    pub fn parse_fragment(&self, markup: DOMString) -> Fallible<Root<DocumentFragment>> {
-        let context_document = document_from_node(self);
-        let fragment = DocumentFragment::new(context_document.r());
-        if context_document.is_html_document() {
-            parse_html_fragment(self.upcast(), markup, fragment.upcast());
-        } else {
-            // FIXME: XML case
-            unimplemented!();
-        }
-        Ok(fragment)
     }
 
     /// Used by `HTMLTableSectionElement::InsertRow` and `HTMLTableRowElement::InsertCell`

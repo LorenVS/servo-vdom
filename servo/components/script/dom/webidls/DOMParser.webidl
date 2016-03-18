@@ -13,9 +13,3 @@ enum SupportedType {
   "application/xhtml+xml",
   "image/svg+xml"*/
 };
-
-[Constructor]
-interface DOMParser {
-  [Throws]
-  Document parseFromString(DOMString str, SupportedType type);
-};

@@ -71,6 +71,4 @@ interface XMLHttpRequest : XMLHttpRequestEventTarget {
   readonly attribute any response;
   [Throws]
   readonly attribute USVString responseText;
-  [Throws]
-  /*[Exposed=Window]*/ readonly attribute Document? responseXML;
 };

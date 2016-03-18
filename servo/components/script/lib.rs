@@ -76,7 +76,6 @@ extern crate url;
 extern crate util;
 extern crate uuid;
 extern crate websocket;
-extern crate xml5ever;
 
 pub mod clipboard_provider;
 pub mod cors;
@@ -88,7 +87,6 @@ pub mod layout_interface;
 mod mem;
 mod network_listener;
 pub mod page;
-pub mod parse;
 pub mod reporter;
 #[allow(unsafe_code)]
 pub mod script_thread;

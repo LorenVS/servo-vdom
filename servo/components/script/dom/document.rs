@@ -68,7 +68,6 @@ use dom::nodeiterator::NodeIterator;
 use dom::nodelist::NodeList;
 use dom::processinginstruction::ProcessingInstruction;
 use dom::range::Range;
-use dom::servohtmlparser::{ParserRoot, ParserRef, MutNullableParserField};
 use dom::text::Text;
 use dom::touch::Touch;
 use dom::touchevent::TouchEvent;
@@ -189,8 +188,6 @@ pub struct Document {
     animation_frame_list: DOMRefCell<BTreeMap<u32, Box<FnBox(f64)>>>,
     /// Tracks all outstanding loads related to this document.
     loader: DOMRefCell<DocumentLoader>,
-    /// The current active HTML parser, to allow resuming after interruptions.
-    current_parser: MutNullableParserField,
     /// When we should kick off a reflow. This happens during parsing.
     reflow_timeout: Cell<Option<u64>>,
     /// The cached first `base` element with an `href` attribute.
@@ -1309,11 +1306,7 @@ impl Document {
 
         // A finished resource load can potentially unblock parsing. In that case, resume the
         // parser so its loop can find out.
-        if let Some(parser) = self.get_current_parser() {
-            if parser.r().is_suspended() {
-                parser.r().resume();
-            }
-        } else if self.reflow_timeout.get().is_none() {
+        if self.reflow_timeout.get().is_none() {
             // If we don't have a parser, and the reflow timer has been reset, explicitly
             // trigger a reflow.
             if let LoadType::Stylesheet(_) = load {
@@ -1429,14 +1422,6 @@ impl Document {
         let event = ConstellationMsg::DOMLoad(pipeline_id);
         chan.send(event).unwrap();
 
-    }
-
-    pub fn set_current_parser(&self, script: Option<ParserRef>) {
-        self.current_parser.set(script);
-    }
-
-    pub fn get_current_parser(&self) -> Option<ParserRoot> {
-        self.current_parser.get()
     }
 
     /// Find an iframe element in the document.
@@ -1590,7 +1575,6 @@ impl Document {
             animation_frame_ident: Cell::new(0),
             animation_frame_list: DOMRefCell::new(BTreeMap::new()),
             loader: DOMRefCell::new(doc_loader),
-            current_parser: Default::default(),
             reflow_timeout: Cell::new(None),
             base_element: Default::default(),
             appropriate_template_contents_owner_document: Default::default(),

@@ -25,7 +25,6 @@ use document_loader::DocumentLoader;
 use dom::bindings::cell::DOMRefCell;
 use dom::bindings::codegen::Bindings::DocumentBinding::{DocumentMethods, DocumentReadyState};
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
-use dom::bindings::conversions::{FromJSValConvertible, StringificationBehavior};
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::Castable;
 use dom::bindings::js::{JS, MutNullableHeap, Root, RootCollection, trace_roots};
@@ -40,51 +39,42 @@ use dom::element::{Element, ElementCreator};
 use dom::event::{Event, EventBubbles, EventCancelable};
 use dom::htmlanchorelement::HTMLAnchorElement;
 use dom::node::{Node, NodeDamage, window_from_node};
-use dom::servohtmlparser::{ParserContext, ParserRoot};
 use dom::text::Text;
 use dom::uievent::UIEvent;
-use dom::window::{ReflowReason, ScriptHelpers, Window};
+use dom::window::{ReflowReason, Window};
 use dom::worker::TrustedWorkerAddress;
 use euclid::Rect;
 use euclid::point::Point2D;
 use gfx_traits::LayerId;
-use hyper::header::{ContentType, HttpDate};
-use hyper::header::{Headers, LastModified};
 use hyper::method::Method;
-use hyper::mime::{Mime, SubLevel, TopLevel};
 use ipc_channel::ipc::{self, IpcSender};
 use ipc_channel::router::ROUTER;
 use js::glue::CollectServoSizes;
-use js::jsapi::{DOMProxyShadowsResult, HandleId, HandleObject, RootedValue};
+use js::jsapi::{DOMProxyShadowsResult, HandleId, HandleObject};
 use js::jsapi::{DisableIncrementalGC, JS_AddExtraGCRootsTracer, JS_SetWrapObjectCallbacks};
 use js::jsapi::{GCDescription, GCProgress, JSGCInvocationKind, SetGCSliceCallback};
-use js::jsapi::{JSAutoRequest, JSGCStatus, JS_GetRuntime, JS_SetGCCallback, SetDOMCallbacks};
+use js::jsapi::{JSGCStatus, JS_GetRuntime, JS_SetGCCallback, SetDOMCallbacks};
 use js::jsapi::{JSContext, JSRuntime, JSTracer};
 use js::jsapi::{JSObject, SetPreserveWrapperCallback};
-use js::jsval::UndefinedValue;
 use js::rust::Runtime;
 use layout_interface::{ReflowQueryType};
-use layout_interface::{self, LayoutChan, NewLayoutThreadInfo, ScriptLayoutChan};
+use layout_interface::{self, LayoutChan, ScriptLayoutChan};
 use libc;
 use mem::heap_size_of_self_and_children;
 use msg::constellation_msg::{ConstellationChan, LoadData};
 use msg::constellation_msg::{PipelineId, PipelineNamespace};
 use msg::constellation_msg::{SubpageId, WindowSizeData};
 use msg::webdriver_msg::WebDriverScriptCommand;
-use net_traits::LoadData as NetLoadData;
 use net_traits::image_cache_thread::{ImageCacheChan, ImageCacheResult, ImageCacheThread};
 use net_traits::storage_thread::StorageThread;
-use net_traits::{AsyncResponseTarget, ControlMsg, LoadConsumer, LoadContext, Metadata, ResourceThread};
-use network_listener::NetworkListener;
+use net_traits::{ResourceThread};
 use page::{Frame, IterablePage, Page};
-use parse::html::{ParseContext, parse_html};
-use parse::xml::{self, parse_xml};
 use profile_traits::mem::{self, OpaqueSender, Report, ReportKind, ReportsChan};
 use profile_traits::time::{self, ProfilerCategory, profile};
 use script_traits::CompositorEvent::{KeyEvent, MouseButtonEvent, MouseMoveEvent, ResizeEvent};
 use script_traits::CompositorEvent::{TouchEvent};
 use script_traits::{CompositorEvent, ConstellationControlMsg, EventResult};
-use script_traits::{InitialScriptState, MouseButton, MouseEventType, MozBrowserEvent, NewLayoutInfo};
+use script_traits::{InitialScriptState, MouseButton, MouseEventType, MozBrowserEvent};
 use script_traits::{LayoutMsg, OpaqueScriptLayoutChannel, ScriptMsg as ConstellationMsg};
 use script_traits::{ScriptThreadFactory, ScriptToCompositorMsg, TimerEvent, TimerEventRequest, TimerSource};
 use script_traits::{TouchEventType, TouchId};
@@ -100,7 +90,7 @@ use std::rc::Rc;
 use std::result::Result;
 use std::sync::atomic::{Ordering, AtomicBool};
 use std::sync::mpsc::{Receiver, Select, Sender, channel};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc};
 use style::context::ReflowGoal;
 use task_source::TaskSource;
 use task_source::dom_manipulation::{DOMManipulationTaskSource, DOMManipulationTask};
@@ -621,13 +611,6 @@ pub unsafe extern "C" fn shadow_check_callback(_cx: *mut JSContext,
 }
 
 impl ScriptThread {
-    pub fn page_fetch_complete(id: PipelineId, subpage: Option<SubpageId>, metadata: Metadata)
-                               -> Option<ParserRoot> {
-        SCRIPT_THREAD_ROOT.with(|root| {
-            let script_thread = unsafe { &*root.borrow().unwrap() };
-            script_thread.handle_page_fetch_complete(id, subpage, metadata)
-        })
-    }
 
     pub fn parsing_complete(id: PipelineId) {
         SCRIPT_THREAD_ROOT.with(|root| {
@@ -844,10 +827,9 @@ impl ScriptThread {
                 // This has to be handled before the ResizeMsg below,
                 // otherwise the page may not have been added to the
                 // child list yet, causing the find() to fail.
-                FromConstellation(ConstellationControlMsg::AttachLayout(
-                        new_layout_info)) => {
+                FromConstellation(ConstellationControlMsg::AttachLayout(_)) => {
                     self.profile_event(ScriptThreadEventCategory::AttachLayout, || {
-                        self.handle_new_layout(new_layout_info);
+                        assert!(false);
                     })
                 }
                 FromConstellation(ConstellationControlMsg::Resize(id, size)) => {
@@ -1215,58 +1197,6 @@ impl ScriptThread {
         panic!("Page rect message sent to nonexistent pipeline");
     }
 
-    fn handle_new_layout(&self, new_layout_info: NewLayoutInfo) {
-        let NewLayoutInfo {
-            containing_pipeline_id,
-            new_pipeline_id,
-            subpage_id,
-            load_data,
-            paint_chan,
-            failure,
-            pipeline_port,
-            layout_shutdown_chan,
-            content_process_shutdown_chan,
-        } = new_layout_info;
-
-        let layout_pair = ScriptThread::create_layout_channel(None::<&mut ScriptThread>);
-        let layout_chan = LayoutChan(*ScriptThread::clone_layout_channel(
-            None::<&mut ScriptThread>,
-            &layout_pair).downcast::<Sender<layout_interface::Msg>>().unwrap());
-
-        let layout_creation_info = NewLayoutThreadInfo {
-            id: new_pipeline_id,
-            url: load_data.url.clone(),
-            is_parent: false,
-            layout_pair: layout_pair,
-            pipeline_port: pipeline_port,
-            constellation_chan: self.layout_to_constellation_chan.clone(),
-            failure: failure,
-            paint_chan: paint_chan,
-            script_chan: self.control_chan.clone(),
-            image_cache_thread: self.image_cache_thread.clone(),
-            layout_shutdown_chan: layout_shutdown_chan,
-            content_process_shutdown_chan: content_process_shutdown_chan,
-        };
-
-        let page = self.root_page();
-        let parent_page = page.find(containing_pipeline_id).expect("ScriptThread: received a layout
-            whose parent has a PipelineId which does not correspond to a pipeline in the script
-            thread's page tree. This is a bug.");
-        let parent_window = parent_page.window();
-
-        // Tell layout to actually spawn the thread.
-        parent_window.layout_chan()
-                     .0
-                     .send(layout_interface::Msg::CreateLayoutThread(layout_creation_info))
-                     .unwrap();
-
-        // Kick off the fetch for the new resource.
-        let new_load = InProgressLoad::new(new_pipeline_id, Some((containing_pipeline_id, subpage_id)),
-                                           layout_chan, parent_window.window_size(),
-                                           load_data.url.clone());
-        self.start_page_load(new_load, load_data);
-    }
-
     fn handle_loads_complete(&self, pipeline: PipelineId) {
         let page = get_page(&self.root_page(), pipeline);
         let doc = page.document();
@@ -1488,27 +1418,6 @@ impl ScriptThread {
         self.compositor.borrow_mut().send(ScriptToCompositorMsg::Exit).unwrap();
     }
 
-    /// We have received notification that the response associated with a load has completed.
-    /// Kick off the document and frame tree creation process using the result.
-    fn handle_page_fetch_complete(&self, id: PipelineId, subpage: Option<SubpageId>,
-                                  metadata: Metadata) -> Option<ParserRoot> {
-        let idx = self.incomplete_loads.borrow().iter().position(|load| {
-            load.pipeline_id == id && load.parent_info.map(|info| info.1) == subpage
-        });
-        // The matching in progress load structure may not exist if
-        // the pipeline exited before the page load completed.
-        match idx {
-            Some(idx) => {
-                let load = self.incomplete_loads.borrow_mut().remove(idx);
-                Some(self.load(metadata, load))
-            }
-            None => {
-                assert!(self.closed_pipelines.borrow().contains(&id));
-                None
-            }
-        }
-    }
-
     /// Handles a request for the window title.
     fn handle_get_title_msg(&self, pipeline_id: PipelineId) {
         let page = get_page(&self.root_page(), pipeline_id);
@@ -1681,250 +1590,6 @@ impl ScriptThread {
 
         document.content_changed(document.upcast(), NodeDamage::OtherNodeDamage);
         window.reflow(ReflowGoal::ForDisplay, ReflowQueryType::NoQuery, ReflowReason::FirstLoad);
-    }
-
-    /// The entry point to document loading. Defines bindings, sets up the window and document
-    /// objects, parses HTML and CSS, and kicks off initial layout.
-    fn load(&self, metadata: Metadata, incomplete: InProgressLoad) -> ParserRoot {
-        let final_url = metadata.final_url.clone();
-        {
-            // send the final url to the layout thread.
-            let LayoutChan(ref chan) = incomplete.layout_chan;
-            chan.send(layout_interface::Msg::SetFinalUrl(final_url.clone())).unwrap();
-
-            // update the pipeline url
-            let ConstellationChan(ref chan) = self.constellation_chan;
-            chan.send(ConstellationMsg::SetFinalUrl(incomplete.pipeline_id, final_url.clone())).unwrap();
-        }
-        debug!("ScriptThread: loading {} on page {:?}", incomplete.url.serialize(), incomplete.pipeline_id);
-
-        let frame_element = incomplete.parent_info.and_then(|(parent_id, subpage_id)| {
-            // The root page may not exist yet, if the parent of this frame
-            // exists in a different script thread.
-            let borrowed_page = self.page.borrow();
-
-            // In the case a parent id exists but the matching page
-            // cannot be found, this means the page exists in a different
-            // script thread (due to origin) so it shouldn't be returned.
-            // TODO: window.parent will continue to return self in that
-            // case, which is wrong. We should be returning an object that
-            // denies access to most properties (per
-            // https://github.com/servo/servo/issues/3939#issuecomment-62287025).
-            borrowed_page.as_ref().and_then(|borrowed_page| {
-                borrowed_page.find(parent_id).and_then(|page| {
-                    let doc = page.document();
-                    doc.find_iframe(subpage_id)
-                })
-            })
-        });
-
-        // Create a new frame tree entry.
-        let page = Rc::new(Page::new(incomplete.pipeline_id));
-        if !self.root_page_exists() {
-            // We have a new root frame tree.
-            *self.page.borrow_mut() = Some(page.clone());
-        } else if let Some((parent, _)) = incomplete.parent_info {
-            // We have a new child frame.
-            let parent_page = self.root_page();
-            // TODO(gw): This find will fail when we are sharing script threads
-            // between cross origin iframes in the same TLD.
-            let parent_page = parent_page.find(parent)
-                                         .expect("received load for subpage with missing parent");
-            parent_page.children.borrow_mut().push(page.clone());
-        }
-
-        enum PageToRemove {
-            Root,
-            Child(PipelineId),
-        }
-        struct AutoPageRemover<'a> {
-            page: PageToRemove,
-            script_thread: &'a ScriptThread,
-            neutered: bool,
-        }
-        impl<'a> AutoPageRemover<'a> {
-            fn new(script_thread: &'a ScriptThread, page: PageToRemove) -> AutoPageRemover<'a> {
-                AutoPageRemover {
-                    page: page,
-                    script_thread: script_thread,
-                    neutered: false,
-                }
-            }
-
-            fn neuter(&mut self) {
-                self.neutered = true;
-            }
-        }
-        impl<'a> Drop for AutoPageRemover<'a> {
-            fn drop(&mut self) {
-                if !self.neutered {
-                    match self.page {
-                        PageToRemove::Root => *self.script_thread.page.borrow_mut() = None,
-                        PageToRemove::Child(id) => {
-                            self.script_thread.root_page().remove(id).unwrap();
-                        }
-                    }
-                }
-            }
-        }
-
-        let page_to_remove = if !self.root_page_exists() {
-            PageToRemove::Root
-        } else {
-            PageToRemove::Child(incomplete.pipeline_id)
-        };
-        let mut page_remover = AutoPageRemover::new(self, page_to_remove);
-        let MainThreadScriptChan(ref sender) = self.chan;
-        let DOMManipulationTaskSource(ref dom_sender) = self.dom_manipulation_task_source;
-        let UserInteractionTaskSource(ref user_sender) = self.user_interaction_task_source;
-        let NetworkingTaskSource(ref network_sender) = self.networking_task_source;
-        let HistoryTraversalTaskSource(ref history_sender) = self.history_traversal_task_source;
-        let FileReadingTaskSource(ref file_sender) = self.file_reading_task_source;
-
-        let (ipc_timer_event_chan, ipc_timer_event_port) = ipc::channel().unwrap();
-        ROUTER.route_ipc_receiver_to_mpsc_sender(ipc_timer_event_port,
-                                                 self.timer_event_chan.clone());
-
-        // Create the window and document objects.
-        let window = Window::new(self.js_runtime.clone(),
-                                 page.clone(),
-                                 MainThreadScriptChan(sender.clone()),
-                                 DOMManipulationTaskSource(dom_sender.clone()),
-                                 UserInteractionTaskSource(user_sender.clone()),
-                                 NetworkingTaskSource(network_sender.clone()),
-                                 HistoryTraversalTaskSource(history_sender.clone()),
-                                 FileReadingTaskSource(file_sender.clone()),
-                                 self.image_cache_channel.clone(),
-                                 self.compositor.borrow_mut().clone(),
-                                 self.image_cache_thread.clone(),
-                                 self.resource_thread.clone(),
-                                 self.storage_thread.clone(),
-                                 self.mem_profiler_chan.clone(),
-                                 self.devtools_chan.clone(),
-                                 self.constellation_chan.clone(),
-                                 self.control_chan.clone(),
-                                 self.scheduler_chan.clone(),
-                                 ipc_timer_event_chan,
-                                 incomplete.layout_chan,
-                                 incomplete.pipeline_id,
-                                 incomplete.parent_info,
-                                 incomplete.window_size);
-
-        let frame_element = frame_element.r().map(Castable::upcast);
-        let browsing_context = BrowsingContext::new(&window, frame_element);
-        window.init_browsing_context(&browsing_context);
-
-        let last_modified = metadata.headers.as_ref().and_then(|headers| {
-            headers.get().map(|&LastModified(HttpDate(ref tm))| dom_last_modified(tm))
-        });
-
-        let content_type = match metadata.content_type {
-            Some(ContentType(Mime(TopLevel::Text, SubLevel::Xml, _))) => {
-                Some(DOMString::from("text/xml"))
-            }
-
-            Some(ContentType(Mime(TopLevel::Text, SubLevel::Plain, _))) => {
-                Some(DOMString::from("text/plain"))
-            }
-
-            _ => None
-        };
-
-        let loader = DocumentLoader::new_with_thread(self.resource_thread.clone(),
-                                                   Some(page.pipeline()),
-                                                   Some(incomplete.url.clone()));
-
-        let is_html_document = match metadata.content_type {
-            Some(ContentType(Mime(TopLevel::Text, SubLevel::Xml, _))) =>
-                IsHTMLDocument::NonHTMLDocument,
-            _ => IsHTMLDocument::HTMLDocument,
-        };
-
-        let document = Document::new(window.r(),
-                                     Some(&browsing_context),
-                                     Some(final_url.clone()),
-                                     is_html_document,
-                                     content_type,
-                                     last_modified,
-                                     DocumentSource::FromParser,
-                                     loader);
-        browsing_context.init(&document);
-        document.set_ready_state(DocumentReadyState::Loading);
-
-        // Create the root frame
-        page.set_frame(Some(Frame {
-            document: JS::from_rooted(&document),
-            window: JS::from_rooted(&window),
-        }));
-
-        let ConstellationChan(ref chan) = self.constellation_chan;
-        chan.send(ConstellationMsg::ActivateDocument(incomplete.pipeline_id)).unwrap();
-
-        // Notify devtools that a new script global exists.
-        self.notify_devtools(document.Title(), final_url.clone(), (page.pipeline(), None));
-
-        let is_javascript = incomplete.url.scheme == "javascript";
-        let parse_input = if is_javascript {
-            use url::percent_encoding::percent_decode_to;
-
-            // Turn javascript: URL into JS code to eval, according to the steps in
-            // https://html.spec.whatwg.org/multipage/#javascript-protocol
-            let _ar = JSAutoRequest::new(self.get_cx());
-            let mut script_source_bytes = Vec::new();
-            // Start with the scheme data of the parsed URL (5.), while percent-decoding (8.)
-            percent_decode_to(incomplete.url.non_relative_scheme_data().unwrap().as_bytes(),
-                              &mut script_source_bytes);
-            // Append question mark and query component, if any (6.), while percent-decoding (8.)
-            if let Some(ref query) = incomplete.url.query {
-                script_source_bytes.push(b'?');
-                percent_decode_to(query.as_bytes(), &mut script_source_bytes);
-            }
-            // Append number sign and fragment component if any (7.), while percent-decoding (8.)
-            if let Some(ref fragment) = incomplete.url.fragment {
-                script_source_bytes.push(b'#');
-                percent_decode_to(fragment.as_bytes(), &mut script_source_bytes);
-            }
-
-            // UTF-8 decode (9.)
-            let script_source = String::from_utf8_lossy(&script_source_bytes);
-
-            // Script source is ready to be evaluated (11.)
-            unsafe {
-                let mut jsval = RootedValue::new(self.get_cx(), UndefinedValue());
-                window.evaluate_js_on_global_with_result(&script_source, jsval.handle_mut());
-                let strval = DOMString::from_jsval(self.get_cx(),
-                                                   jsval.handle(),
-                                                   StringificationBehavior::Empty);
-                strval.unwrap_or(DOMString::new())
-            }
-        } else {
-            DOMString::new()
-        };
-
-        document.set_https_state(metadata.https_state);
-
-        match metadata.content_type {
-            Some(ContentType(Mime(TopLevel::Text, SubLevel::Xml, _))) => {
-                parse_xml(document.r(),
-                          parse_input,
-                          final_url,
-                          xml::ParseContext::Owner(Some(incomplete.pipeline_id)));
-            }
-            _ => {
-                parse_html(document.r(),
-                           parse_input,
-                           final_url,
-                           ParseContext::Owner(Some(incomplete.pipeline_id)));
-            }
-        }
-
-        if incomplete.is_frozen {
-            window.freeze();
-        }
-
-        page_remover.neuter();
-
-        document.get_current_parser().unwrap()
     }
 
     fn notify_devtools(&self, title: DOMString, url: Url, ids: (PipelineId, Option<WorkerId>)) {
@@ -2159,47 +1824,6 @@ impl ScriptThread {
         uievent.upcast::<Event>().fire(window.upcast());
     }
 
-    /// Initiate a non-blocking fetch for a specified resource. Stores the InProgressLoad
-    /// argument until a notification is received that the fetch is complete.
-    fn start_page_load(&self, incomplete: InProgressLoad, mut load_data: LoadData) {
-        let id = incomplete.pipeline_id.clone();
-        let subpage = incomplete.parent_info.clone().map(|p| p.1);
-
-        let script_chan = self.chan.clone();
-        let resource_thread = self.resource_thread.clone();
-
-        let context = Arc::new(Mutex::new(ParserContext::new(id, subpage, script_chan.clone(),
-                                                             load_data.url.clone())));
-        let (action_sender, action_receiver) = ipc::channel().unwrap();
-        let listener = NetworkListener {
-            context: context,
-            script_chan: script_chan.clone(),
-        };
-        ROUTER.add_route(action_receiver.to_opaque(), box move |message| {
-            listener.notify(message.to().unwrap());
-        });
-        let response_target = AsyncResponseTarget {
-            sender: action_sender,
-        };
-
-        if load_data.url.scheme == "javascript" {
-            load_data.url = url!("about:blank");
-        }
-
-        resource_thread.send(ControlMsg::Load(NetLoadData {
-            context: LoadContext::Browsing,
-            url: load_data.url,
-            method: load_data.method,
-            headers: Headers::new(),
-            preserved_headers: load_data.headers,
-            data: load_data.data,
-            cors: None,
-            pipeline_id: Some(id),
-            credentials_flag: true,
-        }, LoadConsumer::Listener(response_target), None)).unwrap();
-
-        self.incomplete_loads.borrow_mut().push(incomplete);
-    }
 
     fn handle_parsing_complete(&self, id: PipelineId) {
         let parent_page = self.root_page();
@@ -2304,8 +1928,4 @@ pub fn get_page(page: &Rc<Page>, pipeline_id: PipelineId) -> Rc<Page> {
     page.find(pipeline_id).expect("ScriptThread: received an event \
         message for a layout channel that is not associated with this script thread.\
          This is a bug.")
-}
-
-fn dom_last_modified(tm: &Tm) -> String {
-    tm.to_local().strftime("%m/%d/%Y %H:%M:%S").unwrap().to_string()
 }

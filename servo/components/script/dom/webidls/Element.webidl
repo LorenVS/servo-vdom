@@ -88,10 +88,6 @@ partial interface Element {
 
 // https://domparsing.spec.whatwg.org/#extensions-to-the-element-interface
 partial interface Element {
-  [Throws,TreatNullAs=EmptyString]
-  attribute DOMString innerHTML;
-  [Throws,TreatNullAs=EmptyString]
-  attribute DOMString outerHTML;
 };
 
 Element implements ChildNode;
