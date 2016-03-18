@@ -1,0 +1,59 @@
+[package]
+name = "glutin_app"
+version = "0.0.1"
+authors = ["The Servo Project Developers"]
+
+[lib]
+name = "glutin_app"
+path = "lib.rs"
+
+[features]
+window = []
+headless = ["servo-glutin/headless"]
+
+[dependencies]
+bitflags = "0.3"
+url = {version = "0.5.7", features = ["heap_size"]}
+gleam = "0.2.8"
+euclid = {version = "0.6.4", features = ["plugins"]}
+servo-glutin = "0.4"
+
+[dependencies.compositing]
+path = "../../components/compositing"
+
+[dependencies.script_traits]
+path = "../../components/script_traits"
+
+[dependencies.layers]
+git = "https://github.com/servo/rust-layers"
+features = ["plugins"]
+
+[dependencies.msg]
+path = "../../components/msg"
+
+[dependencies.net_traits]
+path = "../../components/net_traits"
+
+[dependencies.style_traits]
+path = "../../components/style_traits"
+
+[dependencies.util]
+path = "../../components/util"
+
+[target.i686-unknown-linux-gnu.dependencies]
+x11 = "2.0.0"
+
+[target.x86_64-unknown-linux-gnu.dependencies]
+x11 = "2.0.0"
+
+[target.arm-unknown-linux-gnueabihf.dependencies]
+x11 = "2.0.0"
+
+[target.aarch64-unknown-linux-gnu.dependencies]
+x11 = "2.0.0"
+
+[target.x86_64-apple-darwin.dependencies]
+cgl = "0.1"
+
+[target.arm-linux-androideabi.dependencies]
+servo-egl = "0.2"

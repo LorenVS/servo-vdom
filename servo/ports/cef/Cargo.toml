@@ -1,0 +1,91 @@
+[package]
+name = "embedding"
+version = "0.0.1"
+authors = ["The Servo Project Developers"]
+
+[lib]
+name = "embedding"
+path = "lib.rs"
+crate-type = ["dylib"]
+
+[profile.release]
+opt-level = 3
+codegen-units = 4
+# Uncomment to profile on Linux:
+# debug = true
+# lto = false
+
+[dependencies]
+euclid = {version = "0.6.4", features = ["plugins"]}
+gleam = "0.2.8"
+libc = "0.2"
+url = {version = "0.5.7", features = ["heap_size"]}
+
+[dependencies.servo]
+path = "../../components/servo"
+
+[dependencies.glutin_app]
+path = "../glutin"
+
+[dependencies.plugins]
+path = "../../components/plugins"
+
+[dependencies.compositing]
+path = "../../components/compositing"
+
+[dependencies.gfx]
+path = "../../components/gfx"
+
+[dependencies.log]
+version = "0.3.5"
+features = ["release_max_level_info"]
+
+[dependencies.script]
+path = "../../components/script"
+
+[dependencies.script_traits]
+path = "../../components/script_traits"
+
+[dependencies.net_traits]
+path = "../../components/net_traits"
+
+[dependencies.msg]
+path = "../../components/msg"
+
+[dependencies.util]
+path = "../../components/util"
+features = ["non-geckolib"]
+
+[dependencies.style]
+path = "../../components/style"
+
+[dependencies.style_traits]
+path = "../../components/style_traits"
+
+[dependencies.devtools]
+path = "../../components/devtools"
+
+[dependencies.azure]
+git = "https://github.com/servo/rust-azure"
+features = ["plugins"]
+
+[dependencies.js]
+git = "https://github.com/servo/rust-mozjs"
+
+[dependencies.layers]
+git = "https://github.com/servo/rust-layers"
+features = ["plugins"]
+
+[target.x86_64-apple-darwin.dependencies]
+objc = "0.1"
+cocoa = "0.2.5"
+core-foundation = "0.2"
+core-graphics = "0.3"
+core-text = "1.1"
+cgl = "0.1"
+
+[target.i686-unknown-linux-gnu.dependencies]
+x11 = "2.3"
+
+[target.x86_64-unknown-linux-gnu.dependencies]
+x11 = "2.3"

@@ -1,0 +1,41 @@
+language: python
+
+matrix:
+  fast_finish: true
+  include:
+    - sudo: false
+      script: ./mach test-tidy --no-progress
+      cache: false
+    - sudo: 9000
+      dist: trusty
+      script:
+         - ./mach build -d --verbose
+         - ./mach test-unit
+         - ./mach test-compiletest
+         - bash etc/ci/lockfile_changed.sh
+         - bash etc/ci/manifest_changed.sh
+      cache:
+        directories:
+          - .cargo
+          - .servo
+          - $HOME/.ccache
+      env: CCACHE=/usr/bin/ccache
+      addons:
+        apt:
+          packages:
+            - cmake
+            - freeglut3-dev
+            - gperf
+            - libosmesa6-dev
+            - libgles2-mesa-dev
+            - python-virtualenv
+            - xorg-dev
+            - ccache
+
+branches:
+  only:
+    - master
+
+notifications:
+  webhooks:
+    - https://buildtimetrend.herokuapp.com/travis

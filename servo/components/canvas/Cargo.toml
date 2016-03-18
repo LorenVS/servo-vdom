@@ -1,0 +1,44 @@
+[package]
+name = "canvas"
+version = "0.0.1"
+authors = ["The Servo Project Developers"]
+publish = false
+
+[lib]
+name = "canvas"
+path = "lib.rs"
+
+[dependencies.azure]
+git = "https://github.com/servo/rust-azure"
+features = ["plugins"]
+
+[dependencies.layers]
+git = "https://github.com/servo/rust-layers"
+features = ["plugins"]
+
+[dependencies.canvas_traits]
+path = "../canvas_traits"
+
+[dependencies.plugins]
+path = "../plugins"
+
+[dependencies.util]
+path = "../util"
+
+[dependencies.gfx_traits]
+path = "../gfx_traits"
+
+[dependencies.offscreen_gl_context]
+git = "https://github.com/ecoal95/rust-offscreen-rendering-context"
+
+[dependencies.ipc-channel]
+git = "https://github.com/servo/ipc-channel"
+
+[dependencies.webrender_traits]
+git = "https://github.com/servo/webrender_traits"
+
+[dependencies]
+log = "0.3.5"
+num = "0.1.24"
+gleam = "0.2.8"
+euclid = {version = "0.6.4", features = ["plugins"]}

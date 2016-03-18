@@ -1,0 +1,105 @@
+[package]
+name = "compositing"
+version = "0.0.1"
+authors = ["The Servo Project Developers"]
+publish = false
+
+[lib]
+name = "compositing"
+path = "lib.rs"
+
+[dependencies.gfx]
+path = "../gfx"
+
+[dependencies.gfx_traits]
+path = "../gfx_traits"
+
+[dependencies.layout_traits]
+path = "../layout_traits"
+
+[dependencies.script_traits]
+path = "../script_traits"
+
+[dependencies.style_traits]
+path = "../style_traits"
+
+[dependencies.msg]
+path = "../msg"
+
+[dependencies.profile_traits]
+path = "../profile_traits"
+
+[dependencies.net_traits]
+path = "../net_traits"
+
+[dependencies.util]
+path = "../util"
+
+[dependencies.devtools_traits]
+path = "../devtools_traits"
+
+[dependencies.canvas_traits]
+path = "../canvas_traits"
+
+[dependencies.canvas]
+path = "../canvas"
+
+[dependencies.plugins]
+path = "../plugins"
+
+[dependencies.azure]
+git = "https://github.com/servo/rust-azure"
+features = ["plugins"]
+
+[dependencies.layers]
+git = "https://github.com/servo/rust-layers"
+features = ["plugins"]
+
+[dependencies.clipboard]
+git = "https://github.com/aweinstock314/rust-clipboard"
+
+[dependencies.ipc-channel]
+git = "https://github.com/servo/ipc-channel"
+
+[dependencies.offscreen_gl_context]
+git = "https://github.com/ecoal95/rust-offscreen-rendering-context"
+
+[target.arm-linux-androideabi.dependencies.gaol]
+git = "https://github.com/servo/gaol"
+
+[target.x86_64-apple-darwin.dependencies.gaol]
+git = "https://github.com/servo/gaol"
+
+[target.x86_64-unknown-linux-gnu.dependencies.gaol]
+git = "https://github.com/servo/gaol"
+
+[target.i686-unknown-linux-gnu.dependencies.gaol]
+git = "https://github.com/servo/gaol"
+
+[target.arm-unknown-linux-gnueabihf.dependencies.gaol]
+git = "https://github.com/servo/gaol"
+
+[target.aarch64-unknown-linux-gnu.dependencies.gaol]
+git = "https://github.com/servo/gaol"
+
+[dependencies.webrender_traits]
+git = "https://github.com/servo/webrender_traits"
+
+[dependencies.webrender]
+git = "https://github.com/servo/webrender"
+
+[dependencies]
+app_units = {version = "0.2.3", features = ["plugins"]}
+euclid = {version = "0.6.4", features = ["plugins"]}
+gleam = "0.2.8"
+image = "0.7"
+log = "0.3.5"
+num = "0.1.24"
+serde = "0.7"
+serde_macros = "0.7"
+time = "0.1.17"
+url = {version = "0.5.7", features = ["heap_size"]}
+
+[target.x86_64-apple-darwin.dependencies]
+core-graphics = "0.3"
+core-text = "1.1"

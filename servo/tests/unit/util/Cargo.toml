@@ -1,0 +1,22 @@
+[package]
+name = "util_tests"
+version = "0.0.1"
+authors = ["The Servo Project Developers"]
+
+[lib]
+name = "util_tests"
+path = "lib.rs"
+doctest = false
+
+[dependencies.util]
+path = "../../../components/util"
+
+
+[dependencies.plugins]
+path = "../../../components/plugins"
+
+[dependencies]
+app_units = {version = "0.2.3", features = ["plugins"]}
+euclid = {version = "0.6.4", features = ["plugins"]}
+libc = "0.2"
+

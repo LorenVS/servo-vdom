@@ -1,0 +1,33 @@
+[package]
+name = "net_traits"
+version = "0.0.1"
+authors = ["The Servo Project Developers"]
+publish = false
+
+[lib]
+name = "net_traits"
+path = "lib.rs"
+
+[dependencies.util]
+path = "../util"
+
+[dependencies.msg]
+path = "../msg"
+
+[dependencies.ipc-channel]
+git = "https://github.com/servo/ipc-channel"
+
+[dependencies.plugins]
+path = "../plugins"
+
+[dependencies]
+heapsize = "0.3.0"
+heapsize_plugin = "0.1.2"
+hyper = { version = "0.8", features = [ "serde-serialization" ] }
+image = "0.7"
+lazy_static = "0.1.15"
+log = "0.3.5"
+serde = "0.7"
+serde_macros = "0.7"
+url = {version = "0.5.7", features = ["heap_size"]}
+websocket = "0.15.2"

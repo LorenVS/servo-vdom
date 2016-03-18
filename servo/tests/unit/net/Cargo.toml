@@ -1,0 +1,38 @@
+[package]
+name = "net_tests"
+version = "0.0.1"
+authors = ["The Servo Project Developers"]
+
+[lib]
+name = "net_tests"
+path = "lib.rs"
+doctest = false
+
+[dependencies.net]
+path = "../../../components/net"
+
+[dependencies.net_traits]
+path = "../../../components/net_traits"
+
+[dependencies.util]
+path = "../../../components/util"
+
+[dependencies.msg]
+path = "../../../components/msg"
+
+[dependencies.plugins]
+path = "../../../components/plugins"
+
+[dependencies.devtools_traits]
+path = "../../../components/devtools_traits"
+
+[dependencies.ipc-channel]
+git = "https://github.com/servo/ipc-channel"
+
+[dependencies]
+cookie = "0.2"
+hyper = "0.8"
+url = {version = "0.5.7", features = ["heap_size"]}
+time = "0.1"
+flate2 = "0.2.0"
+unicase = "1.0"

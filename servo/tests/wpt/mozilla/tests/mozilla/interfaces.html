@@ -1,0 +1,286 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Interfaces exposed on the window</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+// This is a list of all interfaces that are exposed to every webpage.
+// Please only add things to this list with great care and proper review
+// from the associated module peers.
+
+// IMPORTANT: Do not change this list without review from
+//            a JavaScript Engine peer!
+var ecmaGlobals = [
+  "Array",
+  "ArrayBuffer",
+  "Atomics",
+  "Boolean",
+  "Crypto",
+  "DataView",
+  "Date",
+  "Error",
+  "EvalError",
+  "Float32Array",
+  "Float64Array",
+  "FocusEvent",
+  "Function",
+  "Infinity",
+  "Int16Array",
+  "Int32Array",
+  "Int8Array",
+  "InternalError",
+  "Intl",
+  "Iterator",
+  "JSON",
+  "Map",
+  "Math",
+  "NaN",
+  "Number",
+  "Object",
+  "Proxy",
+  "RangeError",
+  "ReferenceError",
+  "RegExp",
+  "SIMD",
+  "Set",
+  "SharedArrayBuffer",
+  "SharedFloat32Array",
+  "SharedFloat64Array",
+  "SharedInt16Array",
+  "SharedInt32Array",
+  "SharedInt8Array",
+  "SharedUint16Array",
+  "SharedUint32Array",
+  "SharedUint8Array",
+  "SharedUint8ClampedArray",
+  "StopIteration",
+  "String",
+  "Symbol",
+  "SyntaxError",
+  "TypeError",
+  "TypedObject",
+  "URIError",
+  "Uint16Array",
+  "Uint32Array",
+  "Uint8Array",
+  "Uint8ClampedArray",
+  "Uint8ClampedArray",
+  "WeakMap",
+  "WeakSet",
+];
+
+// IMPORTANT: Do not change the list below without review from a DOM peer!
+var interfaceNamesInGlobalScope = [
+  "Attr",
+  "Blob",
+  "Bluetooth",
+  "BluetoothAdvertisingData",
+  "BluetoothCharacteristicProperties",
+  "BluetoothDevice",
+  "BluetoothRemoteGATTCharacteristic",
+  "BluetoothRemoteGATTDescriptor",
+  "BluetoothRemoteGATTServer",
+  "BluetoothRemoteGATTService",
+  "BluetoothUUID",
+  "CanvasGradient",
+  "CanvasRenderingContext2D",
+  "CanvasPattern",
+  "CharacterData",
+  "CloseEvent",
+  "CSS",
+  "CSSStyleDeclaration",
+  "DOMPoint",
+  "DOMPointReadOnly",
+  "DOMQuad",
+  "DOMRect",
+  "DOMRectReadOnly",
+  "Comment",
+  "Console",
+  "CustomEvent",
+  "DedicatedWorkerGlobalScope", // #2823
+  "Document",
+  "DocumentFragment",
+  "DocumentType",
+  "DOMException",
+  "DOMImplementation",
+  "DOMParser",
+  "DOMTokenList",
+  "DOMStringMap",
+  "Element",
+  "ErrorEvent",
+  "Event",
+  "EventSource",
+  "EventTarget",
+  "File",
+  "FileList",
+  "FileReader",
+  "FormData",
+  "HTMLAnchorElement",
+  "HTMLAppletElement",
+  "HTMLAreaElement",
+  "HTMLAudioElement",
+  "HTMLBaseElement",
+  "HTMLBodyElement",
+  "HTMLBRElement",
+  "HTMLButtonElement",
+  "HTMLCanvasElement",
+  "HTMLCollection",
+  "HTMLDataElement",
+  "HTMLDataListElement",
+  "HTMLDetailsElement",
+  "HTMLDialogElement",
+  "HTMLDirectoryElement",
+  "HTMLDivElement",
+  "HTMLDListElement",
+  "HTMLElement",
+  "HTMLEmbedElement",
+  "HTMLFieldSetElement",
+  "HTMLFontElement",
+  "HTMLFormControlsCollection",
+  "HTMLFormElement",
+  "HTMLFrameElement",
+  "HTMLFrameSetElement",
+  "HTMLHeadElement",
+  "HTMLHeadingElement",
+  "HTMLHRElement",
+  "HTMLHtmlElement",
+  "HTMLIFrameElement",
+  "HTMLImageElement",
+  "HTMLInputElement",
+  "HTMLLabelElement",
+  "HTMLLegendElement",
+  "HTMLLIElement",
+  "HTMLLinkElement",
+  "HTMLMapElement",
+  "HTMLMediaElement",
+  "HTMLMetaElement",
+  "HTMLMeterElement",
+  "HTMLModElement",
+  "HTMLObjectElement",
+  "HTMLOListElement",
+  "HTMLOptGroupElement",
+  "HTMLOptionElement",
+  "HTMLOutputElement",
+  "HTMLParagraphElement",
+  "HTMLParamElement",
+  "HTMLPreElement",
+  "HTMLProgressElement",
+  "HTMLQuoteElement",
+  "HTMLScriptElement",
+  "HTMLSelectElement",
+  "HTMLSourceElement",
+  "HTMLSpanElement",
+  "HTMLStyleElement",
+  "HTMLTableCaptionElement",
+  "HTMLTableCellElement",
+  "HTMLTableColElement",
+  "HTMLTableDataCellElement",
+  "HTMLTableElement",
+  "HTMLTableHeaderCellElement",
+  "HTMLTableRowElement",
+  "HTMLTableSectionElement",
+  "HTMLTemplateElement",
+  "HTMLTextAreaElement",
+  "HTMLTimeElement",
+  "HTMLTitleElement",
+  "HTMLTrackElement",
+  "HTMLUListElement",
+  "HTMLUnknownElement",
+  "HTMLVideoElement",
+  "ImageData",
+  "Image",
+  "KeyboardEvent",
+  "Location",
+  "MessageEvent",
+  "MouseEvent",
+  "NamedNodeMap",
+  "Navigator",
+  "Node",
+  "NodeFilter",
+  "NodeIterator",
+  "NodeList",
+  "Performance",
+  "PerformanceTiming",
+  "ProcessingInstruction",
+  "ProgressEvent",
+  "RadioNodeList",
+  "Range",
+  "Screen",
+  "Storage",
+  "StorageEvent",
+  "TestBinding", // XXX
+  "TestBindingProxy", // XXX
+  "Text",
+  "TextDecoder",
+  "TextEncoder",
+  "Touch",
+  "TouchEvent",
+  "TouchList",
+  "TreeWalker",
+  "UIEvent",
+  "URL",
+  "URLSearchParams",
+  "ValidityState",
+  "WebGLRenderingContext",
+  "WebGLUniformLocation",
+  "WebGLBuffer",
+  "WebGLContextEvent",
+  "WebGLFramebuffer",
+  "WebGLRenderbuffer",
+  "WebGLTexture",
+  "WebGLProgram",
+  "WebGLShader",
+  "WebGLObject",
+  "WebGLActiveInfo",
+  "WebGLShaderPrecisionFormat",
+  "WebSocket",
+  "Window",
+  "Worker",
+  "WorkerGlobalScope", // #2823
+  "WorkerLocation", // #2823
+  "WorkerNavigator", // #2823
+  "XMLDocument",
+  "XMLHttpRequest",
+  "XMLHttpRequestEventTarget",
+  "XMLHttpRequestUpload",
+];
+
+function createInterfaceMap() {
+  var interfaceMap = {};
+
+  function addInterfaces(interfaces)
+  {
+    for (var entry of interfaces) {
+      interfaceMap[entry] = true;
+    }
+  }
+
+  addInterfaces(ecmaGlobals);
+  addInterfaces(interfaceNamesInGlobalScope);
+  addInterfaces(["EventWatcher"]);
+  return interfaceMap;
+}
+
+test(function() {
+  var interfaceMap = createInterfaceMap();
+  for (var name of Object.getOwnPropertyNames(window)) {
+    if (!/^[A-Z]/.test(name)) {
+      continue;
+    }
+    assert_true(name in interfaceMap,
+                "If this is failing: DANGER, are you sure you want to expose the new " +
+                "interface " + name + " to all webpages as a property on the window? " +
+                "Do not make a change to this file without review from jdm or Ms2ger " +
+                "for that specific change!");
+    if (name in interfaceMap) {
+      delete interfaceMap[name];
+    }
+  }
+  for (var name of Object.keys(interfaceMap)) {
+    assert_true(name in window, name + " should be defined on the global scope");
+  }
+  assert_equals(Object.keys(interfaceMap).length, 0,
+                "The following interface(s) are not enumerated: " +
+                Object.keys(interfaceMap).join(", "));
+});
+</script>

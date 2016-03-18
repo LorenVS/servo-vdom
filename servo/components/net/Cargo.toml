@@ -1,0 +1,47 @@
+[package]
+name = "net"
+version = "0.0.1"
+authors = ["The Servo Project Developers"]
+publish = false
+
+[lib]
+name = "net"
+path = "lib.rs"
+
+[dependencies.net_traits]
+path = "../net_traits"
+
+[dependencies.util]
+path = "../util"
+
+[dependencies.devtools_traits]
+path = "../devtools_traits"
+
+[dependencies.brotli]
+git = "https://github.com/ende76/brotli-rs"
+
+[dependencies.plugins]
+path = "../plugins"
+
+[dependencies.msg]
+path = "../msg"
+
+[dependencies.ipc-channel]
+git = "https://github.com/servo/ipc-channel"
+
+[dependencies.webrender_traits]
+git = "https://github.com/servo/webrender_traits"
+
+[dependencies]
+cookie = "0.2"
+flate2 = "0.2.0"
+hyper = { version = "0.8", features = [ "serde-serialization" ] }
+immeta = "0.3.1"
+log = "0.3.5"
+mime_guess = "1.6.0"
+openssl = "0.7.6"
+rustc-serialize = "0.3"
+time = "0.1.17"
+url = {version = "0.5.7", features = ["heap_size"]}
+uuid = "0.1.16"
+websocket = "0.15.2"

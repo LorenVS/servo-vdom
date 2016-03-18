@@ -1,0 +1,34 @@
+[package]
+name = "webdriver_server"
+version = "0.0.1"
+authors = ["The Servo Project Developers"]
+publish = false
+
+[lib]
+name = "webdriver_server"
+path = "lib.rs"
+
+[dependencies.compositing]
+path = "../compositing"
+
+[dependencies.msg]
+path = "../msg"
+
+[dependencies.plugins]
+path = "../plugins"
+
+[dependencies.util]
+path = "../util"
+
+[dependencies.ipc-channel]
+git = "https://github.com/servo/ipc-channel"
+
+[dependencies]
+image = "0.7"
+log = "0.3.5"
+hyper = "0.8"
+rustc-serialize = "0.3.4"
+regex = "0.1.55"
+url = {version = "0.5.7", features = ["heap_size"]}
+uuid = "0.1"
+webdriver = "0.7"
