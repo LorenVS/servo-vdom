@@ -213,7 +213,7 @@ pub mod types {
 
 pub mod activation;
 pub mod attr;
-mod create;
+pub mod create;
 #[allow(unsafe_code)]
 #[deny(missing_docs, non_snake_case)]
 pub mod bindings;

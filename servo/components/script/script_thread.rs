@@ -24,6 +24,7 @@ use devtools_traits::{ScriptToDevtoolsControlMsg, WorkerId};
 use document_loader::DocumentLoader;
 use dom::bindings::cell::DOMRefCell;
 use dom::bindings::codegen::Bindings::DocumentBinding::{DocumentMethods, DocumentReadyState};
+use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::conversions::{FromJSValConvertible, StringificationBehavior};
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::Castable;
@@ -33,12 +34,14 @@ use dom::bindings::refcounted::{LiveDOMReferences, Trusted, TrustedReference, tr
 use dom::bindings::trace::{JSTraceable, trace_traceables};
 use dom::bindings::utils::{DOM_CALLBACKS, WRAP_CALLBACKS};
 use dom::browsingcontext::BrowsingContext;
+use dom::create::create_element_simple;
 use dom::document::{Document, DocumentProgressHandler, DocumentSource, FocusType, IsHTMLDocument};
-use dom::element::Element;
+use dom::element::{Element, ElementCreator};
 use dom::event::{Event, EventBubbles, EventCancelable};
 use dom::htmlanchorelement::HTMLAnchorElement;
 use dom::node::{Node, NodeDamage, window_from_node};
 use dom::servohtmlparser::{ParserContext, ParserRoot};
+use dom::text::Text;
 use dom::uievent::UIEvent;
 use dom::window::{ReflowReason, ScriptHelpers, Window};
 use dom::worker::TrustedWorkerAddress;
@@ -547,7 +550,7 @@ impl ScriptThreadFactory for ScriptThread {
 
             let new_load = InProgressLoad::new(id, parent_info, layout_chan, window_size,
                                                load_data.url.clone());
-            script_thread.start_page_load(new_load, load_data);
+            script_thread.initialize_default_content(new_load);
 
             let reporter_name = format!("script-reporter-{}", id);
             mem_profiler_chan.run_with_memory_reporting(|| {
@@ -1580,6 +1583,104 @@ impl ScriptThread {
         if let Some(iframe) = document.find_iframe_by_pipeline(id) {
             iframe.iframe_load_event_steps(id);
         }
+    }
+
+    /// Initializes the default window/document into a state that is ready to accept
+    /// VDOM patches.
+    fn initialize_default_content(&self, incomplete: InProgressLoad) {
+
+        // Create a new frame tree entry.
+        let page = Rc::new(Page::new(incomplete.pipeline_id));
+        *self.page.borrow_mut() = Some(page.clone());
+
+        let MainThreadScriptChan(ref sender) = self.chan;
+        let DOMManipulationTaskSource(ref dom_sender) = self.dom_manipulation_task_source;
+        let UserInteractionTaskSource(ref user_sender) = self.user_interaction_task_source;
+        let NetworkingTaskSource(ref network_sender) = self.networking_task_source;
+        let HistoryTraversalTaskSource(ref history_sender) = self.history_traversal_task_source;
+        let FileReadingTaskSource(ref file_sender) = self.file_reading_task_source;
+
+        let (ipc_timer_event_chan, ipc_timer_event_port) = ipc::channel().unwrap();
+        ROUTER.route_ipc_receiver_to_mpsc_sender(ipc_timer_event_port,
+                                                 self.timer_event_chan.clone());
+
+        // Create the window and document objects.
+        let window = Window::new(self.js_runtime.clone(),
+                                 page.clone(),
+                                 MainThreadScriptChan(sender.clone()),
+                                 DOMManipulationTaskSource(dom_sender.clone()),
+                                 UserInteractionTaskSource(user_sender.clone()),
+                                 NetworkingTaskSource(network_sender.clone()),
+                                 HistoryTraversalTaskSource(history_sender.clone()),
+                                 FileReadingTaskSource(file_sender.clone()),
+                                 self.image_cache_channel.clone(),
+                                 self.compositor.borrow_mut().clone(),
+                                 self.image_cache_thread.clone(),
+                                 self.resource_thread.clone(),
+                                 self.storage_thread.clone(),
+                                 self.mem_profiler_chan.clone(),
+                                 self.devtools_chan.clone(),
+                                 self.constellation_chan.clone(),
+                                 self.control_chan.clone(),
+                                 self.scheduler_chan.clone(),
+                                 ipc_timer_event_chan,
+                                 incomplete.layout_chan,
+                                 incomplete.pipeline_id,
+                                 None,
+                                 incomplete.window_size);
+
+        let browsing_context = BrowsingContext::new(&window, None);
+        window.init_browsing_context(&browsing_context);
+
+        let loader = DocumentLoader::new_with_thread(self.resource_thread.clone(),
+                                                   Some(page.pipeline()),
+                                                   Some(incomplete.url.clone()));
+
+        let content_type = Some(DOMString::from("text/html"));
+        let is_html_document = IsHTMLDocument::HTMLDocument;
+
+        let document = Document::new(window.r(),
+                                     Some(&browsing_context),
+                                     Some(incomplete.url.clone()),
+                                     is_html_document,
+                                     content_type,
+                                     None,
+                                     DocumentSource::NotFromParser,
+                                     loader);
+
+        browsing_context.init(&document);
+
+        let htmlel = create_element_simple(
+            atom!("html"),
+            &document,
+            ElementCreator::ParserCreated);
+        assert!(document.upcast::<Node>().InsertBefore(htmlel.upcast::<Node>(), None).is_ok());
+
+        let bodyel = create_element_simple(
+            atom!("body"),
+            &document,
+            ElementCreator::ParserCreated);
+        assert!(htmlel.upcast::<Node>().InsertBefore(bodyel.upcast::<Node>(), None).is_ok());
+
+        let text = Text::new(DOMString::from("Hello World!"), &document);
+        assert!(bodyel.upcast::<Node>().InsertBefore(text.upcast(), None).is_ok());
+
+        document.set_ready_state(DocumentReadyState::Complete);
+
+        // Create the root frame
+        page.set_frame(Some(Frame {
+            document: JS::from_rooted(&document),
+            window: JS::from_rooted(&window),
+        }));
+
+        let ConstellationChan(ref chan) = self.constellation_chan;
+        chan.send(ConstellationMsg::ActivateDocument(incomplete.pipeline_id)).unwrap();
+
+        // Notify devtools that a new script global exists.
+        self.notify_devtools(document.Title(), incomplete.url.clone(), (page.pipeline(), None));
+
+        document.content_changed(document.upcast(), NodeDamage::OtherNodeDamage);
+        window.reflow(ReflowGoal::ForDisplay, ReflowQueryType::NoQuery, ReflowReason::FirstLoad);
     }
 
     /// The entry point to document loading. Defines bindings, sets up the window and document

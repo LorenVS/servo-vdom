@@ -249,3 +249,169 @@ pub fn create_element(name: QualName,
         _                   => make!(HTMLUnknownElement),
     }
 }
+
+
+pub fn create_element_simple(
+                      name: Atom,
+                      document: &Document,
+                      creator: ElementCreator)
+                      -> Root<Element> {
+
+    macro_rules! make(
+        ($ctor:ident) => ({
+            let obj = $ctor::new(name, None, document);
+            Root::upcast(obj)
+        });
+        ($ctor:ident, $($arg:expr),+) => ({
+            let obj = $ctor::new(name, None, document, $($arg),+);
+            Root::upcast(obj)
+        })
+    );
+
+    // This is a big match, and the IDs for inline-interned atoms are not very structured.
+    // Perhaps we should build a perfect hash from those IDs instead.
+    match name {
+        atom!("a")          => make!(HTMLAnchorElement),
+        atom!("abbr")       => make!(HTMLElement),
+        atom!("acronym")    => make!(HTMLElement),
+        atom!("address")    => make!(HTMLElement),
+        atom!("applet")     => make!(HTMLAppletElement),
+        atom!("area")       => make!(HTMLAreaElement),
+        atom!("article")    => make!(HTMLElement),
+        atom!("aside")      => make!(HTMLElement),
+        atom!("audio")      => make!(HTMLAudioElement),
+        atom!("b")          => make!(HTMLElement),
+        atom!("base")       => make!(HTMLBaseElement),
+        atom!("bdi")        => make!(HTMLElement),
+        atom!("bdo")        => make!(HTMLElement),
+        // https://html.spec.whatwg.org/multipage/#other-elements,-attributes-and-apis:bgsound
+        atom!("bgsound")    => make!(HTMLUnknownElement),
+        atom!("big")        => make!(HTMLElement),
+        // https://html.spec.whatwg.org/multipage/#other-elements,-attributes-and-apis:blink
+        atom!("blink")      => make!(HTMLUnknownElement),
+        // https://html.spec.whatwg.org/multipage/#the-blockquote-element
+        atom!("blockquote") => make!(HTMLQuoteElement),
+        atom!("body")       => make!(HTMLBodyElement),
+        atom!("br")         => make!(HTMLBRElement),
+        atom!("button")     => make!(HTMLButtonElement),
+        atom!("canvas")     => make!(HTMLCanvasElement),
+        atom!("caption")    => make!(HTMLTableCaptionElement),
+        atom!("center")     => make!(HTMLElement),
+        atom!("cite")       => make!(HTMLElement),
+        atom!("code")       => make!(HTMLElement),
+        atom!("col")        => make!(HTMLTableColElement),
+        atom!("colgroup")   => make!(HTMLTableColElement),
+        atom!("data")       => make!(HTMLDataElement),
+        atom!("datalist")   => make!(HTMLDataListElement),
+        atom!("dd")         => make!(HTMLElement),
+        atom!("del")        => make!(HTMLModElement),
+        atom!("details")    => make!(HTMLDetailsElement),
+        atom!("dfn")        => make!(HTMLElement),
+        atom!("dialog")     => make!(HTMLDialogElement),
+        atom!("dir")        => make!(HTMLDirectoryElement),
+        atom!("div")        => make!(HTMLDivElement),
+        atom!("dl")         => make!(HTMLDListElement),
+        atom!("dt")         => make!(HTMLElement),
+        atom!("em")         => make!(HTMLElement),
+        atom!("embed")      => make!(HTMLEmbedElement),
+        atom!("fieldset")   => make!(HTMLFieldSetElement),
+        atom!("figcaption") => make!(HTMLElement),
+        atom!("figure")     => make!(HTMLElement),
+        atom!("font")       => make!(HTMLFontElement),
+        atom!("footer")     => make!(HTMLElement),
+        atom!("form")       => make!(HTMLFormElement),
+        atom!("frame")      => make!(HTMLFrameElement),
+        atom!("frameset")   => make!(HTMLFrameSetElement),
+        atom!("h1")         => make!(HTMLHeadingElement, HeadingLevel::Heading1),
+        atom!("h2")         => make!(HTMLHeadingElement, HeadingLevel::Heading2),
+        atom!("h3")         => make!(HTMLHeadingElement, HeadingLevel::Heading3),
+        atom!("h4")         => make!(HTMLHeadingElement, HeadingLevel::Heading4),
+        atom!("h5")         => make!(HTMLHeadingElement, HeadingLevel::Heading5),
+        atom!("h6")         => make!(HTMLHeadingElement, HeadingLevel::Heading6),
+        atom!("head")       => make!(HTMLHeadElement),
+        atom!("header")     => make!(HTMLElement),
+        atom!("hgroup")     => make!(HTMLElement),
+        atom!("hr")         => make!(HTMLHRElement),
+        atom!("html")       => make!(HTMLHtmlElement),
+        atom!("i")          => make!(HTMLElement),
+        atom!("iframe")     => make!(HTMLIFrameElement),
+        atom!("img")        => make!(HTMLImageElement),
+        atom!("input")      => make!(HTMLInputElement),
+        atom!("ins")        => make!(HTMLModElement),
+        // https://html.spec.whatwg.org/multipage/#other-elements,-attributes-and-apis:isindex-2
+        atom!("isindex")    => make!(HTMLUnknownElement),
+        atom!("kbd")        => make!(HTMLElement),
+        atom!("label")      => make!(HTMLLabelElement),
+        atom!("legend")     => make!(HTMLLegendElement),
+        atom!("li")         => make!(HTMLLIElement),
+        atom!("link")       => make!(HTMLLinkElement, creator),
+        // https://html.spec.whatwg.org/multipage/#other-elements,-attributes-and-apis:listing
+        atom!("listing")    => make!(HTMLPreElement),
+        atom!("main")       => make!(HTMLElement),
+        atom!("map")        => make!(HTMLMapElement),
+        atom!("mark")       => make!(HTMLElement),
+        atom!("marquee")    => make!(HTMLElement),
+        atom!("meta")       => make!(HTMLMetaElement),
+        atom!("meter")      => make!(HTMLMeterElement),
+        // https://html.spec.whatwg.org/multipage/#other-elements,-attributes-and-apis:multicol
+        atom!("multicol")   => make!(HTMLUnknownElement),
+        atom!("nav")        => make!(HTMLElement),
+        // https://html.spec.whatwg.org/multipage/#other-elements,-attributes-and-apis:nextid
+        atom!("nextid")     => make!(HTMLUnknownElement),
+        atom!("nobr")       => make!(HTMLElement),
+        atom!("noframes")   => make!(HTMLElement),
+        atom!("noscript")   => make!(HTMLElement),
+        atom!("object")     => make!(HTMLObjectElement),
+        atom!("ol")         => make!(HTMLOListElement),
+        atom!("optgroup")   => make!(HTMLOptGroupElement),
+        atom!("option")     => make!(HTMLOptionElement),
+        atom!("output")     => make!(HTMLOutputElement),
+        atom!("p")          => make!(HTMLParagraphElement),
+        atom!("param")      => make!(HTMLParamElement),
+        atom!("plaintext")  => make!(HTMLPreElement),
+        atom!("pre")        => make!(HTMLPreElement),
+        atom!("progress")   => make!(HTMLProgressElement),
+        atom!("q")          => make!(HTMLQuoteElement),
+        atom!("rp")         => make!(HTMLElement),
+        atom!("rt")         => make!(HTMLElement),
+        atom!("ruby")       => make!(HTMLElement),
+        atom!("s")          => make!(HTMLElement),
+        atom!("samp")       => make!(HTMLElement),
+        atom!("script")     => make!(HTMLScriptElement, creator),
+        atom!("section")    => make!(HTMLElement),
+        atom!("select")     => make!(HTMLSelectElement),
+        atom!("small")      => make!(HTMLElement),
+        atom!("source")     => make!(HTMLSourceElement),
+        // https://html.spec.whatwg.org/multipage/#other-elements,-attributes-and-apis:spacer
+        atom!("spacer")     => make!(HTMLUnknownElement),
+        atom!("span")       => make!(HTMLSpanElement),
+        atom!("strike")     => make!(HTMLElement),
+        atom!("strong")     => make!(HTMLElement),
+        atom!("style")      => make!(HTMLStyleElement),
+        atom!("sub")        => make!(HTMLElement),
+        atom!("summary")    => make!(HTMLElement),
+        atom!("sup")        => make!(HTMLElement),
+        atom!("table")      => make!(HTMLTableElement),
+        atom!("tbody")      => make!(HTMLTableSectionElement),
+        atom!("td")         => make!(HTMLTableDataCellElement),
+        atom!("template")   => make!(HTMLTemplateElement),
+        atom!("textarea")   => make!(HTMLTextAreaElement),
+        // https://html.spec.whatwg.org/multipage/#the-tfoot-element:concept-element-dom
+        atom!("tfoot")      => make!(HTMLTableSectionElement),
+        atom!("th")         => make!(HTMLTableHeaderCellElement),
+        // https://html.spec.whatwg.org/multipage/#the-thead-element:concept-element-dom
+        atom!("thead")      => make!(HTMLTableSectionElement),
+        atom!("time")       => make!(HTMLTimeElement),
+        atom!("title")      => make!(HTMLTitleElement),
+        atom!("tr")         => make!(HTMLTableRowElement),
+        atom!("tt")         => make!(HTMLElement),
+        atom!("track")      => make!(HTMLTrackElement),
+        atom!("u")          => make!(HTMLElement),
+        atom!("ul")         => make!(HTMLUListElement),
+        atom!("var")        => make!(HTMLElement),
+        atom!("video")      => make!(HTMLVideoElement),
+        atom!("wbr")        => make!(HTMLElement),
+        atom!("xmp")        => make!(HTMLPreElement),
+        _                   => make!(HTMLUnknownElement),
+    }
+}
