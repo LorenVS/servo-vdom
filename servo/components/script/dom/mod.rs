@@ -336,8 +336,6 @@ pub mod range;
 pub mod screen;
 pub mod storage;
 pub mod storageevent;
-pub mod testbinding;
-pub mod testbindingproxy;
 pub mod text;
 pub mod textdecoder;
 pub mod textencoder;
