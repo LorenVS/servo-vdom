@@ -331,8 +331,6 @@ pub mod progressevent;
 pub mod radionodelist;
 pub mod range;
 pub mod screen;
-pub mod storage;
-pub mod storageevent;
 pub mod text;
 pub mod touch;
 pub mod touchevent;

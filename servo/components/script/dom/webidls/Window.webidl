@@ -166,19 +166,5 @@ partial interface Window {
   void webdriverTimeout();
 };
 
-// https://html.spec.whatwg.org/multipage/#dom-sessionstorage
-[NoInterfaceObject]
-interface WindowSessionStorage {
-  readonly attribute Storage sessionStorage;
-};
-Window implements WindowSessionStorage;
-
-// https://html.spec.whatwg.org/multipage/#dom-localstorage
-[NoInterfaceObject]
-interface WindowLocalStorage {
-  readonly attribute Storage localStorage;
-};
-Window implements WindowLocalStorage;
-
 // http://w3c.github.io/animation-timing/#framerequestcallback
 callback FrameRequestCallback = void (DOMHighResTimeStamp time);

@@ -44,5 +44,4 @@ interface GlobalEventHandlers {
 [NoInterfaceObject]
 interface WindowEventHandlers {
            attribute EventHandler onunload;
-           attribute EventHandler onstorage;
 };

@@ -72,16 +72,6 @@ impl HTMLBodyElementMethods for HTMLBodyElement {
         window_from_node(self).SetOnunload(listener)
     }
 
-    // https://html.spec.whatwg.org/multipage/#the-body-element
-    fn GetOnstorage(&self) -> Option<Rc<EventHandlerNonNull>> {
-        window_from_node(self).GetOnstorage()
-    }
-
-    // https://html.spec.whatwg.org/multipage/#the-body-element
-    fn SetOnstorage(&self, listener: Option<Rc<EventHandlerNonNull>>) {
-        window_from_node(self).SetOnstorage(listener)
-    }
-
     // https://html.spec.whatwg.org/multipage/#dom-body-background
     make_getter!(Background, "background");
 

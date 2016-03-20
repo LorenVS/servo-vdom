@@ -28,7 +28,6 @@ use dom::location::Location;
 use dom::node::{Node, TrustedNodeAddress, from_untrusted_node_address, window_from_node};
 use dom::performance::Performance;
 use dom::screen::Screen;
-use dom::storage::Storage;
 use euclid::{Point2D, Rect, Size2D};
 use gfx_traits::LayerId;
 use ipc_channel::ipc::{self, IpcSender};
@@ -44,7 +43,7 @@ use msg::constellation_msg::{ConstellationChan, LoadData, PipelineId, SubpageId,
 use msg::webdriver_msg::{WebDriverJSError, WebDriverJSResult};
 use net_traits::ResourceThread;
 use net_traits::image_cache_thread::{ImageCacheChan, ImageCacheThread};
-use net_traits::storage_thread::{StorageThread, StorageType};
+use net_traits::storage_thread::{StorageThread};
 use num::traits::ToPrimitive;
 use page::Page;
 use profile_traits::mem;
@@ -144,8 +143,6 @@ pub struct Window {
     navigation_start: u64,
     navigation_start_precise: f64,
     screen: MutNullableHeap<JS<Screen>>,
-    session_storage: MutNullableHeap<JS<Storage>>,
-    local_storage: MutNullableHeap<JS<Storage>>,
     #[ignore_heap_size_of = "channels are hard"]
     scheduler_chan: IpcSender<TimerEventRequest>,
     timers: OneshotTimers,
@@ -432,16 +429,6 @@ impl WindowMethods for Window {
         self.Document().Location()
     }
 
-    // https://html.spec.whatwg.org/multipage/#dom-sessionstorage
-    fn SessionStorage(&self) -> Root<Storage> {
-        self.session_storage.or_init(|| Storage::new(&GlobalRef::Window(self), StorageType::Session))
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-localstorage
-    fn LocalStorage(&self) -> Root<Storage> {
-        self.local_storage.or_init(|| Storage::new(&GlobalRef::Window(self), StorageType::Local))
-    }
-
     // https://html.spec.whatwg.org/multipage/#dom-frameelement
     fn GetFrameElement(&self) -> Option<Root<Element>> {
         self.browsing_context().frame_element().map(Root::from_ref)
@@ -540,9 +527,6 @@ impl WindowMethods for Window {
 
     // https://html.spec.whatwg.org/multipage/#handler-window-onunload
     event_handler!(unload, GetOnunload, SetOnunload);
-
-    // https://html.spec.whatwg.org/multipage/#handler-window-onstorage
-    event_handler!(storage, GetOnstorage, SetOnstorage);
 
     // https://developer.mozilla.org/en-US/docs/Web/API/Window/screen
     fn Screen(&self) -> Root<Screen> {
@@ -1371,8 +1355,6 @@ impl Window {
             navigation_start: time::get_time().sec as u64,
             navigation_start_precise: time::precise_time_ns() as f64,
             screen: Default::default(),
-            session_storage: Default::default(),
-            local_storage: Default::default(),
             scheduler_chan: scheduler_chan.clone(),
             timers: OneshotTimers::new(timer_event_chan, scheduler_chan),
             next_worker_id: Cell::new(WorkerId(0)),
