@@ -218,8 +218,6 @@ pub mod create;
 #[deny(missing_docs, non_snake_case)]
 pub mod bindings;
 pub mod browsingcontext;
-pub mod canvasgradient;
-pub mod canvaspattern;
 pub mod characterdata;
 pub mod closeevent;
 pub mod comment;
