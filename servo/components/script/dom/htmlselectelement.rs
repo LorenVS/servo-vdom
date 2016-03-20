@@ -16,9 +16,8 @@ use dom::htmlelement::HTMLElement;
 use dom::htmlfieldsetelement::HTMLFieldSetElement;
 use dom::htmlformelement::{FormControl, FormDatum, HTMLFormElement};
 use dom::htmloptionelement::HTMLOptionElement;
-use dom::node::{Node, UnbindContext, window_from_node};
+use dom::node::{Node, UnbindContext};
 use dom::nodelist::NodeList;
-use dom::validitystate::ValidityState;
 use dom::virtualmethods::VirtualMethods;
 use string_cache::Atom;
 use style::element_state::*;
@@ -127,11 +126,6 @@ impl HTMLSelectElement {
 }
 
 impl HTMLSelectElementMethods for HTMLSelectElement {
-    // https://html.spec.whatwg.org/multipage/#dom-cva-validity
-    fn Validity(&self) -> Root<ValidityState> {
-        let window = window_from_node(self);
-        ValidityState::new(window.r())
-    }
 
     // Note: this function currently only exists for union.html.
     // https://html.spec.whatwg.org/multipage/#dom-select-add

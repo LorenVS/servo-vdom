@@ -18,7 +18,6 @@ use dom::htmlformelement::{FormControl, FormSubmitter, ResetFrom};
 use dom::htmlformelement::{SubmittedFrom, HTMLFormElement};
 use dom::node::{Node, UnbindContext, document_from_node, window_from_node};
 use dom::nodelist::NodeList;
-use dom::validitystate::ValidityState;
 use dom::virtualmethods::VirtualMethods;
 use std::ascii::AsciiExt;
 use std::cell::Cell;
@@ -63,11 +62,6 @@ impl HTMLButtonElement {
 }
 
 impl HTMLButtonElementMethods for HTMLButtonElement {
-    // https://html.spec.whatwg.org/multipage/#dom-cva-validity
-    fn Validity(&self) -> Root<ValidityState> {
-        let window = window_from_node(self);
-        ValidityState::new(window.r())
-    }
 
     // https://html.spec.whatwg.org/multipage/#dom-fe-disabled
     make_bool_getter!(Disabled, "disabled");

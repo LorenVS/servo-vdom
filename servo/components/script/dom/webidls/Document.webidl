@@ -79,9 +79,6 @@ enum DocumentReadyState { "loading", "interactive", "complete" };
 // https://html.spec.whatwg.org/multipage/#the-document-object
 // [OverrideBuiltins]
 partial /*sealed*/ interface Document {
-  // resource metadata management
-  [/*PutForwards=href, */Unforgeable]
-  readonly attribute Location/*?*/ location;
   readonly attribute DOMString domain;
   // readonly attribute DOMString referrer;
   [Throws]

@@ -55,7 +55,6 @@ use dom::htmlmetaelement::HTMLMetaElement;
 use dom::htmlstyleelement::HTMLStyleElement;
 use dom::htmltitleelement::HTMLTitleElement;
 use dom::keyboardevent::KeyboardEvent;
-use dom::location::Location;
 use dom::messageevent::MessageEvent;
 use dom::mouseevent::MouseEvent;
 use dom::node::{self, CloneChildrenFlag, Node, NodeDamage, window_from_node};
@@ -122,7 +121,6 @@ pub struct Document {
     /// https://html.spec.whatwg.org/multipage/#concept-document-bc
     browsing_context: Option<JS<BrowsingContext>>,
     implementation: MutNullableHeap<JS<DOMImplementation>>,
-    location: MutNullableHeap<JS<Location>>,
     content_type: DOMString,
     last_modified: Option<String>,
     encoding_name: DOMRefCell<DOMString>,
@@ -1328,7 +1326,6 @@ impl Document {
             window: JS::from_ref(window),
             browsing_context: browsing_context.map(JS::from_ref),
             implementation: Default::default(),
-            location: Default::default(),
             content_type: match content_type {
                 Some(string) => string,
                 None => DOMString::from(match is_html_document {
@@ -2097,11 +2094,6 @@ impl DocumentMethods for Document {
             let filter = box AppletsFilter;
             HTMLCollection::create(&self.window, self.upcast(), filter)
         })
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-document-location
-    fn Location(&self) -> Root<Location> {
-        self.location.or_init(|| Location::new(&self.window))
     }
 
     // https://dom.spec.whatwg.org/#dom-parentnode-children

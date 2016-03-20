@@ -17,7 +17,6 @@ interface HTMLObjectElement : HTMLElement {
   //readonly attribute WindowProxy? contentWindow;
 
   //readonly attribute boolean willValidate;
-  readonly attribute ValidityState validity;
   //readonly attribute DOMString validationMessage;
   //boolean checkValidity();
   //boolean reportValidity();

@@ -12,8 +12,7 @@ use dom::document::Document;
 use dom::element::{AttributeMutation, Element};
 use dom::htmlelement::HTMLElement;
 use dom::htmlformelement::{FormControl, HTMLFormElement};
-use dom::node::{Node, window_from_node};
-use dom::validitystate::ValidityState;
+use dom::node::{Node};
 use dom::virtualmethods::VirtualMethods;
 use net_traits::image::base::Image;
 use std::sync::Arc;
@@ -73,11 +72,6 @@ pub fn is_image_data(uri: &str) -> bool {
 }
 
 impl HTMLObjectElementMethods for HTMLObjectElement {
-    // https://html.spec.whatwg.org/multipage/#dom-cva-validity
-    fn Validity(&self) -> Root<ValidityState> {
-        let window = window_from_node(self);
-        ValidityState::new(window.r())
-    }
 
     // https://html.spec.whatwg.org/multipage/#dom-object-type
     make_getter!(Type, "type");

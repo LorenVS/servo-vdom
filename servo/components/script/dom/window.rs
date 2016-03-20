@@ -24,7 +24,6 @@ use dom::cssstyledeclaration::{CSSModificationAccess, CSSStyleDeclaration};
 use dom::document::Document;
 use dom::element::Element;
 use dom::eventtarget::EventTarget;
-use dom::location::Location;
 use dom::node::{Node, TrustedNodeAddress, from_untrusted_node_address, window_from_node};
 use dom::screen::Screen;
 use euclid::{Point2D, Rect, Size2D};
@@ -420,11 +419,6 @@ impl WindowMethods for Window {
     // https://html.spec.whatwg.org/multipage/#dom-document-2
     fn Document(&self) -> Root<Document> {
         self.browsing_context().active_document()
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-location
-    fn Location(&self) -> Root<Location> {
-        self.Document().Location()
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-frameelement

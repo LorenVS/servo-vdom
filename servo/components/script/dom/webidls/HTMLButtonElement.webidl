@@ -18,12 +18,6 @@ interface HTMLButtonElement : HTMLElement {
              attribute DOMString value;
   //         attribute HTMLMenuElement? menu;
 
-  //readonly attribute boolean willValidate;
-  readonly attribute ValidityState validity;
-  //readonly attribute DOMString validationMessage;
-  //boolean checkValidity();
-  //boolean reportValidity();
-  //void setCustomValidity(DOMString error);
 
   readonly attribute NodeList labels;
 };

@@ -495,7 +495,7 @@ impl<'le> ::selectors::Element for ServoLayoutElement<'le> {
             None => false,
             Some(node) => {
                 match node.type_id() {
-                    NodeTypeId::Document(_) => true,
+                    NodeTypeId::Document => true,
                     _ => false
                 }
             },

@@ -9,9 +9,8 @@ use dom::bindings::js::Root;
 use dom::document::Document;
 use dom::htmlelement::HTMLElement;
 use dom::htmlformelement::{FormControl, HTMLFormElement};
-use dom::node::{Node, window_from_node};
+use dom::node::{Node};
 use dom::nodelist::NodeList;
-use dom::validitystate::ValidityState;
 use string_cache::Atom;
 use util::str::DOMString;
 
@@ -40,11 +39,6 @@ impl HTMLOutputElement {
 }
 
 impl HTMLOutputElementMethods for HTMLOutputElement {
-    // https://html.spec.whatwg.org/multipage/#dom-cva-validity
-    fn Validity(&self) -> Root<ValidityState> {
-        let window = window_from_node(self);
-        ValidityState::new(window.r())
-    }
 
     // https://html.spec.whatwg.org/multipage/#dom-fae-form
     fn GetForm(&self) -> Option<Root<HTMLFormElement>> {

@@ -14,7 +14,6 @@ use dom::htmlelement::HTMLElement;
 use dom::htmlformelement::{FormControl, HTMLFormElement};
 use dom::htmllegendelement::HTMLLegendElement;
 use dom::node::{Node, window_from_node};
-use dom::validitystate::ValidityState;
 use dom::virtualmethods::VirtualMethods;
 use string_cache::Atom;
 use style::element_state::*;
@@ -59,12 +58,6 @@ impl HTMLFieldSetElementMethods for HTMLFieldSetElement {
         let filter = box ElementsFilter;
         let window = window_from_node(self);
         HTMLCollection::create(window.r(), self.upcast(), filter)
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-cva-validity
-    fn Validity(&self) -> Root<ValidityState> {
-        let window = window_from_node(self);
-        ValidityState::new(window.r())
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-fieldset-disabled

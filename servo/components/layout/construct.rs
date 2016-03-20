@@ -1476,7 +1476,7 @@ impl<'a, ConcreteThreadSafeLayoutNode> PostorderNodeMutTraversal<ConcreteThreadS
             Some(NodeTypeId::CharacterData(CharacterDataTypeId::ProcessingInstruction)) |
             Some(NodeTypeId::DocumentType) |
             Some(NodeTypeId::DocumentFragment) |
-            Some(NodeTypeId::Document(_)) => {
+            Some(NodeTypeId::Document) => {
                 (display::T::none, float::T::none, position::T::static_)
             }
         };
@@ -1625,7 +1625,7 @@ impl<ConcreteThreadSafeLayoutNode> NodeUtils for ConcreteThreadSafeLayoutNode
             Some(NodeTypeId::CharacterData(_)) |
             Some(NodeTypeId::DocumentType) |
             Some(NodeTypeId::DocumentFragment) |
-            Some(NodeTypeId::Document(_)) |
+            Some(NodeTypeId::Document) |
             Some(NodeTypeId::Element(ElementTypeId::HTMLElement(
                         HTMLElementTypeId::HTMLImageElement))) |
             Some(NodeTypeId::Element(ElementTypeId::HTMLElement(

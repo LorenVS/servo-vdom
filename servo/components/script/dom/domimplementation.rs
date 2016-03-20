@@ -5,7 +5,6 @@
 use document_loader::DocumentLoader;
 use dom::bindings::codegen::Bindings::DOMImplementationBinding;
 use dom::bindings::codegen::Bindings::DOMImplementationBinding::DOMImplementationMethods;
-use dom::bindings::codegen::Bindings::DocumentBinding::DocumentMethods;
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
@@ -22,7 +21,6 @@ use dom::htmlhtmlelement::HTMLHtmlElement;
 use dom::htmltitleelement::HTMLTitleElement;
 use dom::node::Node;
 use dom::text::Text;
-use dom::xmldocument::XMLDocument;
 use util::str::DOMString;
 
 // https://dom.spec.whatwg.org/#domimplementation
@@ -58,55 +56,6 @@ impl DOMImplementationMethods for DOMImplementation {
                           -> Fallible<Root<DocumentType>> {
         try!(validate_qualified_name(&qualified_name));
         Ok(DocumentType::new(qualified_name, Some(pubid), Some(sysid), &self.document))
-    }
-
-    // https://dom.spec.whatwg.org/#dom-domimplementation-createdocument
-    fn CreateDocument(&self,
-                      namespace: Option<DOMString>,
-                      qname: DOMString,
-                      maybe_doctype: Option<&DocumentType>)
-                      -> Fallible<Root<XMLDocument>> {
-        let win = self.document.window();
-        let loader = DocumentLoader::new(&self.document.loader());
-
-        // Step 1.
-        let doc = XMLDocument::new(win,
-                                   None,
-                                   None,
-                                   IsHTMLDocument::NonHTMLDocument,
-                                   None,
-                                   None,
-                                   DocumentSource::NotFromParser,
-                                   loader);
-        // Step 2-3.
-        let maybe_elem = if qname.is_empty() {
-            None
-        } else {
-            match doc.upcast::<Document>().CreateElementNS(namespace, qname) {
-                Err(error) => return Err(error),
-                Ok(elem) => Some(elem),
-            }
-        };
-
-        {
-            let doc_node = doc.upcast::<Node>();
-
-            // Step 4.
-            if let Some(doc_type) = maybe_doctype {
-                doc_node.AppendChild(doc_type.upcast()).unwrap();
-            }
-
-            // Step 5.
-            if let Some(ref elem) = maybe_elem {
-                doc_node.AppendChild(elem.upcast()).unwrap();
-            }
-        }
-
-        // Step 6.
-        // FIXME: https://github.com/mozilla/servo/issues/1522
-
-        // Step 7.
-        Ok(doc)
     }
 
     // https://dom.spec.whatwg.org/#dom-domimplementation-createhtmldocument
