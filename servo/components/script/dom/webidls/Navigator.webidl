@@ -8,7 +8,6 @@ interface Navigator {
   // objects implementing this interface also implement the interfaces given below
 };
 Navigator implements NavigatorID;
-Navigator implements NavigatorBluetooth;
 //Navigator implements NavigatorLanguage;
 //Navigator implements NavigatorOnLine;
 //Navigator implements NavigatorContentUtils;
@@ -25,9 +24,4 @@ interface NavigatorID {
   readonly attribute DOMString product; // constant "Gecko"
   boolean taintEnabled(); // constant false
   readonly attribute DOMString userAgent;
-};
-
-[NoInterfaceObject]
-interface NavigatorBluetooth {
-    readonly attribute Bluetooth bluetooth;
 };

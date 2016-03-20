@@ -5,24 +5,21 @@
 use dom::bindings::codegen::Bindings::NavigatorBinding;
 use dom::bindings::codegen::Bindings::NavigatorBinding::NavigatorMethods;
 use dom::bindings::global::GlobalRef;
-use dom::bindings::js::{JS, MutNullableHeap, Root};
-use dom::bindings::reflector::{Reflector, Reflectable, reflect_dom_object};
-use dom::bluetooth::Bluetooth;
+use dom::bindings::js::{Root};
+use dom::bindings::reflector::{Reflector, reflect_dom_object};
 use dom::navigatorinfo;
 use dom::window::Window;
 use util::str::DOMString;
 
 #[dom_struct]
 pub struct Navigator {
-    reflector_: Reflector,
-    bluetooth: MutNullableHeap<JS<Bluetooth>>,
+    reflector_: Reflector
 }
 
 impl Navigator {
     fn new_inherited() -> Navigator {
         Navigator {
-            reflector_: Reflector::new(),
-            bluetooth: Default::default(),
+            reflector_: Reflector::new()
         }
     }
 
@@ -67,10 +64,5 @@ impl NavigatorMethods for Navigator {
     // https://html.spec.whatwg.org/multipage/#dom-navigator-appversion
     fn AppVersion(&self) -> DOMString {
         navigatorinfo::AppVersion()
-    }
-
-    // https://webbluetoothcg.github.io/web-bluetooth/#dom-navigator-bluetooth
-    fn Bluetooth(&self) -> Root<Bluetooth> {
-        self.bluetooth.or_init(|| Bluetooth::new(self.global().r()))
     }
 }
