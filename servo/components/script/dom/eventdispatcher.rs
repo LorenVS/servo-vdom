@@ -60,8 +60,7 @@ fn dispatch_to_listeners(event: &Event, target: &EventTarget, event_path: &[&Eve
             } else {
                 None
             }
-        },
-        _ => None,
+        }
     };
 
     // Step 5.

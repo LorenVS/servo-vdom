@@ -42,7 +42,6 @@ use dom::node::{Node, NodeDamage, window_from_node};
 use dom::text::Text;
 use dom::uievent::UIEvent;
 use dom::window::{ReflowReason, Window};
-use dom::worker::TrustedWorkerAddress;
 use euclid::Rect;
 use euclid::point::Point2D;
 use gfx_traits::LayerId;
@@ -287,21 +286,6 @@ impl ScriptPort for Receiver<CommonScriptMsg> {
 impl ScriptPort for Receiver<MainThreadScriptMsg> {
     fn recv(&self) -> CommonScriptMsg {
         match self.recv().unwrap() {
-            MainThreadScriptMsg::Common(script_msg) => script_msg,
-            _ => panic!("unexpected main thread event message!")
-        }
-    }
-}
-
-impl ScriptPort for Receiver<(TrustedWorkerAddress, CommonScriptMsg)> {
-    fn recv(&self) -> CommonScriptMsg {
-        self.recv().unwrap().1
-    }
-}
-
-impl ScriptPort for Receiver<(TrustedWorkerAddress, MainThreadScriptMsg)> {
-    fn recv(&self) -> CommonScriptMsg {
-        match self.recv().unwrap().1 {
             MainThreadScriptMsg::Common(script_msg) => script_msg,
             _ => panic!("unexpected main thread event message!")
         }

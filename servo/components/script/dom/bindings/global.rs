@@ -13,7 +13,6 @@ use dom::bindings::conversions::root_from_object;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflectable, Reflector};
 use dom::window::{self, ScriptHelpers};
-use dom::workerglobalscope::WorkerGlobalScope;
 use ipc_channel::ipc::IpcSender;
 use js::jsapi::GetGlobalForObjectCrossCompartment;
 use js::jsapi::{JSContext, JSObject, JS_GetClass, MutableHandleValue};
@@ -32,17 +31,13 @@ use url::Url;
 #[derive(Copy, Clone)]
 pub enum GlobalRef<'a> {
     /// A reference to a `Window` object.
-    Window(&'a window::Window),
-    /// A reference to a `WorkerGlobalScope` object.
-    Worker(&'a WorkerGlobalScope),
+    Window(&'a window::Window)
 }
 
 /// A stack-based rooted reference to a global object.
 pub enum GlobalRoot {
     /// A root for a `Window` object.
-    Window(Root<window::Window>),
-    /// A root for a `WorkerGlobalScope` object.
-    Worker(Root<WorkerGlobalScope>),
+    Window(Root<window::Window>)
 }
 
 impl<'a> GlobalRef<'a> {
@@ -51,7 +46,6 @@ impl<'a> GlobalRef<'a> {
     pub fn get_cx(&self) -> *mut JSContext {
         match *self {
             GlobalRef::Window(ref window) => window.get_cx(),
-            GlobalRef::Worker(ref worker) => worker.get_cx(),
         }
     }
 
@@ -59,40 +53,35 @@ impl<'a> GlobalRef<'a> {
     /// a `Window`.
     pub fn as_window(&self) -> &window::Window {
         match *self {
-            GlobalRef::Window(window) => window,
-            GlobalRef::Worker(_) => panic!("expected a Window scope"),
+            GlobalRef::Window(window) => window
         }
     }
 
     /// Get the `PipelineId` for this global scope.
     pub fn pipeline(&self) -> PipelineId {
         match *self {
-            GlobalRef::Window(window) => window.pipeline(),
-            GlobalRef::Worker(worker) => worker.pipeline(),
+            GlobalRef::Window(window) => window.pipeline()
         }
     }
 
     /// Get a `mem::ProfilerChan` to send messages to the memory profiler thread.
     pub fn mem_profiler_chan(&self) -> mem::ProfilerChan {
         match *self {
-            GlobalRef::Window(window) => window.mem_profiler_chan(),
-            GlobalRef::Worker(worker) => worker.mem_profiler_chan(),
+            GlobalRef::Window(window) => window.mem_profiler_chan()
         }
     }
 
     /// Get a `ConstellationChan` to send messages to the constellation channel when available.
     pub fn constellation_chan(&self) -> ConstellationChan<ConstellationMsg> {
         match *self {
-            GlobalRef::Window(window) => window.constellation_chan(),
-            GlobalRef::Worker(worker) => worker.constellation_chan(),
+            GlobalRef::Window(window) => window.constellation_chan()
         }
     }
 
     /// Get the scheduler channel to request timer events.
     pub fn scheduler_chan(&self) -> IpcSender<TimerEventRequest> {
         match *self {
-            GlobalRef::Window(window) => window.scheduler_chan(),
-            GlobalRef::Worker(worker) => worker.scheduler_chan(),
+            GlobalRef::Window(window) => window.scheduler_chan()
         }
     }
 
@@ -100,8 +89,7 @@ impl<'a> GlobalRef<'a> {
     /// thread when available.
     pub fn devtools_chan(&self) -> Option<IpcSender<ScriptToDevtoolsControlMsg>> {
         match *self {
-            GlobalRef::Window(window) => window.devtools_chan(),
-            GlobalRef::Worker(worker) => worker.devtools_chan(),
+            GlobalRef::Window(window) => window.devtools_chan()
         }
     }
 
@@ -114,31 +102,27 @@ impl<'a> GlobalRef<'a> {
                 let loader = doc.loader();
                 (*loader.resource_thread).clone()
             }
-            GlobalRef::Worker(ref worker) => worker.resource_thread().clone(),
         }
     }
 
     /// Get the worker's id.
     pub fn get_worker_id(&self) -> Option<WorkerId> {
         match *self {
-            GlobalRef::Window(_) => None,
-            GlobalRef::Worker(ref worker) => Some(worker.get_worker_id()),
+            GlobalRef::Window(_) => None
         }
     }
 
     /// Get next worker id.
     pub fn get_next_worker_id(&self) -> WorkerId {
         match *self {
-            GlobalRef::Window(ref window) => window.get_next_worker_id(),
-            GlobalRef::Worker(ref worker) => worker.get_next_worker_id(),
+            GlobalRef::Window(ref window) => window.get_next_worker_id()
         }
     }
 
     /// Get the URL for this global scope.
     pub fn get_url(&self) -> Url {
         match *self {
-            GlobalRef::Window(ref window) => window.get_url(),
-            GlobalRef::Worker(ref worker) => worker.get_url().clone(),
+            GlobalRef::Window(ref window) => window.get_url()
         }
     }
 
@@ -149,7 +133,6 @@ impl<'a> GlobalRef<'a> {
             GlobalRef::Window(ref window) => {
                 MainThreadScriptChan(window.main_thread_script_chan().clone()).clone()
             }
-            GlobalRef::Worker(ref worker) => worker.script_chan(),
         }
     }
 
@@ -157,8 +140,7 @@ impl<'a> GlobalRef<'a> {
     /// thread.
     pub fn dom_manipulation_task_source(&self) -> Box<TaskSource<DOMManipulationTask> + Send> {
         match *self {
-            GlobalRef::Window(ref window) => window.dom_manipulation_task_source(),
-            GlobalRef::Worker(_) => unimplemented!(),
+            GlobalRef::Window(ref window) => window.dom_manipulation_task_source()
         }
     }
 
@@ -166,8 +148,7 @@ impl<'a> GlobalRef<'a> {
     /// thread.
     pub fn user_interaction_task_source(&self) -> Box<ScriptChan + Send> {
         match *self {
-            GlobalRef::Window(ref window) => window.user_interaction_task_source(),
-            GlobalRef::Worker(ref worker) => worker.script_chan(),
+            GlobalRef::Window(ref window) => window.user_interaction_task_source()
         }
     }
 
@@ -175,8 +156,7 @@ impl<'a> GlobalRef<'a> {
     /// thread.
     pub fn networking_task_source(&self) -> Box<ScriptChan + Send> {
         match *self {
-            GlobalRef::Window(ref window) => window.networking_task_source(),
-            GlobalRef::Worker(ref worker) => worker.script_chan(),
+            GlobalRef::Window(ref window) => window.networking_task_source()
         }
     }
 
@@ -184,8 +164,7 @@ impl<'a> GlobalRef<'a> {
     /// thread.
     pub fn history_traversal_task_source(&self) -> Box<ScriptChan + Send> {
         match *self {
-            GlobalRef::Window(ref window) => window.history_traversal_task_source(),
-            GlobalRef::Worker(ref worker) => worker.script_chan(),
+            GlobalRef::Window(ref window) => window.history_traversal_task_source()
         }
     }
 
@@ -193,8 +172,7 @@ impl<'a> GlobalRef<'a> {
     /// thread.
     pub fn file_reading_task_source(&self) -> Box<ScriptChan + Send> {
         match *self {
-            GlobalRef::Window(ref window) => window.file_reading_task_source(),
-            GlobalRef::Worker(ref worker) => worker.script_chan(),
+            GlobalRef::Window(ref window) => window.file_reading_task_source()
         }
     }
 
@@ -203,8 +181,7 @@ impl<'a> GlobalRef<'a> {
     /// without resorting to nested event loops.
     pub fn new_script_pair(&self) -> (Box<ScriptChan + Send>, Box<ScriptPort + Send>) {
         match *self {
-            GlobalRef::Window(ref window) => window.new_script_pair(),
-            GlobalRef::Worker(ref worker) => worker.new_script_pair(),
+            GlobalRef::Window(ref window) => window.new_script_pair()
         }
     }
 
@@ -212,16 +189,14 @@ impl<'a> GlobalRef<'a> {
     /// this global.
     pub fn process_event(&self, msg: CommonScriptMsg) {
         match *self {
-            GlobalRef::Window(_) => ScriptThread::process_event(msg),
-            GlobalRef::Worker(ref worker) => worker.process_event(msg),
+            GlobalRef::Window(_) => ScriptThread::process_event(msg)
         }
     }
 
     /// Evaluate the JS messages on the `RootedValue` of this global
     pub fn evaluate_js_on_global_with_result(&self, code: &str, rval: MutableHandleValue) {
         match *self {
-            GlobalRef::Window(window) => window.evaluate_js_on_global_with_result(code, rval),
-            GlobalRef::Worker(worker) => worker.evaluate_js_on_global_with_result(code, rval),
+            GlobalRef::Window(window) => window.evaluate_js_on_global_with_result(code, rval)
         }
     }
 
@@ -229,8 +204,7 @@ impl<'a> GlobalRef<'a> {
     /// updates from the global
     pub fn set_devtools_wants_updates(&self, send_updates: bool) {
         match *self {
-            GlobalRef::Window(window) => window.set_devtools_wants_updates(send_updates),
-            GlobalRef::Worker(worker) => worker.set_devtools_wants_updates(send_updates),
+            GlobalRef::Window(window) => window.set_devtools_wants_updates(send_updates)
         }
     }
 
@@ -241,24 +215,21 @@ impl<'a> GlobalRef<'a> {
                              duration: MsDuration)
                              -> OneshotTimerHandle {
         match *self {
-            GlobalRef::Window(window) => window.schedule_callback(callback, duration),
-            GlobalRef::Worker(worker) => worker.schedule_callback(callback, duration),
+            GlobalRef::Window(window) => window.schedule_callback(callback, duration)
         }
     }
 
     /// Unschedule a previously-scheduled callback.
     pub fn unschedule_callback(&self, handle: OneshotTimerHandle) {
         match *self {
-            GlobalRef::Window(window) => window.unschedule_callback(handle),
-            GlobalRef::Worker(worker) => worker.unschedule_callback(handle),
+            GlobalRef::Window(window) => window.unschedule_callback(handle)
         }
     }
 
     /// Returns the receiver's reflector.
     pub fn reflector(&self) -> &Reflector {
         match *self {
-            GlobalRef::Window(ref window) => window.reflector(),
-            GlobalRef::Worker(ref worker) => worker.reflector(),
+            GlobalRef::Window(ref window) => window.reflector()
         }
     }
 }
@@ -268,8 +239,7 @@ impl GlobalRoot {
     /// lifetime of this root.
     pub fn r(&self) -> GlobalRef {
         match *self {
-            GlobalRoot::Window(ref window) => GlobalRef::Window(window.r()),
-            GlobalRoot::Worker(ref worker) => GlobalRef::Worker(worker.r()),
+            GlobalRoot::Window(ref window) => GlobalRef::Window(window.r())
         }
     }
 }
@@ -288,11 +258,6 @@ pub fn global_root_from_object(obj: *mut JSObject) -> GlobalRoot {
         assert!(((*clasp).flags & (JSCLASS_IS_DOMJSCLASS | JSCLASS_IS_GLOBAL)) != 0);
         match root_from_object(global) {
             Ok(window) => return GlobalRoot::Window(window),
-            Err(_) => (),
-        }
-
-        match root_from_object(global) {
-            Ok(worker) => return GlobalRoot::Worker(worker),
             Err(_) => (),
         }
 

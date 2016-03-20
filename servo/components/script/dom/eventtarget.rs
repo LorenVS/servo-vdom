@@ -82,10 +82,6 @@ impl EventTargetTypeId {
             (EventTargetTypeId::Node(this_type), EventTargetTypeId::Node(other_type)) => {
                 this_type == other_type
             }
-            (EventTargetTypeId::WorkerGlobalScope(this_type),
-             EventTargetTypeId::WorkerGlobalScope(other_type)) => {
-                this_type == other_type
-            }
             (_, _) => {
                 unsafe {
                     intrinsics::discriminant_value(self) == intrinsics::discriminant_value(other)
