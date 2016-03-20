@@ -383,6 +383,3 @@ pub mod workerglobalscope;
 pub mod workerlocation;
 pub mod workernavigator;
 pub mod xmldocument;
-pub mod xmlhttprequest;
-pub mod xmlhttprequesteventtarget;
-pub mod xmlhttprequestupload;

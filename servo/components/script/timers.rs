@@ -9,7 +9,6 @@ use dom::bindings::global::GlobalRef;
 use dom::bindings::reflector::Reflectable;
 use dom::bindings::trace::JSTraceable;
 use dom::window::ScriptHelpers;
-use dom::xmlhttprequest::XHRTimeoutCallback;
 use euclid::length::Length;
 use heapsize::HeapSizeOf;
 use ipc_channel::ipc::IpcSender;
@@ -67,14 +66,12 @@ struct OneshotTimer {
 //     `invoke<T: Reflectable>(self: Box<Self>, this: &T, js_timers: &JsTimers);`.
 #[derive(JSTraceable, HeapSizeOf)]
 pub enum OneshotTimerCallback {
-    XhrTimeout(XHRTimeoutCallback),
     JsTimer(JsTimerTask),
 }
 
 impl OneshotTimerCallback {
     fn invoke<T: Reflectable>(self, this: &T, js_timers: &JsTimers) {
         match self {
-            OneshotTimerCallback::XhrTimeout(callback) => callback.invoke(),
             OneshotTimerCallback::JsTimer(task) => task.invoke(this, js_timers),
         }
     }

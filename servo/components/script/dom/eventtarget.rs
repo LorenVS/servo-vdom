@@ -86,10 +86,6 @@ impl EventTargetTypeId {
              EventTargetTypeId::WorkerGlobalScope(other_type)) => {
                 this_type == other_type
             }
-            (EventTargetTypeId::XMLHttpRequestEventTarget(this_type),
-             EventTargetTypeId::XMLHttpRequestEventTarget(other_type)) => {
-                this_type == other_type
-            }
             (_, _) => {
                 unsafe {
                     intrinsics::discriminant_value(self) == intrinsics::discriminant_value(other)
