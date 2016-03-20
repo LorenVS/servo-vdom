@@ -22,7 +22,7 @@ use flow::{MutableFlowUtils, MutableOwnedFlowUtils, CAN_BE_FRAGMENTED};
 use flow::{self, AbsoluteDescendants, Flow, IS_ABSOLUTELY_POSITIONED, ImmutableFlowUtils};
 use flow_ref::{self, FlowRef};
 use fragment::{CanvasFragmentInfo, ImageFragmentInfo, InlineAbsoluteFragmentInfo};
-use fragment::{Fragment, GeneratedContentInfo, IframeFragmentInfo};
+use fragment::{Fragment, GeneratedContentInfo};
 use fragment::{InlineAbsoluteHypotheticalFragmentInfo, TableColumnFragmentInfo};
 use fragment::{InlineBlockFragmentInfo, SpecificFragmentInfo, UnscannedTextFragmentInfo};
 use fragment::{WhitespaceStrippingResult};
@@ -295,10 +295,6 @@ impl<'a, ConcreteThreadSafeLayoutNode: ThreadSafeLayoutNode>
     /// Builds the fragment for the given block or subclass thereof.
     fn build_fragment_for_block(&mut self, node: &ConcreteThreadSafeLayoutNode) -> Fragment {
         let specific_fragment_info = match node.type_id() {
-            Some(NodeTypeId::Element(ElementTypeId::HTMLElement(
-                        HTMLElementTypeId::HTMLIFrameElement))) => {
-                SpecificFragmentInfo::Iframe(box IframeFragmentInfo::new(node))
-            }
             Some(NodeTypeId::Element(ElementTypeId::HTMLElement(
                         HTMLElementTypeId::HTMLImageElement))) => {
                 let image_info = box ImageFragmentInfo::new(node,
@@ -1632,8 +1628,6 @@ impl<ConcreteThreadSafeLayoutNode> NodeUtils for ConcreteThreadSafeLayoutNode
             Some(NodeTypeId::Document(_)) |
             Some(NodeTypeId::Element(ElementTypeId::HTMLElement(
                         HTMLElementTypeId::HTMLImageElement))) |
-            Some(NodeTypeId::Element(ElementTypeId::HTMLElement(
-                        HTMLElementTypeId::HTMLIFrameElement))) |
             Some(NodeTypeId::Element(ElementTypeId::HTMLElement(
                         HTMLElementTypeId::HTMLCanvasElement))) => true,
             Some(NodeTypeId::Element(ElementTypeId::HTMLElement(

@@ -24,7 +24,6 @@ use inline::{InlineMetrics, LAST_FRAGMENT_OF_ELEMENT};
 use ipc_channel::ipc::IpcSender;
 use layout_debug;
 use model::{self, IntrinsicISizes, IntrinsicISizesContribution, MaybeAuto, specified};
-use msg::constellation_msg::PipelineId;
 use net_traits::image::base::{Image, ImageMetadata};
 use net_traits::image_cache_thread::{ImageOrMetadataAvailable, UsePlaceholder};
 use range::*;
@@ -145,7 +144,6 @@ pub enum SpecificFragmentInfo {
     /// content resolution phase (e.g. an ordered list item marker).
     GeneratedContent(Box<GeneratedContentInfo>),
 
-    Iframe(Box<IframeFragmentInfo>),
     Image(Box<ImageFragmentInfo>),
     Canvas(Box<CanvasFragmentInfo>),
 
@@ -176,7 +174,6 @@ impl SpecificFragmentInfo {
             match *self {
                 SpecificFragmentInfo::Canvas(_) |
                 SpecificFragmentInfo::GeneratedContent(_) |
-                SpecificFragmentInfo::Iframe(_) |
                 SpecificFragmentInfo::Image(_) |
                 SpecificFragmentInfo::ScannedText(_) |
                 SpecificFragmentInfo::Table |
@@ -201,7 +198,6 @@ impl SpecificFragmentInfo {
             SpecificFragmentInfo::Canvas(_) => "SpecificFragmentInfo::Canvas",
             SpecificFragmentInfo::Generic => "SpecificFragmentInfo::Generic",
             SpecificFragmentInfo::GeneratedContent(_) => "SpecificFragmentInfo::GeneratedContent",
-            SpecificFragmentInfo::Iframe(_) => "SpecificFragmentInfo::Iframe",
             SpecificFragmentInfo::Image(_) => "SpecificFragmentInfo::Image",
             SpecificFragmentInfo::InlineAbsolute(_) => "SpecificFragmentInfo::InlineAbsolute",
             SpecificFragmentInfo::InlineAbsoluteHypothetical(_) => {
@@ -580,70 +576,6 @@ impl ReplacedImageFragmentInfo {
     }
 }
 
-/// A fragment that represents an inline frame (iframe). This stores the pipeline ID so that the
-/// size of this iframe can be communicated via the constellation to the iframe's own layout thread.
-#[derive(Clone)]
-pub struct IframeFragmentInfo {
-    /// The pipeline ID of this iframe.
-    pub pipeline_id: PipelineId,
-}
-
-impl IframeFragmentInfo {
-    /// Creates the information specific to an iframe fragment.
-    pub fn new<N: ThreadSafeLayoutNode>(node: &N) -> IframeFragmentInfo {
-        let pipeline_id = node.iframe_pipeline_id();
-        IframeFragmentInfo {
-            pipeline_id: pipeline_id,
-        }
-    }
-
-    #[inline]
-    pub fn calculate_replaced_inline_size(&self, style: &ComputedValues, containing_size: Au)
-                                          -> Au {
-        // Calculate the replaced inline size (or default) as per CSS 2.1 § 10.3.2
-        IframeFragmentInfo::calculate_replaced_size(style.content_inline_size(),
-                                                    style.min_inline_size(),
-                                                    style.max_inline_size(),
-                                                    Some(containing_size),
-                                                    Au::from_px(300))
-    }
-
-    #[inline]
-    pub fn calculate_replaced_block_size(&self, style: &ComputedValues, containing_size: Option<Au>)
-                                         -> Au {
-        // Calculate the replaced block size (or default) as per CSS 2.1 § 10.3.2
-        IframeFragmentInfo::calculate_replaced_size(style.content_block_size(),
-                                                    style.min_block_size(),
-                                                    style.max_block_size(),
-                                                    containing_size,
-                                                    Au::from_px(150))
-
-    }
-
-    fn calculate_replaced_size(content_size: LengthOrPercentageOrAuto,
-                               style_min_size: LengthOrPercentage,
-                               style_max_size: LengthOrPercentageOrNone,
-                               containing_size: Option<Au>,
-                               default_size: Au) -> Au {
-        let computed_size = match (content_size, containing_size) {
-            (LengthOrPercentageOrAuto::Length(length), _) => length,
-            (LengthOrPercentageOrAuto::Percentage(pc), Some(container_size)) => container_size.scale_by(pc),
-            (LengthOrPercentageOrAuto::Calc(calc), Some(container_size)) => {
-                container_size.scale_by(calc.percentage()) + calc.length()
-            },
-            (LengthOrPercentageOrAuto::Calc(calc), None) => calc.length(),
-            (LengthOrPercentageOrAuto::Percentage(_), None) => default_size,
-            (LengthOrPercentageOrAuto::Auto, _) => default_size,
-        };
-
-        let containing_size = containing_size.unwrap_or(Au(0));
-        clamp_size(computed_size,
-                   style_min_size,
-                   style_max_size,
-                   containing_size)
-    }
-}
-
 /// A scanned text fragment represents a single run of text with a distinct style. A `TextFragment`
 /// may be split into two or more fragments across line breaks. Several `TextFragment`s may
 /// correspond to a single DOM text node. Split text fragments are implemented by referring to
@@ -920,7 +852,6 @@ impl Fragment {
             SpecificFragmentInfo::Canvas(_) |
             SpecificFragmentInfo::Generic |
             SpecificFragmentInfo::GeneratedContent(_) |
-            SpecificFragmentInfo::Iframe(_) |
             SpecificFragmentInfo::Image(_) |
             SpecificFragmentInfo::InlineAbsolute(_) |
             SpecificFragmentInfo::Multicol => {
@@ -1315,7 +1246,6 @@ impl Fragment {
         match self.specific {
             SpecificFragmentInfo::Generic |
             SpecificFragmentInfo::GeneratedContent(_) |
-            SpecificFragmentInfo::Iframe(_) |
             SpecificFragmentInfo::Table |
             SpecificFragmentInfo::TableCell |
             SpecificFragmentInfo::TableColumn(_) |
@@ -1422,7 +1352,6 @@ impl Fragment {
         match self.specific {
             SpecificFragmentInfo::Generic |
             SpecificFragmentInfo::GeneratedContent(_) |
-            SpecificFragmentInfo::Iframe(_) |
             SpecificFragmentInfo::Table |
             SpecificFragmentInfo::TableCell |
             SpecificFragmentInfo::TableRow |
@@ -1698,7 +1627,6 @@ impl Fragment {
             }
             SpecificFragmentInfo::Canvas(_) |
             SpecificFragmentInfo::Image(_) |
-            SpecificFragmentInfo::Iframe(_) |
             SpecificFragmentInfo::InlineBlock(_) |
             SpecificFragmentInfo::InlineAbsoluteHypothetical(_) |
             SpecificFragmentInfo::InlineAbsolute(_) |
@@ -1760,12 +1688,6 @@ impl Fragment {
                                                                         fragment_inline_size,
                                                                         fragment_block_size);
             }
-            SpecificFragmentInfo::Iframe(ref iframe_fragment_info) => {
-                self.border_box.size.inline =
-                    iframe_fragment_info.calculate_replaced_inline_size(style,
-                                                                        container_inline_size) +
-                                              noncontent_inline_size;
-            }
             _ => panic!("this case should have been handled above"),
         }
     }
@@ -1791,7 +1713,6 @@ impl Fragment {
                 panic!("Unscanned text fragments should have been scanned by now!")
             }
             SpecificFragmentInfo::Canvas(_) |
-            SpecificFragmentInfo::Iframe(_) |
             SpecificFragmentInfo::Image(_) |
             SpecificFragmentInfo::InlineBlock(_) |
             SpecificFragmentInfo::InlineAbsoluteHypothetical(_) |
@@ -1846,11 +1767,6 @@ impl Fragment {
                 let block_flow = flow_ref::deref_mut(&mut info.flow_ref).as_block();
                 self.border_box.size.block = block_flow.base.position.size.block +
                     block_flow.fragment.margin.block_start_end()
-            }
-            SpecificFragmentInfo::Iframe(ref info) => {
-                self.border_box.size.block =
-                    info.calculate_replaced_block_size(style, containing_block_block_size) +
-                    noncontent_block_size;
             }
             _ => panic!("should have been handled above"),
         }
@@ -2016,7 +1932,6 @@ impl Fragment {
             SpecificFragmentInfo::Canvas(_) |
             SpecificFragmentInfo::Generic |
             SpecificFragmentInfo::GeneratedContent(_) |
-            SpecificFragmentInfo::Iframe(_) |
             SpecificFragmentInfo::Image(_) |
             SpecificFragmentInfo::ScannedText(_) |
             SpecificFragmentInfo::Table |

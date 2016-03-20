@@ -26,7 +26,7 @@ use gfx::display_list::{BLUR_INFLATION_FACTOR, BaseDisplayItem, BorderDisplayIte
 use gfx::display_list::{BorderRadii, BoxShadowClipMode, BoxShadowDisplayItem, ClippingRegion};
 use gfx::display_list::{DisplayItem, DisplayItemMetadata, DisplayListSection};
 use gfx::display_list::{GradientDisplayItem};
-use gfx::display_list::{GradientStop, IframeDisplayItem, ImageDisplayItem, WebGLDisplayItem, LayeredItem, LayerInfo};
+use gfx::display_list::{GradientStop, ImageDisplayItem, WebGLDisplayItem, LayeredItem, LayerInfo};
 use gfx::display_list::{LineDisplayItem, OpaqueNode, SolidColorDisplayItem};
 use gfx::display_list::{StackingContext, StackingContextId, StackingContextType};
 use gfx::display_list::{TextDisplayItem, TextOrientation, DisplayListEntry};
@@ -1137,31 +1137,6 @@ impl FragmentDisplayListBuilding for Fragment {
                     self.build_debug_borders_around_fragment(state,
                                                              stacking_relative_border_box,
                                                              clip);
-                }
-            }
-            SpecificFragmentInfo::Iframe(ref fragment_info) => {
-                if !stacking_relative_content_box.is_empty() {
-                    let item = DisplayItem::IframeClass(box IframeDisplayItem {
-                        base: BaseDisplayItem::new(
-                            &stacking_relative_content_box,
-                            DisplayItemMetadata::new(self.node,
-                                                     &*self.style,
-                                                     Cursor::DefaultCursor),
-                            clip),
-                        iframe: fragment_info.pipeline_id,
-                    });
-
-                    if opts::get().use_webrender {
-                        state.add_display_item(item, DisplayListSection::Content);
-                    } else {
-                        state.add_display_item(DisplayItem::LayeredItemClass(box LayeredItem {
-                            item: item,
-                            layer_info: LayerInfo::new(self.layer_id(),
-                                                       ScrollPolicy::Scrollable,
-                                                       Some(fragment_info.pipeline_id),
-                                                       color::transparent()),
-                        }), DisplayListSection::Content);
-                    }
                 }
             }
             SpecificFragmentInfo::Image(ref mut image_fragment) => {

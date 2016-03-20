@@ -27,7 +27,7 @@ use layout_interface::{LayoutChan, Msg};
 use msg::constellation_msg::ConstellationChan;
 use net_traits::{AsyncResponseListener, AsyncResponseTarget, Metadata};
 use network_listener::{NetworkListener, PreInvoke};
-use script_traits::{MozBrowserEvent, ScriptMsg as ConstellationMsg};
+use script_traits::{ScriptMsg as ConstellationMsg};
 use std::ascii::AsciiExt;
 use std::borrow::ToOwned;
 use std::cell::Cell;
@@ -230,7 +230,7 @@ impl HTMLLinkElement {
         }
     }
 
-    fn handle_favicon_url(&self, rel: &str, href: &str, sizes: &Option<String>) {
+    fn handle_favicon_url(&self, _: &str, href: &str, _: &Option<String>) {
         let window = window_from_node(self);
         let window = window.r();
         match window.get_url().join(href) {
@@ -238,12 +238,6 @@ impl HTMLLinkElement {
                 let ConstellationChan(ref chan) = window.constellation_chan();
                 let event = ConstellationMsg::NewFavicon(url.clone());
                 chan.send(event).unwrap();
-
-                let mozbrowser_event = match *sizes {
-                    Some(ref sizes) => MozBrowserEvent::IconChange(rel.to_owned(), url.to_string(), sizes.to_owned()),
-                    None => MozBrowserEvent::IconChange(rel.to_owned(), url.to_string(), "".to_owned())
-                };
-                window.Document().trigger_mozbrowser_event(mozbrowser_event);
             }
             Err(e) => debug!("Parsing url {} failed: {}", href, e)
         }

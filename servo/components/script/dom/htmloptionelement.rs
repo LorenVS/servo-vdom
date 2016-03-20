@@ -13,7 +13,6 @@ use dom::characterdata::CharacterData;
 use dom::document::Document;
 use dom::element::{AttributeMutation, Element};
 use dom::htmlelement::HTMLElement;
-use dom::htmlscriptelement::HTMLScriptElement;
 use dom::htmlselectelement::HTMLSelectElement;
 use dom::node::{Node, UnbindContext};
 use dom::text::Text;
@@ -74,8 +73,7 @@ impl HTMLOptionElement {
 // FIXME(ajeffrey): Provide a way of buffering DOMStrings other than using Strings
 fn collect_text(element: &Element, value: &mut String) {
     let svg_script = *element.namespace() == ns!(svg) && element.local_name() == &atom!("script");
-    let html_script = element.is::<HTMLScriptElement>();
-    if svg_script || html_script {
+    if svg_script  {
         return;
     }
 

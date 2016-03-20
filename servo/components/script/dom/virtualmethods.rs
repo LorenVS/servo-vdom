@@ -24,7 +24,6 @@ use dom::htmlfontelement::HTMLFontElement;
 use dom::htmlformelement::HTMLFormElement;
 use dom::htmlheadelement::HTMLHeadElement;
 use dom::htmlhrelement::HTMLHRElement;
-use dom::htmliframeelement::HTMLIFrameElement;
 use dom::htmlimageelement::HTMLImageElement;
 use dom::htmlinputelement::HTMLInputElement;
 use dom::htmllabelelement::HTMLLabelElement;
@@ -33,7 +32,6 @@ use dom::htmlmetaelement::HTMLMetaElement;
 use dom::htmlobjectelement::HTMLObjectElement;
 use dom::htmloptgroupelement::HTMLOptGroupElement;
 use dom::htmloptionelement::HTMLOptionElement;
-use dom::htmlscriptelement::HTMLScriptElement;
 use dom::htmlselectelement::HTMLSelectElement;
 use dom::htmlstyleelement::HTMLStyleElement;
 use dom::htmltablecellelement::HTMLTableCellElement;
@@ -169,9 +167,6 @@ pub fn vtable_for(node: &Node) -> &VirtualMethods {
         NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLImageElement)) => {
             node.downcast::<HTMLImageElement>().unwrap() as &VirtualMethods
         }
-        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLIFrameElement)) => {
-            node.downcast::<HTMLIFrameElement>().unwrap() as &VirtualMethods
-        }
         NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLInputElement)) => {
             node.downcast::<HTMLInputElement>().unwrap() as &VirtualMethods
         }
@@ -192,9 +187,6 @@ pub fn vtable_for(node: &Node) -> &VirtualMethods {
         }
         NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLOptionElement)) => {
             node.downcast::<HTMLOptionElement>().unwrap() as &VirtualMethods
-        }
-        NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLScriptElement)) => {
-            node.downcast::<HTMLScriptElement>().unwrap() as &VirtualMethods
         }
         NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLSelectElement)) => {
             node.downcast::<HTMLSelectElement>().unwrap() as &VirtualMethods

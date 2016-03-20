@@ -34,7 +34,7 @@ use dom::bindings::trace::{JSTraceable, trace_traceables};
 use dom::bindings::utils::{DOM_CALLBACKS, WRAP_CALLBACKS};
 use dom::browsingcontext::BrowsingContext;
 use dom::create::create_element_simple;
-use dom::document::{Document, DocumentProgressHandler, DocumentSource, FocusType, IsHTMLDocument};
+use dom::document::{Document, DocumentProgressHandler, DocumentSource, IsHTMLDocument};
 use dom::element::{Element, ElementCreator};
 use dom::event::{Event, EventBubbles, EventCancelable};
 use dom::htmlanchorelement::HTMLAnchorElement;
@@ -73,7 +73,7 @@ use profile_traits::time::{self, ProfilerCategory, profile};
 use script_traits::CompositorEvent::{KeyEvent, MouseButtonEvent, MouseMoveEvent, ResizeEvent};
 use script_traits::CompositorEvent::{TouchEvent};
 use script_traits::{CompositorEvent, ConstellationControlMsg, EventResult};
-use script_traits::{InitialScriptState, MouseButton, MouseEventType, MozBrowserEvent};
+use script_traits::{InitialScriptState, MouseButton, MouseEventType};
 use script_traits::{LayoutMsg, OpaqueScriptLayoutChannel, ScriptMsg as ConstellationMsg};
 use script_traits::{ScriptThreadFactory, ScriptToCompositorMsg, TimerEvent, TimerEventRequest, TimerSource};
 use script_traits::{TouchEventType, TouchId};
@@ -1001,29 +1001,17 @@ impl ScriptThread {
                 self.handle_freeze_msg(pipeline_id),
             ConstellationControlMsg::Thaw(pipeline_id) =>
                 self.handle_thaw_msg(pipeline_id),
-            ConstellationControlMsg::MozBrowserEvent(parent_pipeline_id,
-                                                     subpage_id,
-                                                     event) =>
-                self.handle_mozbrowser_event_msg(parent_pipeline_id,
-                                                 subpage_id,
-                                                 event),
-            ConstellationControlMsg::UpdateSubpageId(containing_pipeline_id,
-                                                     old_subpage_id,
-                                                     new_subpage_id) =>
-                self.handle_update_subpage_id(containing_pipeline_id, old_subpage_id, new_subpage_id),
-            ConstellationControlMsg::FocusIFrame(containing_pipeline_id, subpage_id) =>
-                self.handle_focus_iframe_msg(containing_pipeline_id, subpage_id),
+            ConstellationControlMsg::MozBrowserEvent(_,_,_) => {},
+            ConstellationControlMsg::UpdateSubpageId(_,_,_) => {},
+            ConstellationControlMsg::FocusIFrame(_,_) => {},
             ConstellationControlMsg::WebDriverScriptCommand(pipeline_id, msg) =>
                 self.handle_webdriver_msg(pipeline_id, msg),
             ConstellationControlMsg::TickAllAnimations(pipeline_id) =>
                 self.handle_tick_all_animations(pipeline_id),
             ConstellationControlMsg::WebFontLoaded(pipeline_id) =>
                 self.handle_web_font_loaded(pipeline_id),
-            ConstellationControlMsg::DispatchFrameLoadEvent {
-                target: pipeline_id, parent: containing_id } =>
-                self.handle_frame_load_event(containing_id, pipeline_id),
-            ConstellationControlMsg::FramedContentChanged(containing_pipeline_id, subpage_id) =>
-                self.handle_framed_content_changed(containing_pipeline_id, subpage_id),
+            ConstellationControlMsg::DispatchFrameLoadEvent { target: _, parent: _ } => {},
+            ConstellationControlMsg::FramedContentChanged(_,_) => {},
             ConstellationControlMsg::ReportCSSError(pipeline_id, filename, line, column, msg) =>
                 self.handle_css_error_reporting(pipeline_id, filename, line, column, msg),
         }
@@ -1314,70 +1302,6 @@ impl ScriptThread {
         panic!("thaw sent to nonexistent pipeline");
     }
 
-    fn handle_focus_iframe_msg(&self,
-                               parent_pipeline_id: PipelineId,
-                               subpage_id: SubpageId) {
-        let borrowed_page = self.root_page();
-        let page = borrowed_page.find(parent_pipeline_id).unwrap();
-
-        let doc = page.document();
-        let frame_element = doc.find_iframe(subpage_id);
-
-        if let Some(ref frame_element) = frame_element {
-            doc.begin_focus_transaction();
-            doc.request_focus(frame_element.upcast());
-            doc.commit_focus_transaction(FocusType::Parent);
-        }
-    }
-
-    fn handle_framed_content_changed(&self,
-                                     parent_pipeline_id: PipelineId,
-                                     subpage_id: SubpageId) {
-        let borrowed_page = self.root_page();
-        let page = borrowed_page.find(parent_pipeline_id).unwrap();
-        let doc = page.document();
-        let frame_element = doc.find_iframe(subpage_id);
-        if let Some(ref frame_element) = frame_element {
-            frame_element.upcast::<Node>().dirty(NodeDamage::OtherNodeDamage);
-            let window = page.window();
-            window.reflow(ReflowGoal::ForDisplay,
-                          ReflowQueryType::NoQuery,
-                          ReflowReason::FramedContentChanged);
-        }
-    }
-
-    /// Handles a mozbrowser event, for example see:
-    /// https://developer.mozilla.org/en-US/docs/Web/Events/mozbrowserloadstart
-    fn handle_mozbrowser_event_msg(&self,
-                                   parent_pipeline_id: PipelineId,
-                                   subpage_id: SubpageId,
-                                   event: MozBrowserEvent) {
-        let borrowed_page = self.root_page();
-
-        let frame_element = borrowed_page.find(parent_pipeline_id).and_then(|page| {
-            let doc = page.document();
-            doc.find_iframe(subpage_id)
-        });
-
-        if let Some(ref frame_element) = frame_element {
-            frame_element.dispatch_mozbrowser_event(event);
-        }
-    }
-
-    fn handle_update_subpage_id(&self,
-                                containing_pipeline_id: PipelineId,
-                                old_subpage_id: SubpageId,
-                                new_subpage_id: SubpageId) {
-        let borrowed_page = self.root_page();
-
-        let frame_element = borrowed_page.find(containing_pipeline_id).and_then(|page| {
-            let doc = page.document();
-            doc.find_iframe(old_subpage_id)
-        });
-
-        frame_element.unwrap().update_subpage_id(new_subpage_id);
-    }
-
     /// Window was resized, but this script was not active, so don't reflow yet
     fn handle_resize_inactive_msg(&self, id: PipelineId, new_size: WindowSizeData) {
         let page = self.root_page();
@@ -1466,15 +1390,6 @@ impl ScriptThread {
     fn handle_web_font_loaded(&self, pipeline_id: PipelineId) {
         if let Some(ref page) = self.find_subpage(pipeline_id)  {
             self.rebuild_and_force_reflow(page, ReflowReason::WebFontLoaded);
-        }
-    }
-
-    /// Notify the containing document of a child frame that has completed loading.
-    fn handle_frame_load_event(&self, containing_pipeline: PipelineId, id: PipelineId) {
-        let page = get_page(&self.root_page(), containing_pipeline);
-        let document = page.document();
-        if let Some(iframe) = document.find_iframe_by_pipeline(id) {
-            iframe.iframe_load_event_steps(id);
         }
     }
 
@@ -1766,16 +1681,7 @@ impl ScriptThread {
         }
 
         match subpage_id {
-            Some(subpage_id) => {
-                let borrowed_page = self.root_page();
-                let iframe = borrowed_page.find(pipeline_id).and_then(|page| {
-                    let doc = page.document();
-                    doc.find_iframe(subpage_id)
-                });
-                if let Some(iframe) = iframe.r() {
-                    iframe.navigate_or_reload_child_browsing_context(Some(load_data.url));
-                }
-            }
+            Some(_) => {},
             None => {
                 let ConstellationChan(ref const_chan) = self.constellation_chan;
                 const_chan.send(ConstellationMsg::LoadUrl(pipeline_id, load_data)).unwrap();
@@ -1834,9 +1740,6 @@ impl ScriptThread {
 
         // No more reflow required
         page.set_reflow_status(false);
-
-        // https://html.spec.whatwg.org/multipage/#the-end steps 3-4.
-        document.process_deferred_scripts();
 
         window.set_fragment_name(final_url.fragment.clone());
     }

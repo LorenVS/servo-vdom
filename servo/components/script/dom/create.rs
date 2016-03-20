@@ -34,7 +34,6 @@ use dom::htmlheadingelement::HTMLHeadingElement;
 use dom::htmlheadingelement::HeadingLevel;
 use dom::htmlhrelement::HTMLHRElement;
 use dom::htmlhtmlelement::HTMLHtmlElement;
-use dom::htmliframeelement::HTMLIFrameElement;
 use dom::htmlimageelement::HTMLImageElement;
 use dom::htmlinputelement::HTMLInputElement;
 use dom::htmllabelelement::HTMLLabelElement;
@@ -55,7 +54,6 @@ use dom::htmlparamelement::HTMLParamElement;
 use dom::htmlpreelement::HTMLPreElement;
 use dom::htmlprogresselement::HTMLProgressElement;
 use dom::htmlquoteelement::HTMLQuoteElement;
-use dom::htmlscriptelement::HTMLScriptElement;
 use dom::htmlselectelement::HTMLSelectElement;
 use dom::htmlsourceelement::HTMLSourceElement;
 use dom::htmlspanelement::HTMLSpanElement;
@@ -168,7 +166,6 @@ pub fn create_element(name: QualName,
         atom!("hr")         => make!(HTMLHRElement),
         atom!("html")       => make!(HTMLHtmlElement),
         atom!("i")          => make!(HTMLElement),
-        atom!("iframe")     => make!(HTMLIFrameElement),
         atom!("img")        => make!(HTMLImageElement),
         atom!("input")      => make!(HTMLInputElement),
         atom!("ins")        => make!(HTMLModElement),
@@ -211,7 +208,6 @@ pub fn create_element(name: QualName,
         atom!("ruby")       => make!(HTMLElement),
         atom!("s")          => make!(HTMLElement),
         atom!("samp")       => make!(HTMLElement),
-        atom!("script")     => make!(HTMLScriptElement, creator),
         atom!("section")    => make!(HTMLElement),
         atom!("select")     => make!(HTMLSelectElement),
         atom!("small")      => make!(HTMLElement),
@@ -334,7 +330,6 @@ pub fn create_element_simple(
         atom!("hr")         => make!(HTMLHRElement),
         atom!("html")       => make!(HTMLHtmlElement),
         atom!("i")          => make!(HTMLElement),
-        atom!("iframe")     => make!(HTMLIFrameElement),
         atom!("img")        => make!(HTMLImageElement),
         atom!("input")      => make!(HTMLInputElement),
         atom!("ins")        => make!(HTMLModElement),
@@ -377,7 +372,6 @@ pub fn create_element_simple(
         atom!("ruby")       => make!(HTMLElement),
         atom!("s")          => make!(HTMLElement),
         atom!("samp")       => make!(HTMLElement),
-        atom!("script")     => make!(HTMLScriptElement, creator),
         atom!("section")    => make!(HTMLElement),
         atom!("select")     => make!(HTMLSelectElement),
         atom!("small")      => make!(HTMLElement),

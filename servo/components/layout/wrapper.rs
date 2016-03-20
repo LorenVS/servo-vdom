@@ -35,7 +35,6 @@ use data::{LayoutDataFlags, PrivateLayoutData};
 use gfx::display_list::OpaqueNode;
 use gfx::text::glyph::CharIndex;
 use incremental::RestyleDamage;
-use msg::constellation_msg::PipelineId;
 use opaque_node::OpaqueNodeMethods;
 use script::dom::attr::AttrValue;
 use script::dom::bindings::inheritance::{Castable, CharacterDataTypeId, ElementTypeId};
@@ -45,7 +44,6 @@ use script::dom::characterdata::LayoutCharacterDataHelpers;
 use script::dom::document::{Document, LayoutDocumentHelpers};
 use script::dom::element::{Element, LayoutElementHelpers, RawLayoutElementHelpers};
 use script::dom::htmlcanvaselement::{LayoutHTMLCanvasElementHelpers, HTMLCanvasData};
-use script::dom::htmliframeelement::HTMLIFrameElement;
 use script::dom::htmlimageelement::LayoutHTMLImageElementHelpers;
 use script::dom::htmlinputelement::{HTMLInputElement, LayoutHTMLInputElementHelpers};
 use script::dom::htmltextareaelement::{HTMLTextAreaElement, LayoutHTMLTextAreaElementHelpers};
@@ -779,10 +777,6 @@ pub trait ThreadSafeLayoutNode : Clone + Copy + Sized {
 
     fn canvas_data(&self) -> Option<HTMLCanvasData>;
 
-    /// If this node is an iframe element, returns its pipeline ID. If this node is
-    /// not an iframe element, fails.
-    fn iframe_pipeline_id(&self) -> PipelineId;
-
     fn get_colspan(&self) -> u32;
 }
 
@@ -1012,15 +1006,6 @@ impl<'ln> ThreadSafeLayoutNode for ServoThreadSafeLayoutNode<'ln> {
         unsafe {
             let canvas_element = self.get_jsmanaged().downcast();
             canvas_element.map(|canvas| canvas.data())
-        }
-    }
-
-    fn iframe_pipeline_id(&self) -> PipelineId {
-        use script::dom::htmliframeelement::HTMLIFrameElementLayoutMethods;
-        unsafe {
-            let iframe_element = self.get_jsmanaged().downcast::<HTMLIFrameElement>()
-                .expect("not an iframe element!");
-            iframe_element.pipeline_id().unwrap()
         }
     }
 

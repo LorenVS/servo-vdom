@@ -6,7 +6,6 @@ use dom::bindings::codegen::Bindings::CSSStyleDeclarationBinding::CSSStyleDeclar
 use dom::bindings::codegen::Bindings::DocumentBinding::DocumentMethods;
 use dom::bindings::codegen::Bindings::ElementBinding::ElementMethods;
 use dom::bindings::codegen::Bindings::HTMLElementBinding::HTMLElementMethods;
-use dom::bindings::codegen::Bindings::HTMLIFrameElementBinding::HTMLIFrameElementMethods;
 use dom::bindings::codegen::Bindings::HTMLInputElementBinding::HTMLInputElementMethods;
 use dom::bindings::codegen::Bindings::HTMLOptionElementBinding::HTMLOptionElementMethods;
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
@@ -17,7 +16,6 @@ use dom::bindings::inheritance::Castable;
 use dom::bindings::js::Root;
 use dom::element::Element;
 use dom::htmlelement::HTMLElement;
-use dom::htmliframeelement::HTMLIFrameElement;
 use dom::htmlinputelement::HTMLInputElement;
 use dom::htmloptionelement::HTMLOptionElement;
 use dom::node::Node;
@@ -91,7 +89,7 @@ pub fn handle_execute_async_script(page: &Rc<Page>,
 }
 
 pub fn handle_get_frame_id(page: &Rc<Page>,
-                           pipeline: PipelineId,
+                           _: PipelineId,
                            webdriver_frame_id: WebDriverFrameId,
                            reply: IpcSender<Result<Option<PipelineId>, ()>>) {
     let window = match webdriver_frame_id {
@@ -99,16 +97,8 @@ pub fn handle_get_frame_id(page: &Rc<Page>,
             // This isn't supported yet
             Ok(None)
         },
-        WebDriverFrameId::Element(x) => {
-            match find_node_by_unique_id(page, pipeline, x) {
-                Some(ref node) => {
-                    match node.downcast::<HTMLIFrameElement>() {
-                        Some(ref elem) => Ok(elem.GetContentWindow()),
-                        None => Err(())
-                    }
-                },
-                None => Err(())
-            }
+        WebDriverFrameId::Element(_) => {
+            Err(())
         },
         WebDriverFrameId::Parent => {
             let window = page.window();

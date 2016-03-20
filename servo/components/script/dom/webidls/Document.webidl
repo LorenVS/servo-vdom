@@ -105,13 +105,8 @@ partial /*sealed*/ interface Document {
   readonly attribute HTMLCollection links;
   [SameObject]
   readonly attribute HTMLCollection forms;
-  [SameObject]
-  readonly attribute HTMLCollection scripts;
   NodeList getElementsByName(DOMString elementName);
   // NodeList getItems(optional DOMString typeNames = ""); // microdata
-  // [SameObject]
-  // readonly attribute DOMElementMap cssElementMap;
-  readonly attribute HTMLScriptElement? currentScript;
 
   // dynamic markup insertion
   // Document open(optional DOMString type = "text/html", optional DOMString replace = "");

@@ -41,7 +41,6 @@ use dom::htmlcollection::HTMLCollection;
 use dom::htmlfieldsetelement::HTMLFieldSetElement;
 use dom::htmlfontelement::{HTMLFontElement, HTMLFontElementLayoutHelpers};
 use dom::htmlhrelement::{HTMLHRElement, HTMLHRLayoutHelpers};
-use dom::htmliframeelement::{HTMLIFrameElement, HTMLIFrameElementLayoutMethods};
 use dom::htmlimageelement::{HTMLImageElement, LayoutHTMLImageElementHelpers};
 use dom::htmlinputelement::{HTMLInputElement, LayoutHTMLInputElementHelpers};
 use dom::htmllabelelement::HTMLLabelElement;
@@ -387,9 +386,7 @@ impl LayoutElementHelpers for LayoutJS<Element> {
         }
 
 
-        let width = if let Some(this) = self.downcast::<HTMLIFrameElement>() {
-            this.get_width()
-        } else if let Some(this) = self.downcast::<HTMLImageElement>() {
+        let width = if let Some(this) = self.downcast::<HTMLImageElement>() {
             this.get_width()
         } else if let Some(this) = self.downcast::<HTMLTableElement>() {
             this.get_width()
@@ -419,9 +416,7 @@ impl LayoutElementHelpers for LayoutJS<Element> {
         }
 
 
-        let height = if let Some(this) = self.downcast::<HTMLIFrameElement>() {
-            this.get_height()
-        } else if let Some(this) = self.downcast::<HTMLImageElement>() {
+        let height = if let Some(this) = self.downcast::<HTMLImageElement>() {
             this.get_height()
         } else {
             LengthOrPercentageOrAuto::Auto

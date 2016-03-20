@@ -55,7 +55,7 @@ use script_thread::{MainThreadScriptChan, MainThreadScriptMsg, RunnableWrapper};
 use script_thread::{SendableMainThreadScriptChan, ScriptChan, ScriptPort};
 use script_traits::{ConstellationControlMsg, UntrustedNodeAddress};
 use script_traits::{DocumentState, MsDuration, ScriptToCompositorMsg, TimerEvent, TimerEventId};
-use script_traits::{MozBrowserEvent, ScriptMsg as ConstellationMsg, TimerEventRequest, TimerSource};
+use script_traits::{ScriptMsg as ConstellationMsg, TimerEventRequest, TimerSource};
 use std::ascii::AsciiExt;
 use std::borrow::ToOwned;
 use std::cell::Cell;
@@ -417,11 +417,6 @@ impl WindowMethods for Window {
         writeln!(&mut stdout, "ALERT: {}", s).unwrap();
         stdout.flush().unwrap();
         stderr.flush().unwrap();
-
-        // https://developer.mozilla.org/en-US/docs/Web/Events/mozbrowsershowmodalprompt
-        let event = MozBrowserEvent::ShowModalPrompt("alert".to_owned(), "Alert".to_owned(),
-                                                     String::from(s), "".to_owned());
-        self.Document().trigger_mozbrowser_event(event);
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-window-close

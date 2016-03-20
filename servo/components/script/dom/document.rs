@@ -7,10 +7,8 @@ use document_loader::{DocumentLoader, LoadType};
 use dom::activation::{ActivationSource, synthetic_click_activation};
 use dom::attr::{Attr, AttrValue};
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::DOMRectBinding::DOMRectMethods;
 use dom::bindings::codegen::Bindings::DocumentBinding;
 use dom::bindings::codegen::Bindings::DocumentBinding::{DocumentMethods, DocumentReadyState};
-use dom::bindings::codegen::Bindings::ElementBinding::ElementMethods;
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::OnErrorEventHandlerNonNull;
@@ -52,11 +50,9 @@ use dom::htmlembedelement::HTMLEmbedElement;
 use dom::htmlformelement::HTMLFormElement;
 use dom::htmlheadelement::HTMLHeadElement;
 use dom::htmlhtmlelement::HTMLHtmlElement;
-use dom::htmliframeelement::{self, HTMLIFrameElement};
 use dom::htmlimageelement::HTMLImageElement;
 use dom::htmllinkelement::HTMLLinkElement;
 use dom::htmlmetaelement::HTMLMetaElement;
-use dom::htmlscriptelement::HTMLScriptElement;
 use dom::htmlstyleelement::HTMLStyleElement;
 use dom::htmltitleelement::HTMLTitleElement;
 use dom::keyboardevent::KeyboardEvent;
@@ -83,14 +79,13 @@ use js::jsapi::{JSContext, JSObject, JSRuntime};
 use layout_interface::{LayoutChan, Msg, ReflowQueryType};
 use msg::constellation_msg::{ALT, CONTROL, SHIFT, SUPER};
 use msg::constellation_msg::{ConstellationChan, Key, KeyModifiers, KeyState};
-use msg::constellation_msg::{PipelineId, SubpageId};
 use net_traits::ControlMsg::{GetCookiesForUrl, SetCookiesForUrl};
 use net_traits::CookieSource::NonHTTP;
 use net_traits::response::HttpsState;
 use net_traits::{AsyncResponseTarget, PendingAsyncLoad};
 use num::ToPrimitive;
 use script_thread::{MainThreadScriptChan, MainThreadScriptMsg, Runnable, ScriptChan};
-use script_traits::{AnimationState, MouseButton, MouseEventType, MozBrowserEvent};
+use script_traits::{AnimationState, MouseButton, MouseEventType};
 use script_traits::{ScriptMsg as ConstellationMsg, ScriptToCompositorMsg};
 use script_traits::{TouchEventType, TouchId};
 use std::ascii::AsciiExt;
@@ -120,12 +115,6 @@ pub enum IsHTMLDocument {
     NonHTMLDocument,
 }
 
-#[derive(PartialEq)]
-enum ParserBlockedByScript {
-    Blocked,
-    Unblocked,
-}
-
 // https://dom.spec.whatwg.org/#document
 #[dom_struct]
 pub struct Document {
@@ -150,7 +139,6 @@ pub struct Document {
     embeds: MutNullableHeap<JS<HTMLCollection>>,
     links: MutNullableHeap<JS<HTMLCollection>>,
     forms: MutNullableHeap<JS<HTMLCollection>>,
-    scripts: MutNullableHeap<JS<HTMLCollection>>,
     anchors: MutNullableHeap<JS<HTMLCollection>>,
     applets: MutNullableHeap<JS<HTMLCollection>>,
     /// List of stylesheets associated with nodes in this document. |None| if the list needs to be refreshed.
@@ -164,18 +152,8 @@ pub struct Document {
     possibly_focused: MutNullableHeap<JS<Element>>,
     /// The element that currently has the document focus context.
     focused: MutNullableHeap<JS<Element>>,
-    /// The script element that is currently executing.
-    current_script: MutNullableHeap<JS<HTMLScriptElement>>,
-    /// https://html.spec.whatwg.org/multipage/#pending-parsing-blocking-script
-    pending_parsing_blocking_script: MutNullableHeap<JS<HTMLScriptElement>>,
     /// Number of stylesheets that block executing the next parser-inserted script
     script_blocking_stylesheets_count: Cell<u32>,
-    /// https://html.spec.whatwg.org/multipage/#list-of-scripts-that-will-execute-when-the-document-has-finished-parsing
-    deferred_scripts: DOMRefCell<Vec<JS<HTMLScriptElement>>>,
-    /// https://html.spec.whatwg.org/multipage/#list-of-scripts-that-will-execute-in-order-as-soon-as-possible
-    asap_in_order_scripts_list: DOMRefCell<Vec<JS<HTMLScriptElement>>>,
-    /// https://html.spec.whatwg.org/multipage/#set-of-scripts-that-will-execute-as-soon-as-possible
-    asap_scripts_set: DOMRefCell<Vec<JS<HTMLScriptElement>>>,
     /// https://html.spec.whatwg.org/multipage/#concept-n-noscript
     /// True if scripting is enabled for all scripts in this document
     scripting_enabled: Cell<bool>,
@@ -247,14 +225,6 @@ impl CollectionFilter for FormsFilter {
 }
 
 #[derive(JSTraceable, HeapSizeOf)]
-struct ScriptsFilter;
-impl CollectionFilter for ScriptsFilter {
-    fn filter(&self, elem: &Element, _root: &Node) -> bool {
-        elem.is::<HTMLScriptElement>()
-    }
-}
-
-#[derive(JSTraceable, HeapSizeOf)]
 struct AnchorsFilter;
 impl CollectionFilter for AnchorsFilter {
     fn filter(&self, elem: &Element, _root: &Node) -> bool {
@@ -304,7 +274,6 @@ impl Document {
 
     pub fn set_https_state(&self, https_state: HttpsState) {
         self.https_state.set(https_state);
-        self.trigger_mozbrowser_event(MozBrowserEvent::SecurityChange(https_state));
     }
 
     pub fn report_css_error(&self, css_error: CSSError) {
@@ -565,13 +534,9 @@ impl Document {
     pub fn set_ready_state(&self, state: DocumentReadyState) {
         match state {
             DocumentReadyState::Loading => {
-                // https://developer.mozilla.org/en-US/docs/Web/Events/mozbrowserconnected
-                self.trigger_mozbrowser_event(MozBrowserEvent::Connected);
                 update_with_current_time(&self.dom_loading);
             },
             DocumentReadyState::Complete => {
-                // https://developer.mozilla.org/en-US/docs/Web/Events/mozbrowserloadend
-                self.trigger_mozbrowser_event(MozBrowserEvent::LoadEnd);
                 update_with_current_time(&self.dom_complete);
             },
             DocumentReadyState::Interactive => update_with_current_time(&self.dom_interactive),
@@ -636,9 +601,6 @@ impl Document {
 
     /// Handles any updates when the document's title has changed.
     pub fn title_changed(&self) {
-        // https://developer.mozilla.org/en-US/docs/Web/Events/mozbrowsertitlechange
-        self.trigger_mozbrowser_event(MozBrowserEvent::TitleChange(String::from(self.Title())));
-
         self.send_title_to_compositor();
     }
 
@@ -660,7 +622,7 @@ impl Document {
 
     pub fn handle_mouse_event(&self,
                               js_runtime: *mut JSRuntime,
-                              button: MouseButton,
+                              _: MouseButton,
                               client_point: Point2D<f32>,
                               mouse_event_type: MouseEventType) {
         let mouse_event_type_string = match mouse_event_type {
@@ -690,21 +652,6 @@ impl Document {
                 }
             },
         };
-
-        // If the target is an iframe, forward the event to the child document.
-        if let Some(iframe) = el.downcast::<HTMLIFrameElement>() {
-            if let Some(pipeline_id) = iframe.pipeline_id() {
-                let rect = iframe.upcast::<Element>().GetBoundingClientRect();
-                let child_origin = Point2D::new(rect.X() as f32, rect.Y() as f32);
-                let child_point = client_point - child_origin;
-
-                let event = ConstellationMsg::ForwardMouseButtonEvent(pipeline_id,
-                                                                      mouse_event_type,
-                                                                      button, child_point);
-                self.window.constellation_chan().0.send(event).unwrap();
-            }
-            return;
-        }
 
         let node = el.upcast::<Node>();
         debug!("{} on {:?}", mouse_event_type_string, node.debug_str());
@@ -808,21 +755,8 @@ impl Document {
                 .next()
         });
 
-        // Send mousemove event to topmost target, and forward it if it's an iframe
+        // Send mousemove event to topmost target
         if let Some(ref new_target) = maybe_new_target {
-            // If the target is an iframe, forward the event to the child document.
-            if let Some(iframe) = new_target.downcast::<HTMLIFrameElement>() {
-                if let Some(pipeline_id) = iframe.pipeline_id() {
-                    let rect = iframe.upcast::<Element>().GetBoundingClientRect();
-                    let child_origin = Point2D::new(rect.X() as f32, rect.Y() as f32);
-                    let child_point = client_point - child_origin;
-
-                    let event = ConstellationMsg::ForwardMouseMoveEvent(pipeline_id, child_point);
-                    self.window.constellation_chan().0.send(event).unwrap();
-                }
-                return;
-            }
-
             self.fire_mouse_event(client_point, new_target.upcast(), "mousemove".to_owned());
         }
 
@@ -1150,10 +1084,6 @@ impl Document {
         }
     }
 
-    pub fn set_current_script(&self, script: Option<&HTMLScriptElement>) {
-        self.current_script.set(script);
-    }
-
     pub fn get_script_blocking_stylesheets_count(&self) -> u32 {
         self.script_blocking_stylesheets_count.get()
     }
@@ -1182,39 +1112,6 @@ impl Document {
         let changed = self.stylesheets_changed_since_reflow.get();
         self.stylesheets_changed_since_reflow.set(false);
         changed
-    }
-
-    pub fn set_pending_parsing_blocking_script(&self, script: Option<&HTMLScriptElement>) {
-        assert!(self.get_pending_parsing_blocking_script().is_none() || script.is_none());
-        self.pending_parsing_blocking_script.set(script);
-    }
-
-    pub fn get_pending_parsing_blocking_script(&self) -> Option<Root<HTMLScriptElement>> {
-        self.pending_parsing_blocking_script.get()
-    }
-
-    pub fn add_deferred_script(&self, script: &HTMLScriptElement) {
-        self.deferred_scripts.borrow_mut().push(JS::from_ref(script));
-    }
-
-    pub fn add_asap_script(&self, script: &HTMLScriptElement) {
-        self.asap_scripts_set.borrow_mut().push(JS::from_ref(script));
-    }
-
-    pub fn push_asap_in_order_script(&self, script: &HTMLScriptElement) {
-        self.asap_in_order_scripts_list.borrow_mut().push(JS::from_ref(script));
-    }
-
-    pub fn trigger_mozbrowser_event(&self, event: MozBrowserEvent) {
-        if htmliframeelement::mozbrowser_enabled() {
-            if let Some((containing_pipeline_id, subpage_id)) = self.window.parent_info() {
-                let ConstellationChan(ref chan) = self.window.constellation_chan();
-                let event = ConstellationMsg::MozBrowserEvent(containing_pipeline_id,
-                                                              subpage_id,
-                                                              event);
-                chan.send(event).unwrap();
-            }
-        }
     }
 
     /// https://html.spec.whatwg.org/multipage/#dom-window-requestanimationframe
@@ -1295,15 +1192,6 @@ impl Document {
             loader.finish_load(load.clone());
         }
 
-        if let LoadType::Script(_) = load {
-            self.process_deferred_scripts();
-            self.process_asap_scripts();
-        }
-
-        if self.maybe_execute_parser_blocking_script() == ParserBlockedByScript::Blocked {
-            return;
-        }
-
         // A finished resource load can potentially unblock parsing. In that case, resume the
         // parser so its loop can find out.
         if self.reflow_timeout.get().is_none() {
@@ -1324,77 +1212,6 @@ impl Document {
         }
     }
 
-    /// If document parsing is blocked on a script, and that script is ready to run,
-    /// execute it.
-    /// https://html.spec.whatwg.org/multipage/#ready-to-be-parser-executed
-    fn maybe_execute_parser_blocking_script(&self) -> ParserBlockedByScript {
-        let script = match self.pending_parsing_blocking_script.get() {
-            None => return ParserBlockedByScript::Unblocked,
-            Some(script) => script,
-        };
-
-        if self.script_blocking_stylesheets_count.get() == 0 && script.is_ready_to_be_executed() {
-            self.pending_parsing_blocking_script.set(None);
-            script.execute();
-            return ParserBlockedByScript::Unblocked;
-        }
-        ParserBlockedByScript::Blocked
-    }
-
-    /// https://html.spec.whatwg.org/multipage/#the-end step 3
-    pub fn process_deferred_scripts(&self) {
-        if self.ready_state.get() != DocumentReadyState::Interactive {
-            return;
-        }
-        // Part of substep 1.
-        if self.script_blocking_stylesheets_count.get() > 0 {
-            return;
-        }
-        let mut deferred_scripts = self.deferred_scripts.borrow_mut();
-        while !deferred_scripts.is_empty() {
-            {
-                let script = &*deferred_scripts[0];
-                // Part of substep 1.
-                if !script.is_ready_to_be_executed() {
-                    return;
-                }
-                // Substep 2.
-                script.execute();
-            }
-            // Substep 3.
-            deferred_scripts.remove(0);
-            // Substep 4 (implicit).
-        }
-        // https://html.spec.whatwg.org/multipage/#the-end step 4.
-        self.maybe_dispatch_dom_content_loaded();
-    }
-
-    /// https://html.spec.whatwg.org/multipage/#the-end step 5 and the latter parts of
-    /// https://html.spec.whatwg.org/multipage/#prepare-a-script 15.d and 15.e.
-    pub fn process_asap_scripts(&self) {
-        // Execute the first in-order asap-executed script if it's ready, repeat as required.
-        // Re-borrowing the list for each step because it can also be borrowed under execute.
-        while self.asap_in_order_scripts_list.borrow().len() > 0 {
-            let script = Root::from_ref(&*self.asap_in_order_scripts_list.borrow()[0]);
-            if !script.is_ready_to_be_executed() {
-                break;
-            }
-            script.execute();
-            self.asap_in_order_scripts_list.borrow_mut().remove(0);
-        }
-
-        let mut idx = 0;
-        // Re-borrowing the set for each step because it can also be borrowed under execute.
-        while idx < self.asap_scripts_set.borrow().len() {
-            let script = Root::from_ref(&*self.asap_scripts_set.borrow()[idx]);
-            if !script.is_ready_to_be_executed() {
-                idx += 1;
-                continue;
-            }
-            script.execute();
-            self.asap_scripts_set.borrow_mut().swap_remove(idx);
-        }
-    }
 
     pub fn maybe_dispatch_dom_content_loaded(&self) {
         if self.domcontentloaded_dispatched.get() {
@@ -1422,22 +1239,6 @@ impl Document {
         let event = ConstellationMsg::DOMLoad(pipeline_id);
         chan.send(event).unwrap();
 
-    }
-
-    /// Find an iframe element in the document.
-    pub fn find_iframe(&self, subpage_id: SubpageId) -> Option<Root<HTMLIFrameElement>> {
-        self.upcast::<Node>()
-            .traverse_preorder()
-            .filter_map(Root::downcast::<HTMLIFrameElement>)
-            .find(|node| node.subpage_id() == Some(subpage_id))
-    }
-
-    /// Find an iframe element in the document.
-    pub fn find_iframe_by_pipeline(&self, pipeline: PipelineId) -> Option<Root<HTMLIFrameElement>> {
-        self.upcast::<Node>()
-            .traverse_preorder()
-            .filter_map(Root::downcast::<HTMLIFrameElement>)
-            .find(|node| node.pipeline() == Some(pipeline))
     }
 
     pub fn get_dom_loading(&self) -> u64 {
@@ -1556,7 +1357,6 @@ impl Document {
             embeds: Default::default(),
             links: Default::default(),
             forms: Default::default(),
-            scripts: Default::default(),
             anchors: Default::default(),
             applets: Default::default(),
             stylesheets: DOMRefCell::new(None),
@@ -1565,12 +1365,7 @@ impl Document {
             domcontentloaded_dispatched: Cell::new(domcontentloaded_dispatched),
             possibly_focused: Default::default(),
             focused: Default::default(),
-            current_script: Default::default(),
-            pending_parsing_blocking_script: Default::default(),
             script_blocking_stylesheets_count: Cell::new(0u32),
-            deferred_scripts: DOMRefCell::new(vec![]),
-            asap_in_order_scripts_list: DOMRefCell::new(vec![]),
-            asap_scripts_set: DOMRefCell::new(vec![]),
             scripting_enabled: Cell::new(true),
             animation_frame_ident: Cell::new(0),
             animation_frame_list: DOMRefCell::new(BTreeMap::new()),
@@ -2185,11 +1980,6 @@ impl DocumentMethods for Document {
             .and_then(|root| root.upcast::<Node>().children().filter_map(Root::downcast).next())
     }
 
-    // https://html.spec.whatwg.org/multipage/#dom-document-currentscript
-    fn GetCurrentScript(&self) -> Option<Root<HTMLScriptElement>> {
-        self.current_script.get()
-    }
-
     // https://html.spec.whatwg.org/multipage/#dom-document-body
     fn GetBody(&self) -> Option<Root<HTMLElement>> {
         self.get_html_element().and_then(|root| {
@@ -2292,14 +2082,6 @@ impl DocumentMethods for Document {
     fn Forms(&self) -> Root<HTMLCollection> {
         self.forms.or_init(|| {
             let filter = box FormsFilter;
-            HTMLCollection::create(&self.window, self.upcast(), filter)
-        })
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-document-scripts
-    fn Scripts(&self) -> Root<HTMLCollection> {
-        self.scripts.or_init(|| {
-            let filter = box ScriptsFilter;
             HTMLCollection::create(&self.window, self.upcast(), filter)
         })
     }
