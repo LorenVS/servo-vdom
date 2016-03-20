@@ -93,7 +93,6 @@ pub mod script_thread;
 mod task_source;
 pub mod textinput;
 mod timers;
-mod unpremultiplytable;
 mod webdriver_handlers;
 
 use dom::bindings::codegen::RegisterBindings;
