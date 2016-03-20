@@ -225,8 +225,6 @@ pub mod canvasrenderingcontext2d;
 pub mod characterdata;
 pub mod closeevent;
 pub mod comment;
-pub mod console;
-pub mod crypto;
 pub mod css;
 pub mod cssstyledeclaration;
 pub mod customevent;

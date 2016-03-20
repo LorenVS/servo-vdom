@@ -10,8 +10,6 @@ use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::Castable;
 use dom::bindings::js::{JS, MutNullableHeap, Root};
 use dom::bindings::reflector::Reflectable;
-use dom::console::Console;
-use dom::crypto::Crypto;
 use dom::dedicatedworkerglobalscope::DedicatedWorkerGlobalScope;
 use dom::eventtarget::EventTarget;
 use dom::window::{base64_atob, base64_btoa};
@@ -62,8 +60,6 @@ pub struct WorkerGlobalScope {
     resource_thread: ResourceThread,
     location: MutNullableHeap<JS<WorkerLocation>>,
     navigator: MutNullableHeap<JS<WorkerNavigator>>,
-    console: MutNullableHeap<JS<Console>>,
-    crypto: MutNullableHeap<JS<Crypto>>,
     timers: OneshotTimers,
     #[ignore_heap_size_of = "Defined in std"]
     mem_profiler_chan: mem::ProfilerChan,
@@ -108,8 +104,6 @@ impl WorkerGlobalScope {
             resource_thread: init.resource_thread,
             location: Default::default(),
             navigator: Default::default(),
-            console: Default::default(),
-            crypto: Default::default(),
             timers: OneshotTimers::new(timer_event_chan, init.scheduler_chan.clone()),
             mem_profiler_chan: init.mem_profiler_chan,
             to_devtools_sender: init.to_devtools_sender,
@@ -227,16 +221,6 @@ impl WorkerGlobalScopeMethods for WorkerGlobalScope {
     // https://html.spec.whatwg.org/multipage/#dom-worker-navigator
     fn Navigator(&self) -> Root<WorkerNavigator> {
         self.navigator.or_init(|| WorkerNavigator::new(self))
-    }
-
-    // https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/console
-    fn Console(&self) -> Root<Console> {
-        self.console.or_init(|| Console::new(GlobalRef::Worker(self)))
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dfn-Crypto
-    fn Crypto(&self) -> Root<Crypto> {
-        self.crypto.or_init(|| Crypto::new(GlobalRef::Worker(self)))
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-windowbase64-btoa
