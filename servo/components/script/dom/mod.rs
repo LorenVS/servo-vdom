@@ -334,8 +334,6 @@ pub mod screen;
 pub mod storage;
 pub mod storageevent;
 pub mod text;
-pub mod textdecoder;
-pub mod textencoder;
 pub mod touch;
 pub mod touchevent;
 pub mod touchlist;
