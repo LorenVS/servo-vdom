@@ -14,7 +14,6 @@ use dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::OnErrorEventHandlerNonNull;
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::codegen::Bindings::NodeFilterBinding::NodeFilter;
-use dom::bindings::codegen::Bindings::PerformanceBinding::PerformanceMethods;
 use dom::bindings::codegen::Bindings::TouchBinding::TouchMethods;
 use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::codegen::UnionTypes::NodeOrString;
@@ -1145,12 +1144,9 @@ impl Document {
     pub fn run_the_animation_frame_callbacks(&self) {
         let animation_frame_list =
             mem::replace(&mut *self.animation_frame_list.borrow_mut(), BTreeMap::new());
-        let performance = self.window.Performance();
-        let performance = performance.r();
-        let timing = performance.Now();
 
         for (_, callback) in animation_frame_list {
-            callback(*timing);
+            callback(0.0);
         }
 
         // Only send the animation change state message after running any callbacks.

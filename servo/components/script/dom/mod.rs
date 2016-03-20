@@ -324,8 +324,6 @@ pub mod namednodemap;
 pub mod node;
 pub mod nodeiterator;
 pub mod nodelist;
-pub mod performance;
-pub mod performancetiming;
 pub mod processinginstruction;
 pub mod progressevent;
 pub mod radionodelist;

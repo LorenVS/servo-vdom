@@ -3,6 +3,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+typedef double DOMHighResTimeStamp;
+
 // https://html.spec.whatwg.org/multipage/#window
 [PrimaryGlobal]
 /*sealed*/ interface Window : EventTarget {
@@ -85,11 +87,6 @@ interface WindowBase64 {
   DOMString atob(DOMString atob);
 };
 Window implements WindowBase64;
-
-// https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/NavigationTiming/Overview.html#sec-window.performance-attribute
-partial interface Window {
-  /*[Replaceable]*/ readonly attribute Performance performance;
-};
 
 // https://html.spec.whatwg.org/multipage/#Window-partial
 partial interface Window {

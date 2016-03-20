@@ -26,7 +26,6 @@ use dom::element::Element;
 use dom::eventtarget::EventTarget;
 use dom::location::Location;
 use dom::node::{Node, TrustedNodeAddress, from_untrusted_node_address, window_from_node};
-use dom::performance::Performance;
 use dom::screen::Screen;
 use euclid::{Point2D, Rect, Size2D};
 use gfx_traits::LayerId;
@@ -139,7 +138,6 @@ pub struct Window {
     compositor: IpcSender<ScriptToCompositorMsg>,
     browsing_context: MutNullableHeap<JS<BrowsingContext>>,
     page: Rc<Page>,
-    performance: MutNullableHeap<JS<Performance>>,
     navigation_start: u64,
     navigation_start_precise: f64,
     screen: MutNullableHeap<JS<Screen>>,
@@ -511,15 +509,6 @@ impl WindowMethods for Window {
             window = parent;
         }
         window
-    }
-
-    // https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/
-    // NavigationTiming/Overview.html#sec-window.performance-attribute
-    fn Performance(&self) -> Root<Performance> {
-        self.performance.or_init(|| {
-            Performance::new(self, self.navigation_start,
-                             self.navigation_start_precise)
-        })
     }
 
     // https://html.spec.whatwg.org/multipage/#globaleventhandlers
@@ -1351,7 +1340,6 @@ impl Window {
             mem_profiler_chan: mem_profiler_chan,
             devtools_chan: devtools_chan,
             browsing_context: Default::default(),
-            performance: Default::default(),
             navigation_start: time::get_time().sec as u64,
             navigation_start_precise: time::precise_time_ns() as f64,
             screen: Default::default(),
