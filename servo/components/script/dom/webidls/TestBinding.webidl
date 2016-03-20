@@ -25,7 +25,6 @@ dictionary TestDictionary {
   DOMString stringValue;
   USVString usvstringValue;
   TestEnum enumValue;
-  Blob interfaceValue;
   any anyValue;
   object objectValue;
   TestDictionaryDefaults dict;
@@ -90,15 +89,12 @@ interface TestBinding {
            attribute USVString usvstringAttribute;
            attribute ByteString byteStringAttribute;
            attribute TestEnum enumAttribute;
-           attribute Blob interfaceAttribute;
            attribute (HTMLElement or long) unionAttribute;
            attribute (Event or DOMString) union2Attribute;
            attribute (Event or USVString) union3Attribute;
            attribute (DOMString or unsigned long) union4Attribute;
            attribute (DOMString or boolean) union5Attribute;
            attribute (unsigned long or boolean) union6Attribute;
-           attribute (Blob or boolean) union7Attribute;
-           attribute (Blob or unsigned long) union8Attribute;
   readonly attribute Uint8ClampedArray arrayAttribute;
            attribute any anyAttribute;
            attribute object objectAttribute;
@@ -120,12 +116,10 @@ interface TestBinding {
            attribute USVString? usvstringAttributeNullable;
            attribute ByteString? byteStringAttributeNullable;
   readonly attribute TestEnum? enumAttributeNullable;
-           attribute Blob? interfaceAttributeNullable;
            attribute URL? interfaceAttributeWeak;
            attribute object? objectAttributeNullable;
            attribute (HTMLElement or long)? unionAttributeNullable;
            attribute (Event or DOMString)? union2AttributeNullable;
-           attribute (Blob or boolean)? union3AttributeNullable;
            attribute (unsigned long or boolean)? union4AttributeNullable;
            attribute (DOMString or boolean)? union5AttributeNullable;
   [BinaryName="BinaryRenamedAttribute"] attribute DOMString attrToBinaryRename;
@@ -154,20 +148,17 @@ interface TestBinding {
   USVString receiveUsvstring();
   ByteString receiveByteString();
   TestEnum receiveEnum();
-  Blob receiveInterface();
   any receiveAny();
   object receiveObject();
   (HTMLElement or long) receiveUnion();
   (Event or DOMString) receiveUnion2();
   (DOMString or sequence<long>) receiveUnion3();
   (DOMString or sequence<DOMString>) receiveUnion4();
-  (Blob or sequence<Blob>) receiveUnion5();
   (DOMString or unsigned long) receiveUnion6();
   (DOMString or boolean) receiveUnion7();
   (unsigned long or boolean) receiveUnion8();
   (HTMLElement or unsigned long or DOMString or boolean) receiveUnion9();
   sequence<long> receiveSequence();
-  sequence<Blob> receiveInterfaceSequence();
 
   byte? receiveNullableByte();
   boolean? receiveNullableBoolean();
@@ -186,7 +177,6 @@ interface TestBinding {
   USVString? receiveNullableUsvstring();
   ByteString? receiveNullableByteString();
   TestEnum? receiveNullableEnum();
-  Blob? receiveNullableInterface();
   object? receiveNullableObject();
   (HTMLElement or long)? receiveNullableUnion();
   (Event or DOMString)? receiveNullableUnion2();
@@ -212,10 +202,8 @@ interface TestBinding {
   void passUsvstring(USVString arg);
   void passByteString(ByteString arg);
   void passEnum(TestEnum arg);
-  void passInterface(Blob arg);
   void passUnion((HTMLElement or long) arg);
   void passUnion2((Event or DOMString) data);
-  void passUnion3((Blob or DOMString) data);
   void passUnion4((DOMString or sequence<DOMString>) seq);
   void passUnion5((DOMString or boolean) data);
   void passUnion6((unsigned long or boolean) bool);
@@ -226,7 +214,6 @@ interface TestBinding {
   void passCallbackInterface(EventListener listener);
   void passSequence(sequence<long> seq);
   void passStringSequence(sequence<DOMString> seq);
-  void passInterfaceSequence(sequence<Blob> seq);
 
   void passNullableBoolean(boolean? arg);
   void passNullableByte(byte? arg);
@@ -245,7 +232,6 @@ interface TestBinding {
   void passNullableUsvstring(USVString? arg);
   void passNullableByteString(ByteString? arg);
   // void passNullableEnum(TestEnum? arg);
-  void passNullableInterface(Blob? arg);
   void passNullableObject(object? arg);
   void passNullableUnion((HTMLElement or long)? arg);
   void passNullableUnion2((Event or DOMString)? data);
@@ -273,7 +259,6 @@ interface TestBinding {
   void passOptionalUsvstring(optional USVString arg);
   void passOptionalByteString(optional ByteString arg);
   void passOptionalEnum(optional TestEnum arg);
-  void passOptionalInterface(optional Blob arg);
   void passOptionalUnion(optional (HTMLElement or long) arg);
   void passOptionalUnion2(optional (Event or DOMString) data);
   void passOptionalUnion3(optional (DOMString or sequence<long>) arg);
@@ -302,7 +287,6 @@ interface TestBinding {
   void passOptionalNullableUsvstring(optional USVString? arg);
   void passOptionalNullableByteString(optional ByteString? arg);
   // void passOptionalNullableEnum(optional TestEnum? arg);
-  void passOptionalNullableInterface(optional Blob? arg);
   void passOptionalNullableObject(optional object? arg);
   void passOptionalNullableUnion(optional (HTMLElement or long)? arg);
   void passOptionalNullableUnion2(optional (Event or DOMString)? data);
@@ -341,7 +325,6 @@ interface TestBinding {
   void passOptionalNullableUsvstringWithDefault(optional USVString? arg = null);
   void passOptionalNullableByteStringWithDefault(optional ByteString? arg = null);
   // void passOptionalNullableEnumWithDefault(optional TestEnum? arg = null);
-  void passOptionalNullableInterfaceWithDefault(optional Blob? arg = null);
   void passOptionalNullableObjectWithDefault(optional object? arg = null);
   void passOptionalNullableUnionWithDefault(optional (HTMLElement or long)? arg = null);
   void passOptionalNullableUnion2WithDefault(optional (Event or DOMString)? data = null);
@@ -386,11 +369,8 @@ interface TestBinding {
   void passVariadicUsvstring(USVString... args);
   void passVariadicByteString(ByteString... args);
   void passVariadicEnum(TestEnum... args);
-  void passVariadicInterface(Blob... args);
   void passVariadicUnion((HTMLElement or long)... args);
   void passVariadicUnion2((Event or DOMString)... args);
-  void passVariadicUnion3((Blob or DOMString)... args);
-  void passVariadicUnion4((Blob or boolean)... args);
   void passVariadicUnion5((DOMString or unsigned long)... args);
   void passVariadicUnion6((unsigned long or boolean)... args);
   void passVariadicAny(any... args);

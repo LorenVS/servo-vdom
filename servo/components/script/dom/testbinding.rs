@@ -7,8 +7,7 @@
 use dom::bindings::codegen::Bindings::EventListenerBinding::EventListener;
 use dom::bindings::codegen::Bindings::FunctionBinding::Function;
 use dom::bindings::codegen::Bindings::TestBindingBinding::{self, TestBindingMethods, TestEnum};
-use dom::bindings::codegen::UnionTypes::{BlobOrBoolean, BlobOrBlobSequence};
-use dom::bindings::codegen::UnionTypes::{BlobOrString, BlobOrUnsignedLong, EventOrString};
+use dom::bindings::codegen::UnionTypes::{EventOrString};
 use dom::bindings::codegen::UnionTypes::{EventOrUSVString, HTMLElementOrLong};
 use dom::bindings::codegen::UnionTypes::{HTMLElementOrUnsignedLongOrStringOrBoolean, LongSequenceOrBoolean};
 use dom::bindings::codegen::UnionTypes::{StringOrLongSequence, StringOrStringSequence, StringSequenceOrUnsignedLong};
@@ -17,10 +16,9 @@ use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::js::Root;
 use dom::bindings::num::Finite;
-use dom::bindings::reflector::{Reflectable, Reflector, reflect_dom_object};
+use dom::bindings::reflector::{Reflector, reflect_dom_object};
 use dom::bindings::str::{ByteString, USVString};
 use dom::bindings::weakref::MutableWeakRef;
-use dom::blob::Blob;
 use dom::url::URL;
 use js::jsapi::{HandleValue, JSContext, JSObject};
 use js::jsval::{JSVal, NullValue};
@@ -98,10 +96,6 @@ impl TestBindingMethods for TestBinding {
     fn SetByteStringAttribute(&self, _: ByteString) {}
     fn EnumAttribute(&self) -> TestEnum { TestEnum::_empty }
     fn SetEnumAttribute(&self, _: TestEnum) {}
-    fn InterfaceAttribute(&self) -> Root<Blob> {
-        Blob::new(self.global().r(), Vec::new(), "")
-    }
-    fn SetInterfaceAttribute(&self, _: &Blob) {}
     fn UnionAttribute(&self) -> HTMLElementOrLong { HTMLElementOrLong::Long(0) }
     fn SetUnionAttribute(&self, _: HTMLElementOrLong) {}
     fn Union2Attribute(&self) -> EventOrString { EventOrString::String(DOMString::new()) }
@@ -122,14 +116,6 @@ impl TestBindingMethods for TestBinding {
         UnsignedLongOrBoolean::Boolean(true)
     }
     fn SetUnion6Attribute(&self, _: UnsignedLongOrBoolean) {}
-    fn Union7Attribute(&self) -> BlobOrBoolean {
-        BlobOrBoolean::Boolean(true)
-    }
-    fn SetUnion7Attribute(&self, _: BlobOrBoolean) {}
-    fn Union8Attribute(&self) -> BlobOrUnsignedLong {
-        BlobOrUnsignedLong::UnsignedLong(0u32)
-    }
-    fn SetUnion8Attribute(&self, _: BlobOrUnsignedLong) {}
     fn ArrayAttribute(&self, _: *mut JSContext) -> *mut JSObject { NullValue().to_object_or_null() }
     fn AnyAttribute(&self, _: *mut JSContext) -> JSVal { NullValue() }
     fn SetAnyAttribute(&self, _: *mut JSContext, _: HandleValue) {}
@@ -176,10 +162,6 @@ impl TestBindingMethods for TestBinding {
     fn Attr_to_automatically_rename(&self) -> DOMString { DOMString::new() }
     fn SetAttr_to_automatically_rename(&self, _: DOMString) {}
     fn GetEnumAttributeNullable(&self) -> Option<TestEnum> { Some(TestEnum::_empty) }
-    fn GetInterfaceAttributeNullable(&self) -> Option<Root<Blob>> {
-        Some(Blob::new(self.global().r(), Vec::new(), ""))
-    }
-    fn SetInterfaceAttributeNullable(&self, _: Option<&Blob>) {}
     fn GetInterfaceAttributeWeak(&self) -> Option<Root<URL>> {
         self.url.root()
     }
@@ -196,10 +178,6 @@ impl TestBindingMethods for TestBinding {
         Some(EventOrString::String(DOMString::new()))
     }
     fn SetUnion2AttributeNullable(&self, _: Option<EventOrString>) {}
-    fn GetUnion3AttributeNullable(&self) -> Option<BlobOrBoolean> {
-        Some(BlobOrBoolean::Boolean(true))
-    }
-    fn SetUnion3AttributeNullable(&self, _: Option<BlobOrBoolean>) {}
     fn GetUnion4AttributeNullable(&self) -> Option<UnsignedLongOrBoolean> {
         Some(UnsignedLongOrBoolean::Boolean(true))
     }
@@ -227,16 +205,12 @@ impl TestBindingMethods for TestBinding {
     fn ReceiveUsvstring(&self) -> USVString { USVString("".to_owned()) }
     fn ReceiveByteString(&self) -> ByteString { ByteString::new(vec!()) }
     fn ReceiveEnum(&self) -> TestEnum { TestEnum::_empty }
-    fn ReceiveInterface(&self) -> Root<Blob> {
-        Blob::new(self.global().r(), Vec::new(), "")
-    }
     fn ReceiveAny(&self, _: *mut JSContext) -> JSVal { NullValue() }
     fn ReceiveObject(&self, _: *mut JSContext) -> *mut JSObject { panic!() }
     fn ReceiveUnion(&self) -> HTMLElementOrLong { HTMLElementOrLong::Long(0) }
     fn ReceiveUnion2(&self) -> EventOrString { EventOrString::String(DOMString::new()) }
     fn ReceiveUnion3(&self) -> StringOrLongSequence { StringOrLongSequence::LongSequence(vec![]) }
     fn ReceiveUnion4(&self) -> StringOrStringSequence { StringOrStringSequence::StringSequence(vec![]) }
-    fn ReceiveUnion5(&self) -> BlobOrBlobSequence { BlobOrBlobSequence::BlobSequence(vec![]) }
     fn ReceiveUnion6(&self) -> StringOrUnsignedLong { StringOrUnsignedLong::String(DOMString::new()) }
     fn ReceiveUnion7(&self) -> StringOrBoolean { StringOrBoolean::Boolean(true) }
     fn ReceiveUnion8(&self) -> UnsignedLongOrBoolean { UnsignedLongOrBoolean::UnsignedLong(0u32) }
@@ -244,10 +218,6 @@ impl TestBindingMethods for TestBinding {
         HTMLElementOrUnsignedLongOrStringOrBoolean::Boolean(true)
     }
     fn ReceiveSequence(&self) -> Vec<i32> { vec![1] }
-    fn ReceiveInterfaceSequence(&self) -> Vec<Root<Blob>> {
-        vec![Blob::new(self.global().r(), Vec::new(), "")]
-    }
-
     fn ReceiveNullableBoolean(&self) -> Option<bool> { Some(false) }
     fn ReceiveNullableByte(&self) -> Option<i8> { Some(0) }
     fn ReceiveNullableOctet(&self) -> Option<u8> { Some(0) }
@@ -265,9 +235,6 @@ impl TestBindingMethods for TestBinding {
     fn ReceiveNullableUsvstring(&self) -> Option<USVString> { Some(USVString("".to_owned())) }
     fn ReceiveNullableByteString(&self) -> Option<ByteString> { Some(ByteString::new(vec!())) }
     fn ReceiveNullableEnum(&self) -> Option<TestEnum> { Some(TestEnum::_empty) }
-    fn ReceiveNullableInterface(&self) -> Option<Root<Blob>> {
-        Some(Blob::new(self.global().r(), Vec::new(), ""))
-    }
     fn ReceiveNullableObject(&self, _: *mut JSContext) -> *mut JSObject { ptr::null_mut() }
     fn ReceiveNullableUnion(&self) -> Option<HTMLElementOrLong> {
         Some(HTMLElementOrLong::Long(0))
@@ -303,10 +270,8 @@ impl TestBindingMethods for TestBinding {
     fn PassUsvstring(&self, _: USVString) {}
     fn PassByteString(&self, _: ByteString) {}
     fn PassEnum(&self, _: TestEnum) {}
-    fn PassInterface(&self, _: &Blob) {}
     fn PassUnion(&self, _: HTMLElementOrLong) {}
     fn PassUnion2(&self, _: EventOrString) {}
-    fn PassUnion3(&self, _: BlobOrString) {}
     fn PassUnion4(&self, _: StringOrStringSequence) {}
     fn PassUnion5(&self, _: StringOrBoolean) {}
     fn PassUnion6(&self, _: UnsignedLongOrBoolean) {}
@@ -317,7 +282,6 @@ impl TestBindingMethods for TestBinding {
     fn PassCallbackInterface(&self, _: Rc<EventListener>) {}
     fn PassSequence(&self, _: Vec<i32>) {}
     fn PassStringSequence(&self, _: Vec<DOMString>) {}
-    fn PassInterfaceSequence(&self, _: Vec<Root<Blob>>) {}
 
     fn PassNullableBoolean(&self, _: Option<bool>) {}
     fn PassNullableByte(&self, _: Option<i8>) {}
@@ -336,7 +300,6 @@ impl TestBindingMethods for TestBinding {
     fn PassNullableUsvstring(&self, _: Option<USVString>) {}
     fn PassNullableByteString(&self, _: Option<ByteString>) {}
     // fn PassNullableEnum(self, _: Option<TestEnum>) {}
-    fn PassNullableInterface(&self, _: Option<&Blob>) {}
     fn PassNullableObject(&self, _: *mut JSContext, _: *mut JSObject) {}
     fn PassNullableUnion(&self, _: Option<HTMLElementOrLong>) {}
     fn PassNullableUnion2(&self, _: Option<EventOrString>) {}
@@ -364,7 +327,6 @@ impl TestBindingMethods for TestBinding {
     fn PassOptionalUsvstring(&self, _: Option<USVString>) {}
     fn PassOptionalByteString(&self, _: Option<ByteString>) {}
     fn PassOptionalEnum(&self, _: Option<TestEnum>) {}
-    fn PassOptionalInterface(&self, _: Option<&Blob>) {}
     fn PassOptionalUnion(&self, _: Option<HTMLElementOrLong>) {}
     fn PassOptionalUnion2(&self, _: Option<EventOrString>) {}
     fn PassOptionalUnion3(&self, _: Option<StringOrLongSequence>) {}
@@ -392,8 +354,7 @@ impl TestBindingMethods for TestBinding {
     fn PassOptionalNullableString(&self, _: Option<Option<DOMString>>) {}
     fn PassOptionalNullableUsvstring(&self, _: Option<Option<USVString>>) {}
     fn PassOptionalNullableByteString(&self, _: Option<Option<ByteString>>) {}
-    // fn PassOptionalNullableEnum(self, _: Option<Option<TestEnum>>) {}
-    fn PassOptionalNullableInterface(&self, _: Option<Option<&Blob>>) {}
+
     fn PassOptionalNullableObject(&self, _: *mut JSContext, _: Option<*mut JSObject>) {}
     fn PassOptionalNullableUnion(&self, _: Option<Option<HTMLElementOrLong>>) {}
     fn PassOptionalNullableUnion2(&self, _: Option<Option<EventOrString>>) {}
@@ -434,7 +395,6 @@ impl TestBindingMethods for TestBinding {
     fn PassOptionalNullableUsvstringWithDefault(&self, _: Option<USVString>) {}
     fn PassOptionalNullableByteStringWithDefault(&self, _: Option<ByteString>) {}
     // fn PassOptionalNullableEnumWithDefault(self, _: Option<TestEnum>) {}
-    fn PassOptionalNullableInterfaceWithDefault(&self, _: Option<&Blob>) {}
     fn PassOptionalNullableObjectWithDefault(&self, _: *mut JSContext, _: *mut JSObject) {}
     fn PassOptionalNullableUnionWithDefault(&self, _: Option<HTMLElementOrLong>) {}
     fn PassOptionalNullableUnion2WithDefault(&self, _: Option<EventOrString>) {}
@@ -477,11 +437,8 @@ impl TestBindingMethods for TestBinding {
     fn PassVariadicUsvstring(&self, _: Vec<USVString>) {}
     fn PassVariadicByteString(&self, _: Vec<ByteString>) {}
     fn PassVariadicEnum(&self, _: Vec<TestEnum>) {}
-    fn PassVariadicInterface(&self, _: &[&Blob]) {}
     fn PassVariadicUnion(&self, _: Vec<HTMLElementOrLong>) {}
     fn PassVariadicUnion2(&self, _: Vec<EventOrString>) {}
-    fn PassVariadicUnion3(&self, _: Vec<BlobOrString>) {}
-    fn PassVariadicUnion4(&self, _: Vec<BlobOrBoolean>) {}
     fn PassVariadicUnion5(&self, _: Vec<StringOrUnsignedLong>) {}
     fn PassVariadicUnion6(&self, _: Vec<UnsignedLongOrBoolean>) {}
     fn PassVariadicAny(&self, _: *mut JSContext, _: Vec<HandleValue>) {}

@@ -25,7 +25,6 @@ use dom::document::Document;
 use dom::element::Element;
 use dom::eventtarget::EventTarget;
 use dom::location::Location;
-use dom::navigator::Navigator;
 use dom::node::{Node, TrustedNodeAddress, from_untrusted_node_address, window_from_node};
 use dom::performance::Performance;
 use dom::screen::Screen;
@@ -133,7 +132,6 @@ pub struct Window {
     history_traversal_task_source: HistoryTraversalTaskSource,
     #[ignore_heap_size_of = "task sources are hard"]
     file_reading_task_source: FileReadingTaskSource,
-    navigator: MutNullableHeap<JS<Navigator>>,
     #[ignore_heap_size_of = "channels are hard"]
     image_cache_thread: ImageCacheThread,
     #[ignore_heap_size_of = "channels are hard"]
@@ -447,11 +445,6 @@ impl WindowMethods for Window {
     // https://html.spec.whatwg.org/multipage/#dom-frameelement
     fn GetFrameElement(&self) -> Option<Root<Element>> {
         self.browsing_context().frame_element().map(Root::from_ref)
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-navigator
-    fn Navigator(&self) -> Root<Navigator> {
-        self.navigator.or_init(|| Navigator::new(self))
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-windowtimers-settimeout
@@ -1370,7 +1363,6 @@ impl Window {
             image_cache_chan: image_cache_chan,
             compositor: compositor,
             page: page,
-            navigator: Default::default(),
             image_cache_thread: image_cache_thread,
             mem_profiler_chan: mem_profiler_chan,
             devtools_chan: devtools_chan,

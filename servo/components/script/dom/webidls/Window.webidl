@@ -43,8 +43,6 @@
   //getter WindowProxy (unsigned long index);
   //getter object (DOMString name);
 
-  // the user agent
-  readonly attribute Navigator navigator;
   //[Replaceable] readonly attribute External external;
   //readonly attribute ApplicationCache applicationCache;
 
