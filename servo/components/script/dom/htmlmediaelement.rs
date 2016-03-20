@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+use dom::bindings::inheritance::{HTMLElementTypeId, HTMLMediaElementTypeId};
 use dom::document::Document;
-use dom::htmlelement::HTMLElement;
+use dom::htmlelement::{HTMLElement};
 use string_cache::Atom;
 use util::str::DOMString;
 
@@ -13,12 +14,13 @@ pub struct HTMLMediaElement {
 }
 
 impl HTMLMediaElement {
-    pub fn new_inherited(tag_name: Atom,
+    pub fn new_inherited(type_id: HTMLMediaElementTypeId,
+                         tag_name: Atom,
                          prefix: Option<DOMString>, document: &Document)
                          -> HTMLMediaElement {
         HTMLMediaElement {
             htmlelement:
-                HTMLElement::new_inherited(tag_name, prefix, document)
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLMediaElement(type_id), tag_name, prefix, document)
         }
     }
 

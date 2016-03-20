@@ -13,7 +13,7 @@ use dom::bindings::codegen::Bindings::HTMLInputElementBinding::HTMLInputElementM
 use dom::bindings::codegen::Bindings::KeyboardEventBinding::KeyboardEventMethods;
 use dom::bindings::error::{Error, ErrorResult};
 use dom::bindings::global::GlobalRef;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::{JS, LayoutJS, Root, RootedReference};
 use dom::bindings::refcounted::Trusted;
 use dom::document::Document;
@@ -132,6 +132,7 @@ impl HTMLInputElement {
         HTMLInputElement {
             htmlelement:
                 HTMLElement::new_inherited_with_state(IN_ENABLED_STATE,
+                                                      HTMLElementTypeId::HTMLInputElement,
                                                       localName, prefix, document),
             input_type: Cell::new(InputType::InputText),
             placeholder: DOMRefCell::new(DOMString::new()),

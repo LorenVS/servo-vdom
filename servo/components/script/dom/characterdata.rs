@@ -7,10 +7,9 @@
 use dom::bindings::cell::DOMRefCell;
 use dom::bindings::codegen::Bindings::CharacterDataBinding::CharacterDataMethods;
 use dom::bindings::codegen::Bindings::ProcessingInstructionBinding::ProcessingInstructionMethods;
-use dom::bindings::codegen::InheritTypes::{CharacterDataTypeId, NodeTypeId};
 use dom::bindings::codegen::UnionTypes::NodeOrString;
 use dom::bindings::error::{Error, ErrorResult, Fallible};
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, CharacterDataTypeId, NodeTypeId};
 use dom::bindings::js::{LayoutJS, Root};
 use dom::comment::Comment;
 use dom::document::Document;
@@ -29,9 +28,9 @@ pub struct CharacterData {
 }
 
 impl CharacterData {
-    pub fn new_inherited(data: DOMString, document: &Document) -> CharacterData {
+    pub fn new_inherited(type_id: CharacterDataTypeId, data: DOMString, document: &Document) -> CharacterData {
         CharacterData {
-            node: Node::new_inherited(document),
+            node: Node::new_inherited(NodeTypeId::CharacterData(type_id), document),
             data: DOMRefCell::new(data),
         }
     }

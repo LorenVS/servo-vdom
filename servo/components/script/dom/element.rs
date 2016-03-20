@@ -120,19 +120,20 @@ impl Element {
     }
 
 
-    pub fn new_inherited(local_name: Atom,
+    pub fn new_inherited(type_id: ElementTypeId,
+                         local_name: Atom,
                          namespace: Namespace, prefix: Option<DOMString>,
                          document: &Document) -> Element {
-        Element::new_inherited_with_state(ElementState::empty(), local_name,
+        Element::new_inherited_with_state(ElementState::empty(), type_id, local_name,
                                           namespace, prefix, document)
     }
 
-    pub fn new_inherited_with_state(state: ElementState, local_name: Atom,
+    pub fn new_inherited_with_state(state: ElementState, type_id: ElementTypeId, local_name: Atom,
                                     namespace: Namespace, prefix: Option<DOMString>,
                                     document: &Document)
                                     -> Element {
         Element {
-            node: Node::new_inherited(document),
+            node: Node::new_inherited(NodeTypeId::Element(type_id), document),
             local_name: local_name,
             namespace: namespace,
             prefix: prefix,
@@ -146,12 +147,13 @@ impl Element {
         }
     }
 
-    pub fn new(local_name: Atom,
+    pub fn new(type_id: ElementTypeId,
+               local_name: Atom,
                namespace: Namespace,
                prefix: Option<DOMString>,
                document: &Document) -> Root<Element> {
         Node::reflect_node(
-            box Element::new_inherited(local_name, namespace, prefix, document),
+            box Element::new_inherited(type_id, local_name, namespace, prefix, document),
             document,
             ElementBinding::Wrap)
     }

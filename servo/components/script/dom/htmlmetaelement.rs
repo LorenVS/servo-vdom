@@ -5,7 +5,7 @@
 use dom::bindings::cell::DOMRefCell;
 use dom::bindings::codegen::Bindings::HTMLMetaElementBinding;
 use dom::bindings::codegen::Bindings::HTMLMetaElementBinding::HTMLMetaElementMethods;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::{Root, RootedReference};
 use dom::document::Document;
 use dom::element::Element;
@@ -31,7 +31,7 @@ impl HTMLMetaElement {
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLMetaElement {
         HTMLMetaElement {
-            htmlelement: HTMLElement::new_inherited(localName, prefix, document),
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLMetaElement, localName, prefix, document),
             stylesheet: DOMRefCell::new(None),
         }
     }

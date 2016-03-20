@@ -4,6 +4,7 @@
 
 use dom::bindings::codegen::Bindings::HTMLTimeElementBinding;
 use dom::bindings::js::Root;
+use dom::bindings::inheritance::HTMLElementTypeId;
 use dom::document::Document;
 use dom::htmlelement::HTMLElement;
 use dom::node::Node;
@@ -18,7 +19,7 @@ pub struct HTMLTimeElement {
 impl HTMLTimeElement {
     fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLTimeElement {
         HTMLTimeElement {
-            htmlelement: HTMLElement::new_inherited(localName, prefix, document)
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTimeElement, localName, prefix, document)
         }
     }
 

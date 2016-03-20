@@ -6,6 +6,7 @@ use dom::bindings::codegen::Bindings::CommentBinding;
 use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
+use dom::bindings::inheritance::CharacterDataTypeId;
 use dom::bindings::js::Root;
 use dom::characterdata::CharacterData;
 use dom::document::Document;
@@ -21,7 +22,7 @@ pub struct Comment {
 impl Comment {
     fn new_inherited(text: DOMString, document: &Document) -> Comment {
         Comment {
-            characterdata: CharacterData::new_inherited(text, document),
+            characterdata: CharacterData::new_inherited(CharacterDataTypeId::Comment, text, document),
         }
     }
 

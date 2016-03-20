@@ -8,7 +8,7 @@ use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
 use dom::bindings::codegen::Bindings::HTMLTextAreaElementBinding;
 use dom::bindings::codegen::Bindings::HTMLTextAreaElementBinding::HTMLTextAreaElementMethods;
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::{LayoutJS, Root};
 use dom::bindings::reflector::{Reflectable};
 use dom::document::Document;
@@ -100,6 +100,7 @@ impl HTMLTextAreaElement {
         HTMLTextAreaElement {
             htmlelement:
                 HTMLElement::new_inherited_with_state(IN_ENABLED_STATE,
+                                                      HTMLElementTypeId::HTMLTextAreaElement,
                                                       localName, prefix, document),
             textinput: DOMRefCell::new(TextInput::new(Lines::Multiple, DOMString::new(), chan, None)),
             value_changed: Cell::new(false),

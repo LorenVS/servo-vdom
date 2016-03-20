@@ -7,7 +7,7 @@ use dom::attr::AttrValue;
 use dom::bindings::codegen::Bindings::HTMLTableRowElementBinding::{self, HTMLTableRowElementMethods};
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::error::{ErrorResult, Fallible};
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::{JS, LayoutJS, MutNullableHeap, Root, RootedReference};
 use dom::document::Document;
 use dom::element::{Element, RawLayoutElementHelpers};
@@ -40,7 +40,7 @@ impl HTMLTableRowElement {
     fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document)
                      -> HTMLTableRowElement {
         HTMLTableRowElement {
-            htmlelement: HTMLElement::new_inherited(localName, prefix, document),
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTableRowElement, localName, prefix, document),
             cells: Default::default(),
         }
     }

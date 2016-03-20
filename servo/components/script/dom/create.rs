@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::js::Root;
+use dom::bindings::inheritance::{ElementTypeId};
 use dom::document::Document;
 use dom::element::Element;
 use dom::element::ElementCreator;
@@ -86,7 +87,7 @@ pub fn create_element(name: QualName,
     let prefix = prefix.map(|p| DOMString::from(&*p));
 
     if name.ns != ns!(html) {
-        return Element::new(name.local, name.ns, prefix, document);
+        return Element::new(ElementTypeId::Element, name.local, name.ns, prefix, document);
     }
 
     macro_rules! make(
@@ -99,6 +100,7 @@ pub fn create_element(name: QualName,
             Root::upcast(obj)
         })
     );
+
 
     // This is a big match, and the IDs for inline-interned atoms are not very structured.
     // Perhaps we should build a perfect hash from those IDs instead.

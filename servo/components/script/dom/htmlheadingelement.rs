@@ -4,6 +4,7 @@
 
 use dom::bindings::codegen::Bindings::HTMLHeadingElementBinding;
 use dom::bindings::js::Root;
+use dom::bindings::inheritance::HTMLElementTypeId;
 use dom::document::Document;
 use dom::htmlelement::HTMLElement;
 use dom::node::Node;
@@ -33,7 +34,7 @@ impl HTMLHeadingElement {
                      level: HeadingLevel) -> HTMLHeadingElement {
         HTMLHeadingElement {
             htmlelement:
-                HTMLElement::new_inherited(localName, prefix, document),
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLHeadingElement, localName, prefix, document),
             level: level,
         }
     }

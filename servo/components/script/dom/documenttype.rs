@@ -6,7 +6,7 @@ use dom::bindings::codegen::Bindings::DocumentTypeBinding;
 use dom::bindings::codegen::Bindings::DocumentTypeBinding::DocumentTypeMethods;
 use dom::bindings::codegen::UnionTypes::NodeOrString;
 use dom::bindings::error::ErrorResult;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable,NodeTypeId};
 use dom::bindings::js::Root;
 use dom::document::Document;
 use dom::node::Node;
@@ -29,7 +29,7 @@ impl DocumentType {
                      document: &Document)
                      -> DocumentType {
         DocumentType {
-            node: Node::new_inherited(document),
+            node: Node::new_inherited(NodeTypeId::DocumentFragment, document),
             name: name,
             public_id: public_id.unwrap_or_default(),
             system_id: system_id.unwrap_or_default(),

@@ -1280,19 +1280,19 @@ impl Node {
         reflect_dom_object(node, GlobalRef::Window(window), wrap_fn)
     }
 
-    pub fn new_inherited(doc: &Document) -> Node {
-        Node::new_(NodeFlags::new(), Some(doc))
+    pub fn new_inherited(type_id: NodeTypeId, doc: &Document) -> Node {
+        Node::new_(type_id, NodeFlags::new(), Some(doc))
     }
 
     #[allow(unrooted_must_root)]
     pub fn new_document_node() -> Node {
-        Node::new_(NodeFlags::new() | IS_IN_DOC, None)
+        Node::new_(NodeTypeId::Document, NodeFlags::new() | IS_IN_DOC, None)
     }
 
     #[allow(unrooted_must_root)]
-    fn new_(flags: NodeFlags, doc: Option<&Document>) -> Node {
+    fn new_(type_id: NodeTypeId, flags: NodeFlags, doc: Option<&Document>) -> Node {
         Node {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::Node(type_id)),
 
             parent_node: Default::default(),
             first_child: Default::default(),

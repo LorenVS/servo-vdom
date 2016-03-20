@@ -8,7 +8,7 @@ use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::codegen::UnionTypes::NodeOrString;
 use dom::bindings::error::{ErrorResult, Fallible};
 use dom::bindings::global::GlobalRef;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, NodeTypeId};
 use dom::bindings::js::Root;
 use dom::document::Document;
 use dom::element::Element;
@@ -28,7 +28,7 @@ impl DocumentFragment {
     /// Creates a new DocumentFragment.
     fn new_inherited(document: &Document) -> DocumentFragment {
         DocumentFragment {
-            node: Node::new_inherited(document),
+            node: Node::new_inherited(NodeTypeId::DocumentFragment, document),
         }
     }
 

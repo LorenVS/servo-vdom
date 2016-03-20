@@ -4,6 +4,7 @@
 
 use dom::bindings::codegen::Bindings::HTMLMapElementBinding;
 use dom::bindings::js::Root;
+use dom::bindings::inheritance::HTMLElementTypeId;
 use dom::document::Document;
 use dom::htmlelement::HTMLElement;
 use dom::node::Node;
@@ -20,7 +21,7 @@ impl HTMLMapElement {
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLMapElement {
         HTMLMapElement {
-            htmlelement: HTMLElement::new_inherited(localName, prefix, document)
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLMapElement, localName, prefix, document)
         }
     }
 

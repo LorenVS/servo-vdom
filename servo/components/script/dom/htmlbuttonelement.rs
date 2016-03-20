@@ -6,7 +6,7 @@ use dom::activation::{Activatable, ActivationSource, synthetic_click_activation}
 use dom::attr::Attr;
 use dom::bindings::codegen::Bindings::HTMLButtonElementBinding;
 use dom::bindings::codegen::Bindings::HTMLButtonElementBinding::HTMLButtonElementMethods;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable,HTMLElementTypeId};
 use dom::bindings::js::Root;
 use dom::document::Document;
 use dom::element::{AttributeMutation, Element};
@@ -47,6 +47,7 @@ impl HTMLButtonElement {
         HTMLButtonElement {
             htmlelement:
                 HTMLElement::new_inherited_with_state(IN_ENABLED_STATE,
+                                                      HTMLElementTypeId::HTMLButtonElement,
                                                       localName, prefix, document),
             button_type: Cell::new(ButtonType::Submit)
         }

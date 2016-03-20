@@ -7,6 +7,7 @@ use dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
 use dom::bindings::codegen::Bindings::EventSourceBinding::{EventSourceInit, EventSourceMethods, Wrap};
 use dom::bindings::error::{Error, Fallible};
 use dom::bindings::global::GlobalRef;
+use dom::bindings::inheritance::EventTargetTypeId;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::reflect_dom_object;
 use dom::eventtarget::EventTarget;
@@ -34,7 +35,7 @@ pub struct EventSource {
 impl EventSource {
     fn new_inherited(url: Url, with_credentials: bool) -> EventSource {
         EventSource {
-            eventtarget: EventTarget::new_inherited(),
+            eventtarget: EventTarget::new_inherited(EventTargetTypeId::EventSource),
             url: url,
             ready_state: Cell::new(EventSourceReadyState::Connecting),
             with_credentials: with_credentials,

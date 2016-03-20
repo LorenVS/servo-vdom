@@ -4,6 +4,7 @@
 
 use dom::bindings::codegen::Bindings::HTMLTableHeaderCellElementBinding;
 use dom::bindings::js::Root;
+use dom::bindings::inheritance::HTMLTableCellElementTypeId;
 use dom::document::Document;
 use dom::htmltablecellelement::HTMLTableCellElement;
 use dom::node::Node;
@@ -21,7 +22,7 @@ impl HTMLTableHeaderCellElement {
                      document: &Document) -> HTMLTableHeaderCellElement {
         HTMLTableHeaderCellElement {
             htmltablecellelement:
-                HTMLTableCellElement::new_inherited(localName, prefix, document)
+                HTMLTableCellElement::new_inherited(HTMLTableCellElementTypeId::HTMLTableHeaderCellElement, localName, prefix, document)
         }
     }
 

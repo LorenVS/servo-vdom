@@ -4,6 +4,7 @@
 
 use dom::bindings::codegen::Bindings::HTMLFrameElementBinding;
 use dom::bindings::js::Root;
+use dom::bindings::inheritance::HTMLElementTypeId;
 use dom::document::Document;
 use dom::htmlelement::HTMLElement;
 use dom::node::Node;
@@ -18,7 +19,7 @@ pub struct HTMLFrameElement {
 impl HTMLFrameElement {
     fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLFrameElement {
         HTMLFrameElement {
-            htmlelement: HTMLElement::new_inherited(localName, prefix, document)
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLFrameElement, localName, prefix, document)
         }
     }
 

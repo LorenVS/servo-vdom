@@ -282,12 +282,15 @@ impl EventListeners {
 #[dom_struct]
 pub struct EventTarget {
     reflector_: Reflector,
+    #[ignore_heap_size_of = "type_ids are new"]
+    type_id: EventTargetTypeId,
     handlers: DOMRefCell<HashMap<Atom, EventListeners, BuildHasherDefault<FnvHasher>>>,
 }
 
 impl EventTarget {
-    pub fn new_inherited() -> EventTarget {
+    pub fn new_inherited(type_id: EventTargetTypeId) -> EventTarget {
         EventTarget {
+            type_id: type_id,
             reflector_: Reflector::new(),
             handlers: DOMRefCell::new(Default::default()),
         }

@@ -7,7 +7,7 @@ use dom::bindings::codegen::Bindings::CharacterDataBinding::CharacterDataMethods
 use dom::bindings::codegen::Bindings::HTMLOptionElementBinding;
 use dom::bindings::codegen::Bindings::HTMLOptionElementBinding::HTMLOptionElementMethods;
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::Root;
 use dom::characterdata::CharacterData;
 use dom::document::Document;
@@ -40,6 +40,7 @@ impl HTMLOptionElement {
         HTMLOptionElement {
             htmlelement:
                 HTMLElement::new_inherited_with_state(IN_ENABLED_STATE,
+                                                      HTMLElementTypeId::HTMLOptionElement,
                                                       localName, prefix, document),
             selectedness: Cell::new(false),
             dirtiness: Cell::new(false),

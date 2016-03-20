@@ -6,7 +6,7 @@ use cssparser::Parser as CssParser;
 use dom::bindings::cell::DOMRefCell;
 use dom::bindings::codegen::Bindings::HTMLStyleElementBinding;
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::Root;
 use dom::document::Document;
 use dom::element::Element;
@@ -32,7 +32,7 @@ impl HTMLStyleElement {
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLStyleElement {
         HTMLStyleElement {
-            htmlelement: HTMLElement::new_inherited(localName, prefix, document),
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLStyleElement, localName, prefix, document),
             stylesheet: DOMRefCell::new(None),
         }
     }

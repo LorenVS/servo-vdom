@@ -4,7 +4,7 @@
 
 use dom::bindings::codegen::Bindings::HTMLDataListElementBinding;
 use dom::bindings::codegen::Bindings::HTMLDataListElementBinding::HTMLDataListElementMethods;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable,HTMLElementTypeId};
 use dom::bindings::js::Root;
 use dom::document::Document;
 use dom::element::Element;
@@ -26,7 +26,7 @@ impl HTMLDataListElement {
                      document: &Document) -> HTMLDataListElement {
         HTMLDataListElement {
             htmlelement:
-                HTMLElement::new_inherited(localName, prefix, document)
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLDataListElement, localName, prefix, document)
         }
     }
 

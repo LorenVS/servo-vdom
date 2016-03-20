@@ -4,6 +4,7 @@
 
 use dom::bindings::codegen::Bindings::HTMLDListElementBinding;
 use dom::bindings::js::Root;
+use dom::bindings::inheritance::HTMLElementTypeId;
 use dom::document::Document;
 use dom::htmlelement::HTMLElement;
 use dom::node::Node;
@@ -19,7 +20,7 @@ impl HTMLDListElement {
     fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLDListElement {
         HTMLDListElement {
             htmlelement:
-                HTMLElement::new_inherited(localName, prefix, document)
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLDListElement, localName, prefix, document)
         }
     }
 

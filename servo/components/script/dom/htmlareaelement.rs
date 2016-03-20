@@ -7,6 +7,7 @@ use dom::bindings::codegen::Bindings::HTMLAreaElementBinding;
 use dom::bindings::codegen::Bindings::HTMLAreaElementBinding::HTMLAreaElementMethods;
 use dom::bindings::inheritance::Castable;
 use dom::bindings::js::{JS, MutNullableHeap, Root};
+use dom::bindings::inheritance::HTMLElementTypeId;
 use dom::bindings::reflector::Reflectable;
 use dom::document::Document;
 use dom::domtokenlist::DOMTokenList;
@@ -26,7 +27,7 @@ pub struct HTMLAreaElement {
 impl HTMLAreaElement {
     fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLAreaElement {
         HTMLAreaElement {
-            htmlelement: HTMLElement::new_inherited(localName, prefix, document),
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLAreaElement, localName, prefix, document),
             rel_list: Default::default(),
         }
     }

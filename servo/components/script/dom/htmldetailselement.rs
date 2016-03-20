@@ -5,7 +5,7 @@
 use dom::attr::Attr;
 use dom::bindings::codegen::Bindings::HTMLDetailsElementBinding;
 use dom::bindings::codegen::Bindings::HTMLDetailsElementBinding::HTMLDetailsElementMethods;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::Root;
 use dom::bindings::refcounted::Trusted;
 use dom::document::Document;
@@ -32,7 +32,7 @@ impl HTMLDetailsElement {
                      document: &Document) -> HTMLDetailsElement {
         HTMLDetailsElement {
             htmlelement:
-                HTMLElement::new_inherited(localName, prefix, document),
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLDetailsElement, localName, prefix, document),
             toggle_counter: Cell::new(0)
         }
     }

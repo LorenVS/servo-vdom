@@ -4,6 +4,7 @@
 
 use dom::bindings::codegen::Bindings::HTMLSourceElementBinding;
 use dom::bindings::js::Root;
+use dom::bindings::inheritance::HTMLElementTypeId;
 use dom::document::Document;
 use dom::htmlelement::HTMLElement;
 use dom::node::Node;
@@ -21,7 +22,7 @@ impl HTMLSourceElement {
                      document: &Document) -> HTMLSourceElement {
         HTMLSourceElement {
             htmlelement:
-                HTMLElement::new_inherited(localName, prefix, document)
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLSourceElement, localName, prefix, document)
         }
     }
 

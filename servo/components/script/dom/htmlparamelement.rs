@@ -4,6 +4,7 @@
 
 use dom::bindings::codegen::Bindings::HTMLParamElementBinding;
 use dom::bindings::js::Root;
+use dom::bindings::inheritance::HTMLElementTypeId;
 use dom::document::Document;
 use dom::htmlelement::HTMLElement;
 use dom::node::Node;
@@ -21,7 +22,7 @@ impl HTMLParamElement {
                      document: &Document) -> HTMLParamElement {
         HTMLParamElement {
             htmlelement:
-                HTMLElement::new_inherited(localName, prefix, document)
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLParamElement, localName, prefix, document)
         }
     }
 

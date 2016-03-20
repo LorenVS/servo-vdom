@@ -9,7 +9,7 @@ use dom::bindings::codegen::Bindings::TextBinding::{self, TextMethods};
 use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::error::{Error, Fallible};
 use dom::bindings::global::GlobalRef;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, CharacterDataTypeId};
 use dom::bindings::js::Root;
 use dom::bindings::js::{RootedReference};
 use dom::characterdata::CharacterData;
@@ -26,7 +26,7 @@ pub struct Text {
 impl Text {
     fn new_inherited(text: DOMString, document: &Document) -> Text {
         Text {
-            characterdata: CharacterData::new_inherited(text, document)
+            characterdata: CharacterData::new_inherited(CharacterDataTypeId::Text, text, document)
         }
     }
 

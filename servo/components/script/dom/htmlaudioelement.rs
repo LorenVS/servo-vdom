@@ -4,6 +4,7 @@
 
 use dom::bindings::codegen::Bindings::HTMLAudioElementBinding;
 use dom::bindings::js::Root;
+use dom::bindings::inheritance::HTMLMediaElementTypeId;
 use dom::document::Document;
 use dom::htmlmediaelement::HTMLMediaElement;
 use dom::node::Node;
@@ -21,7 +22,7 @@ impl HTMLAudioElement {
                      document: &Document) -> HTMLAudioElement {
         HTMLAudioElement {
             htmlmediaelement:
-                HTMLMediaElement::new_inherited(localName, prefix, document)
+                HTMLMediaElement::new_inherited(HTMLMediaElementTypeId::HTMLAudioElement, localName, prefix, document)
         }
     }
 

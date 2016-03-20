@@ -5,6 +5,7 @@
 use dom::bindings::codegen::Bindings::ProcessingInstructionBinding;
 use dom::bindings::codegen::Bindings::ProcessingInstructionBinding::ProcessingInstructionMethods;
 use dom::bindings::js::Root;
+use dom::bindings::inheritance::CharacterDataTypeId;
 use dom::characterdata::CharacterData;
 use dom::document::Document;
 use dom::node::Node;
@@ -20,7 +21,7 @@ pub struct ProcessingInstruction {
 impl ProcessingInstruction {
     fn new_inherited(target: DOMString, data: DOMString, document: &Document) -> ProcessingInstruction {
         ProcessingInstruction {
-            characterdata: CharacterData::new_inherited(data, document),
+            characterdata: CharacterData::new_inherited(CharacterDataTypeId::ProcessingInstruction, data, document),
             target: target
         }
     }

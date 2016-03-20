@@ -4,6 +4,7 @@
 
 use dom::bindings::codegen::Bindings::HTMLVideoElementBinding;
 use dom::bindings::js::Root;
+use dom::bindings::inheritance::HTMLMediaElementTypeId;
 use dom::document::Document;
 use dom::htmlmediaelement::HTMLMediaElement;
 use dom::node::Node;
@@ -19,7 +20,7 @@ impl HTMLVideoElement {
     fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLVideoElement {
         HTMLVideoElement {
             htmlmediaelement:
-                HTMLMediaElement::new_inherited(localName, prefix, document)
+                HTMLMediaElement::new_inherited(HTMLMediaElementTypeId::HTMLVideoElement, localName, prefix, document)
         }
     }
 

@@ -4,6 +4,7 @@
 
 use dom::bindings::codegen::Bindings::HTMLDataElementBinding;
 use dom::bindings::js::Root;
+use dom::bindings::inheritance::HTMLElementTypeId;
 use dom::document::Document;
 use dom::htmlelement::HTMLElement;
 use dom::node::Node;
@@ -20,7 +21,7 @@ impl HTMLDataElement {
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLDataElement {
         HTMLDataElement {
-            htmlelement: HTMLElement::new_inherited(localName, prefix, document)
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLDataElement, localName, prefix, document)
         }
     }
 

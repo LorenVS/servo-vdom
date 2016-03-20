@@ -5,7 +5,7 @@
 use cssparser::RGBA;
 use dom::attr::AttrValue;
 use dom::bindings::codegen::Bindings::HTMLHRElementBinding::{self, HTMLHRElementMethods};
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable,HTMLElementTypeId};
 use dom::bindings::js::{LayoutJS, Root};
 use dom::document::Document;
 use dom::element::{Element, RawLayoutElementHelpers};
@@ -23,7 +23,7 @@ pub struct HTMLHRElement {
 impl HTMLHRElement {
     fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLHRElement {
         HTMLHRElement {
-            htmlelement: HTMLElement::new_inherited(localName, prefix, document)
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLHRElement, localName, prefix, document)
         }
     }
 

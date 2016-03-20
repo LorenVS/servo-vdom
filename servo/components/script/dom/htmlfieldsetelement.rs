@@ -31,6 +31,7 @@ impl HTMLFieldSetElement {
         HTMLFieldSetElement {
             htmlelement:
                 HTMLElement::new_inherited_with_state(IN_ENABLED_STATE,
+                                                      HTMLElementTypeId::HTMLFieldSetElement,
                                                       localName, prefix, document)
         }
     }
