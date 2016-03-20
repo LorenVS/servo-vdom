@@ -38,7 +38,6 @@ use layout_interface::{ContentBoxResponse, ContentBoxesResponse, ResolvedStyleRe
 use layout_interface::{LayoutChan, LayoutRPC, Msg, Reflow, ReflowQueryType, MarginStyleResponse};
 use libc;
 use msg::constellation_msg::{ConstellationChan, LoadData, PipelineId, SubpageId, WindowSizeData};
-use msg::webdriver_msg::{WebDriverJSError, WebDriverJSResult};
 use net_traits::ResourceThread;
 use net_traits::image_cache_thread::{ImageCacheChan, ImageCacheThread};
 use net_traits::storage_thread::{StorageThread};
@@ -80,7 +79,6 @@ use url::Url;
 use util::geometry::{self, MAX_RECT};
 use util::str::{DOMString, HTML_SPACE_CHARACTERS};
 use util::{breakpoint, opts};
-use webdriver_handlers::jsval_to_webdriver;
 
 /// Current state of the window object
 #[derive(JSTraceable, Copy, Clone, Debug, PartialEq, HeapSizeOf)]
@@ -219,10 +217,6 @@ pub struct Window {
 
     /// A counter of the number of pending reflows for this window.
     pending_reflow_count: Cell<u32>,
-
-    /// A channel for communicating results of async scripts back to the webdriver server
-    #[ignore_heap_size_of = "channels are hard"]
-    webdriver_script_chan: DOMRefCell<Option<IpcSender<WebDriverJSResult>>>,
 
     /// The current state of the window object
     current_state: Cell<WindowState>,
@@ -569,22 +563,6 @@ impl WindowMethods for Window {
 
     fn Trap(&self) {
         breakpoint();
-    }
-
-    #[allow(unsafe_code)]
-    fn WebdriverCallback(&self, cx: *mut JSContext, val: HandleValue) {
-        let rv = unsafe { jsval_to_webdriver(cx, val) };
-        let opt_chan = self.webdriver_script_chan.borrow_mut().take();
-        if let Some(chan) = opt_chan {
-            chan.send(rv).unwrap();
-        }
-    }
-
-    fn WebdriverTimeout(&self) {
-        let opt_chan = self.webdriver_script_chan.borrow_mut().take();
-        if let Some(chan) = opt_chan {
-            chan.send(Err(WebDriverJSError::Timeout)).unwrap();
-        }
     }
 
     // https://drafts.csswg.org/cssom/#dom-window-getcomputedstyle
@@ -1265,10 +1243,6 @@ impl Window {
         }
     }
 
-    pub fn set_webdriver_script_chan(&self, chan: Option<IpcSender<WebDriverJSResult>>) {
-        *self.webdriver_script_chan.borrow_mut() = chan;
-    }
-
     pub fn is_alive(&self) -> bool {
         self.current_state.get() == WindowState::Alive
     }
@@ -1362,7 +1336,6 @@ impl Window {
             devtools_marker_sender: DOMRefCell::new(None),
             devtools_markers: DOMRefCell::new(HashSet::new()),
             devtools_wants_updates: Cell::new(false),
-            webdriver_script_chan: DOMRefCell::new(None),
             ignore_further_async_events: Arc::new(AtomicBool::new(false)),
             error_reporter: error_reporter
         };

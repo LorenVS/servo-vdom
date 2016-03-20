@@ -63,7 +63,6 @@ use mem::heap_size_of_self_and_children;
 use msg::constellation_msg::{ConstellationChan, LoadData};
 use msg::constellation_msg::{PipelineId, PipelineNamespace};
 use msg::constellation_msg::{SubpageId, WindowSizeData};
-use msg::webdriver_msg::WebDriverScriptCommand;
 use net_traits::image_cache_thread::{ImageCacheChan, ImageCacheResult, ImageCacheThread};
 use net_traits::storage_thread::StorageThread;
 use net_traits::{ResourceThread};
@@ -103,7 +102,6 @@ use util::opts;
 use util::str::DOMString;
 use util::thread;
 use util::thread_state;
-use webdriver_handlers;
 
 thread_local!(pub static STACK_ROOTS: Cell<Option<RootCollectionPtr>> = Cell::new(None));
 thread_local!(static SCRIPT_THREAD_ROOT: RefCell<Option<*const ScriptThread>> = RefCell::new(None));
@@ -1004,8 +1002,7 @@ impl ScriptThread {
             ConstellationControlMsg::MozBrowserEvent(_,_,_) => {},
             ConstellationControlMsg::UpdateSubpageId(_,_,_) => {},
             ConstellationControlMsg::FocusIFrame(_,_) => {},
-            ConstellationControlMsg::WebDriverScriptCommand(pipeline_id, msg) =>
-                self.handle_webdriver_msg(pipeline_id, msg),
+            ConstellationControlMsg::WebDriverScriptCommand(_, _) => {},
             ConstellationControlMsg::TickAllAnimations(pipeline_id) =>
                 self.handle_tick_all_animations(pipeline_id),
             ConstellationControlMsg::WebFontLoaded(pipeline_id) =>
@@ -1093,46 +1090,6 @@ impl ScriptThread {
 
     fn handle_msg_from_image_cache(&self, msg: ImageCacheResult) {
         msg.responder.unwrap().respond(msg.image_response);
-    }
-
-    fn handle_webdriver_msg(&self, pipeline_id: PipelineId, msg: WebDriverScriptCommand) {
-        let page = self.root_page();
-        match msg {
-            WebDriverScriptCommand::ExecuteScript(script, reply) =>
-                webdriver_handlers::handle_execute_script(&page, pipeline_id, script, reply),
-            WebDriverScriptCommand::FindElementCSS(selector, reply) =>
-                webdriver_handlers::handle_find_element_css(&page, pipeline_id, selector, reply),
-            WebDriverScriptCommand::FindElementsCSS(selector, reply) =>
-                webdriver_handlers::handle_find_elements_css(&page, pipeline_id, selector, reply),
-            WebDriverScriptCommand::FocusElement(element_id, reply) =>
-                webdriver_handlers::handle_focus_element(&page, pipeline_id, element_id, reply),
-            WebDriverScriptCommand::GetActiveElement(reply) =>
-                webdriver_handlers::handle_get_active_element(&page, pipeline_id, reply),
-            WebDriverScriptCommand::GetElementTagName(node_id, reply) =>
-                webdriver_handlers::handle_get_name(&page, pipeline_id, node_id, reply),
-            WebDriverScriptCommand::GetElementAttribute(node_id, name, reply) =>
-                webdriver_handlers::handle_get_attribute(&page, pipeline_id, node_id, name, reply),
-            WebDriverScriptCommand::GetElementCSS(node_id, name, reply) =>
-                webdriver_handlers::handle_get_css(&page, pipeline_id, node_id, name, reply),
-            WebDriverScriptCommand::GetElementRect(node_id, reply) =>
-                webdriver_handlers::handle_get_rect(&page, pipeline_id, node_id, reply),
-            WebDriverScriptCommand::GetElementText(node_id, reply) =>
-                webdriver_handlers::handle_get_text(&page, pipeline_id, node_id, reply),
-            WebDriverScriptCommand::GetFrameId(frame_id, reply) =>
-                webdriver_handlers::handle_get_frame_id(&page, pipeline_id, frame_id, reply),
-            WebDriverScriptCommand::GetUrl(reply) =>
-                webdriver_handlers::handle_get_url(&page, pipeline_id, reply),
-            WebDriverScriptCommand::GetWindowSize(reply) =>
-                webdriver_handlers::handle_get_window_size(&page, pipeline_id, reply),
-            WebDriverScriptCommand::IsEnabled(element_id, reply) =>
-                webdriver_handlers::handle_is_enabled(&page, pipeline_id, element_id, reply),
-            WebDriverScriptCommand::IsSelected(element_id, reply) =>
-                webdriver_handlers::handle_is_selected(&page, pipeline_id, element_id, reply),
-            WebDriverScriptCommand::GetTitle(reply) =>
-                webdriver_handlers::handle_get_title(&page, pipeline_id, reply),
-            WebDriverScriptCommand::ExecuteAsyncScript(script, reply) =>
-                webdriver_handlers::handle_execute_async_script(&page, pipeline_id, script, reply),
-        }
     }
 
     fn handle_resize(&self, id: PipelineId, size: WindowSizeData) {

@@ -155,12 +155,5 @@ partial interface Window {
   void trap();
 };
 
-// WebDriver extensions
-partial interface Window {
-  // Shouldn't be public, but just to make things work for now
-  void webdriverCallback(optional any result);
-  void webdriverTimeout();
-};
-
 // http://w3c.github.io/animation-timing/#framerequestcallback
 callback FrameRequestCallback = void (DOMHighResTimeStamp time);
