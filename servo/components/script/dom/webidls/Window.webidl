@@ -151,7 +151,6 @@ partial interface Window {
 // Proprietary extensions.
 partial interface Window {
   void debug(DOMString arg);
-  void gc();
   void trap();
 };
 

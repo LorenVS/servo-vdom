@@ -176,10 +176,6 @@ pub struct Window {
     /// Global static data related to the DOM.
     dom_static: GlobalStaticData,
 
-    /// The JavaScript runtime.
-    #[ignore_heap_size_of = "Rc<T> is hard"]
-    js_runtime: DOMRefCell<Option<Rc<Runtime>>>,
-
     /// A handle for communicating messages to the layout thread.
     #[ignore_heap_size_of = "channels are hard"]
     layout_chan: LayoutChan,
@@ -234,15 +230,10 @@ impl Window {
     #[allow(unsafe_code)]
     pub fn clear_js_runtime_for_script_deallocation(&self) {
         unsafe {
-            *self.js_runtime.borrow_for_script_deallocation() = None;
             self.browsing_context.set(None);
             self.current_state.set(WindowState::Zombie);
             self.ignore_further_async_events.store(true, Ordering::Relaxed);
         }
-    }
-
-    pub fn get_cx(&self) -> *mut JSContext {
-        self.js_runtime.borrow().as_ref().unwrap().cx()
     }
 
     pub fn dom_manipulation_task_source(&self) -> Box<TaskSource<DOMManipulationTask> + Send> {
@@ -554,13 +545,6 @@ impl WindowMethods for Window {
         debug!("{}", message);
     }
 
-    #[allow(unsafe_code)]
-    fn Gc(&self) {
-        unsafe {
-            JS_GC(JS_GetRuntime(self.get_cx()));
-        }
-    }
-
     fn Trap(&self) {
         breakpoint();
     }
@@ -739,23 +723,7 @@ impl<'a, T: Reflectable> ScriptHelpers for &'a T {
     #[allow(unsafe_code)]
     fn evaluate_script_on_global_with_result(self, code: &str, filename: &str,
                                              rval: MutableHandleValue) {
-        let global = self.global();
-        let cx = global.r().get_cx();
-        let _ar = JSAutoRequest::new(cx);
-        let globalhandle = global.r().reflector().get_jsobject();
-        let code: Vec<u16> = code.encode_utf16().collect();
-        let filename = CString::new(filename).unwrap();
-
-        let _ac = JSAutoCompartment::new(cx, globalhandle.get());
-        let options = CompileOptionsWrapper::new(cx, filename.as_ptr(), 0);
-        unsafe {
-            if !Evaluate2(cx, options.ptr, code.as_ptr(),
-                          code.len() as libc::size_t,
-                          rval) {
-                debug!("error evaluating JS string");
-                report_pending_exception(cx, globalhandle.get());
-            }
-        }
+        panic!("called evaluate_script_on_global_with_result");
     }
 }
 
@@ -768,20 +736,7 @@ impl Window {
 
     pub fn clear_js_runtime(&self) {
         self.Document().upcast::<Node>().teardown();
-
-        // The above code may not catch all DOM objects
-        // (e.g. DOM objects removed from the tree that haven't
-        // been collected yet). Forcing a GC here means that
-        // those DOM objects will be able to call dispose()
-        // to free their layout data before the layout thread
-        // exits. Without this, those remaining objects try to
-        // send a message to free their layout data to the
-        // layout thread when the script thread is dropped,
-        // which causes a panic!
-        self.Gc();
-
         self.current_state.set(WindowState::Zombie);
-        *self.js_runtime.borrow_mut() = None;
         self.browsing_context.set(None);
         self.ignore_further_async_events.store(true, Ordering::Relaxed);
     }
@@ -1257,8 +1212,7 @@ impl Window {
 }
 
 impl Window {
-    pub fn new(runtime: Rc<Runtime>,
-               page: Rc<Page>,
+    pub fn new(page: Rc<Page>,
                script_chan: MainThreadScriptChan,
                dom_task_source: DOMManipulationTaskSource,
                user_task_source: UserInteractionTaskSource,
@@ -1315,7 +1269,6 @@ impl Window {
             id: id,
             parent_info: parent_info,
             dom_static: GlobalStaticData::new(),
-            js_runtime: DOMRefCell::new(Some(runtime.clone())),
             resource_thread: resource_thread,
             storage_thread: storage_thread,
             constellation_chan: constellation_chan,

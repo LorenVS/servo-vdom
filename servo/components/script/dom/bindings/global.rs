@@ -41,13 +41,6 @@ pub enum GlobalRoot {
 }
 
 impl<'a> GlobalRef<'a> {
-    /// Get the `JSContext` for the `JSRuntime` associated with the thread
-    /// this global object is on.
-    pub fn get_cx(&self) -> *mut JSContext {
-        match *self {
-            GlobalRef::Window(ref window) => window.get_cx(),
-        }
-    }
 
     /// Extract a `Window`, causing thread failure if the global object is not
     /// a `Window`.

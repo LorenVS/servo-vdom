@@ -166,11 +166,9 @@ impl CallSetup {
     /// Performs the setup needed to make a call.
     #[allow(unrooted_must_root)]
     pub fn new<T: CallbackContainer>(callback: &T, handling: ExceptionHandling) -> CallSetup {
+        panic!("Calling call setup");
+        /*
         let global = global_root_from_object(callback.callback());
-        let cx = global.r().get_cx();
-        unsafe {
-            JS_BeginRequest(cx);
-        }
 
         let exception_compartment = unsafe {
             GetGlobalForObjectCrossCompartment(callback.callback())
@@ -183,6 +181,7 @@ impl CallSetup {
             old_compartment: unsafe { JS_EnterCompartment(cx, callback.callback()) },
             handling: handling,
         }
+        */
     }
 
     /// Returns the `JSContext` used for the call.

@@ -50,15 +50,7 @@ impl StructuredCloneData {
     ///
     /// Panics if `JS_ReadStructuredClone` fails.
     pub fn read(self, global: GlobalRef, rval: MutableHandleValue) {
-        unsafe {
-            assert!(JS_ReadStructuredClone(global.get_cx(),
-                                           self.data,
-                                           self.nbytes,
-                                           JS_STRUCTURED_CLONE_VERSION,
-                                           rval,
-                                           ptr::null(),
-                                           ptr::null_mut()));
-        }
+        panic!("Called StructuredClone.read()");
     }
 }
 

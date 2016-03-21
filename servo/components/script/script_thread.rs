@@ -425,9 +425,6 @@ pub struct ScriptThread {
     devtools_port: Receiver<DevtoolScriptControlMsg>,
     devtools_sender: IpcSender<DevtoolScriptControlMsg>,
 
-    /// The JavaScript runtime.
-    js_runtime: Rc<Runtime>,
-
     /// The topmost element over the mouse.
     topmost_mouse_over_target: MutNullableHeap<JS<Element>>,
 
@@ -615,12 +612,6 @@ impl ScriptThread {
                port: Receiver<MainThreadScriptMsg>,
                chan: Sender<MainThreadScriptMsg>)
                -> ScriptThread {
-        let runtime = ScriptThread::new_rt_and_cx();
-
-        unsafe {
-            JS_SetWrapObjectCallbacks(runtime.rt(),
-                                      &WRAP_CALLBACKS);
-        }
 
         // Ask the router to proxy IPC messages from the devtools to us.
         let (ipc_devtools_sender, ipc_devtools_receiver) = ipc::channel().unwrap();
@@ -667,7 +658,6 @@ impl ScriptThread {
             devtools_port: devtools_port,
             devtools_sender: ipc_devtools_sender,
 
-            js_runtime: Rc::new(runtime),
             topmost_mouse_over_target: MutNullableHeap::new(Default::default()),
             closed_pipelines: DOMRefCell::new(HashSet::new()),
 
@@ -677,38 +667,6 @@ impl ScriptThread {
 
             content_process_shutdown_chan: state.content_process_shutdown_chan,
         }
-    }
-
-    pub fn new_rt_and_cx() -> Runtime {
-        LiveDOMReferences::initialize();
-        let runtime = Runtime::new();
-
-        unsafe {
-            JS_AddExtraGCRootsTracer(runtime.rt(), Some(trace_rust_roots), ptr::null_mut());
-            JS_AddExtraGCRootsTracer(runtime.rt(), Some(trace_refcounted_objects), ptr::null_mut());
-        }
-
-        // Needed for debug assertions about whether GC is running.
-        if cfg!(debug_assertions) {
-            unsafe {
-                JS_SetGCCallback(runtime.rt(), Some(debug_gc_callback), ptr::null_mut());
-            }
-        }
-        if opts::get().gc_profile {
-            unsafe {
-                SetGCSliceCallback(runtime.rt(), Some(gc_slice_callback));
-            }
-        }
-
-        unsafe {
-            unsafe extern "C" fn empty_wrapper_callback(_: *mut JSContext, _: *mut JSObject) -> bool { true }
-            SetDOMCallbacks(runtime.rt(), &DOM_CALLBACKS);
-            SetPreserveWrapperCallback(runtime.rt(), Some(empty_wrapper_callback));
-            // Pre barriers aren't working correctly at the moment
-            DisableIncrementalGC(runtime.rt());
-        }
-
-        runtime
     }
 
     // Return the root page in the frame tree. Panics if it doesn't exist.
@@ -724,10 +682,6 @@ impl ScriptThread {
     /// not exist or the subpage cannot be found.
     fn find_subpage(&self, pipeline_id: PipelineId) -> Option<Rc<Page>> {
         self.page.borrow().as_ref().and_then(|page| page.find(pipeline_id))
-    }
-
-    pub fn get_cx(&self) -> *mut JSContext {
-        self.js_runtime.cx()
     }
 
     /// Starts the script thread. After calling this method, the script thread will loop receiving
@@ -1057,11 +1011,7 @@ impl ScriptThread {
     fn handle_msg_from_devtools(&self, msg: DevtoolScriptControlMsg) {
         let page = self.root_page();
         match msg {
-            DevtoolScriptControlMsg::EvaluateJS(id, s, reply) => {
-                let window = get_page(&page, id).window();
-                let global_ref = GlobalRef::Window(window.r());
-                devtools::handle_evaluate_js(&global_ref, s, reply)
-            },
+            DevtoolScriptControlMsg::EvaluateJS(id, s, reply) => {},
             DevtoolScriptControlMsg::GetRootNode(id, reply) =>
                 devtools::handle_get_root_node(&page, id, reply),
             DevtoolScriptControlMsg::GetDocumentElement(id, reply) =>
@@ -1145,56 +1095,6 @@ impl ScriptThread {
         chan.send(ConstellationMsg::LoadComplete(pipeline)).unwrap();
     }
 
-    pub fn get_reports(cx: *mut JSContext, path_seg: String) -> Vec<Report> {
-        let mut reports = vec![];
-
-        unsafe {
-            let rt = JS_GetRuntime(cx);
-            let mut stats = ::std::mem::zeroed();
-            if CollectServoSizes(rt, &mut stats) {
-                let mut report = |mut path_suffix, kind, size| {
-                    let mut path = path![path_seg, "js"];
-                    path.append(&mut path_suffix);
-                    reports.push(Report {
-                        path: path,
-                        kind: kind,
-                        size: size as usize,
-                    })
-                };
-
-                // A note about possibly confusing terminology: the JS GC "heap" is allocated via
-                // mmap/VirtualAlloc, which means it's not on the malloc "heap", so we use
-                // `ExplicitNonHeapSize` as its kind.
-
-                report(path!["gc-heap", "used"],
-                       ReportKind::ExplicitNonHeapSize,
-                       stats.gcHeapUsed);
-
-                report(path!["gc-heap", "unused"],
-                       ReportKind::ExplicitNonHeapSize,
-                       stats.gcHeapUnused);
-
-                report(path!["gc-heap", "admin"],
-                       ReportKind::ExplicitNonHeapSize,
-                       stats.gcHeapAdmin);
-
-                report(path!["gc-heap", "decommitted"],
-                       ReportKind::ExplicitNonHeapSize,
-                       stats.gcHeapDecommitted);
-
-                // SpiderMonkey uses the system heap, not jemalloc.
-                report(path!["malloc-heap"],
-                       ReportKind::ExplicitSystemHeapSize,
-                       stats.mallocHeap);
-
-                report(path!["non-heap"],
-                       ReportKind::ExplicitNonHeapSize,
-                       stats.nonHeap);
-            }
-        }
-        reports
-    }
-
     fn collect_reports(&self, reports_chan: ReportsChan) {
         let mut urls = vec![];
         let mut dom_tree_size = 0;
@@ -1219,7 +1119,6 @@ impl ScriptThread {
             }
         }
         let path_seg = format!("url({})", urls.join(", "));
-        reports.extend(ScriptThread::get_reports(self.get_cx(), path_seg));
         reports_chan.send(reports);
     }
 
@@ -1370,8 +1269,7 @@ impl ScriptThread {
                                                  self.timer_event_chan.clone());
 
         // Create the window and document objects.
-        let window = Window::new(self.js_runtime.clone(),
-                                 page.clone(),
+        let window = Window::new(page.clone(),
                                  MainThreadScriptChan(sender.clone()),
                                  DOMManipulationTaskSource(dom_sender.clone()),
                                  UserInteractionTaskSource(user_sender.clone()),
@@ -1515,7 +1413,7 @@ impl ScriptThread {
                 // Get the previous target temporarily
                 let prev_mouse_over_target = self.topmost_mouse_over_target.get();
 
-                document.handle_mouse_move_event(self.js_runtime.rt(), point,
+                document.handle_mouse_move_event(point,
                                                  &self.topmost_mouse_over_target);
 
                 // Short-circuit if nothing changed
@@ -1598,7 +1496,7 @@ impl ScriptThread {
                           point: Point2D<f32>) {
         let page = get_page(&self.root_page(), pipeline_id);
         let document = page.document();
-        document.handle_mouse_event(self.js_runtime.rt(), button, point, mouse_event_type);
+        document.handle_mouse_event(button, point, mouse_event_type);
     }
 
     fn handle_touch_event(&self,
@@ -1609,7 +1507,7 @@ impl ScriptThread {
                           -> bool {
         let page = get_page(&self.root_page(), pipeline_id);
         let document = page.document();
-        document.handle_touch_event(self.js_runtime.rt(), event_type, identifier, point)
+        document.handle_touch_event(event_type, identifier, point)
     }
 
     /// https://html.spec.whatwg.org/multipage/#navigating-across-documents

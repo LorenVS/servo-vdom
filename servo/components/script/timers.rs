@@ -454,18 +454,10 @@ impl JsTimerTask {
         // step 4.2
         match *&self.callback {
             InternalTimerCallback::StringTimerCallback(ref code_str) => {
-                let cx = this.global().r().get_cx();
-                let mut rval = RootedValue::new(cx, UndefinedValue());
-
-                this.evaluate_js_on_global_with_result(code_str, rval.handle_mut());
+                panic!("StringTimerCallback");
             },
             InternalTimerCallback::FunctionTimerCallback(ref function, ref arguments) => {
-                let arguments: Vec<JSVal> = arguments.iter().map(|arg| arg.get()).collect();
-                let arguments = arguments.iter().by_ref().map(|arg| unsafe {
-                    HandleValue::from_marked_location(arg)
-                }).collect();
-
-                let _ = function.Call_(this, arguments, Report);
+                panic!("StringTimerCallback");
             },
         };
 

@@ -617,7 +617,6 @@ impl Document {
     }
 
     pub fn handle_mouse_event(&self,
-                              _js_runtime: *mut JSRuntime,
                               _: MouseButton,
                               client_point: Point2D<f32>,
                               mouse_event_type: MouseEventType) {
@@ -726,7 +725,6 @@ impl Document {
     }
 
     pub fn handle_mouse_move_event(&self,
-                                   _js_runtime: *mut JSRuntime,
                                    client_point: Option<Point2D<f32>>,
                                    prev_mouse_over_target: &MutNullableHeap<JS<Element>>) {
         let page_point = match client_point {
@@ -813,7 +811,6 @@ impl Document {
     }
 
     pub fn handle_touch_event(&self,
-                              _js_runtime: *mut JSRuntime,
                               event_type: TouchEventType,
                               TouchId(identifier): TouchId,
                               point: Point2D<f32>)
