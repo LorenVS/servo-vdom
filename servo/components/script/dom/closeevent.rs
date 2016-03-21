@@ -33,8 +33,7 @@ impl CloseEvent {
         }
     }
 
-    pub fn new(global: GlobalRef,
-               type_: Atom,
+    pub fn new(type_: Atom,
                bubbles: EventBubbles,
                cancelable: EventCancelable,
                wasClean: bool,
@@ -42,7 +41,7 @@ impl CloseEvent {
                reason: DOMString)
                -> Root<CloseEvent> {
         let event = box CloseEvent::new_inherited(wasClean, code, reason);
-        let ev = reflect_dom_object(event, global, CloseEventBinding::Wrap);
+        let ev = Root::new_box(event);
         {
             let event = ev.upcast::<Event>();
             event.init_event(type_,
@@ -66,8 +65,7 @@ impl CloseEvent {
         } else {
             EventCancelable::NotCancelable
         };
-        Ok(CloseEvent::new(global,
-                           Atom::from(type_),
+        Ok(CloseEvent::new(Atom::from(type_),
                            bubbles,
                            cancelable,
                            init.wasClean,

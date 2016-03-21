@@ -27,16 +27,12 @@ pub struct MessageEvent {
 }
 
 impl MessageEvent {
-    pub fn new_uninitialized(global: GlobalRef) -> Root<MessageEvent> {
-        MessageEvent::new_initialized(global,
-                                      HandleValue::undefined(),
-                                      DOMString::new(),
+    pub fn new_uninitialized() -> Root<MessageEvent> {
+        MessageEvent::new_initialized(DOMString::new(),
                                       DOMString::new())
     }
 
-    pub fn new_initialized(global: GlobalRef,
-                           data: HandleValue,
-                           origin: DOMString,
+    pub fn new_initialized(origin: DOMString,
                            lastEventId: DOMString) -> Root<MessageEvent> {
         let mut ev = box MessageEvent {
             event: Event::new_inherited(EventTypeId::MessageEvent),
@@ -44,15 +40,14 @@ impl MessageEvent {
             origin: origin,
             lastEventId: lastEventId,
         };
-        ev.data.set(data.get());
-        reflect_dom_object(ev, global, MessageEventBinding::Wrap)
+        Root::new_box(ev)
     }
 
-    pub fn new(global: GlobalRef, type_: Atom,
+    pub fn new(type_: Atom,
                bubbles: bool, cancelable: bool,
-               data: HandleValue, origin: DOMString, lastEventId: DOMString)
+               origin: DOMString, lastEventId: DOMString)
                -> Root<MessageEvent> {
-        let ev = MessageEvent::new_initialized(global, data, origin, lastEventId);
+        let ev = MessageEvent::new_initialized(origin, lastEventId);
         {
             let event = ev.upcast::<Event>();
             event.init_event(type_, bubbles, cancelable);
@@ -60,15 +55,13 @@ impl MessageEvent {
         ev
     }
 
-    pub fn Constructor(global: GlobalRef,
+    pub fn Constructor(_global: GlobalRef,
                        type_: DOMString,
                        init: &MessageEventBinding::MessageEventInit)
                        -> Fallible<Root<MessageEvent>> {
         // Dictionaries need to be rooted
         // https://github.com/servo/servo/issues/6381
-        let data = RootedValue::new(global.get_cx(), init.data);
-        let ev = MessageEvent::new(global, Atom::from(type_), init.parent.bubbles, init.parent.cancelable,
-                                   data.handle(),
+        let ev = MessageEvent::new(Atom::from(type_), init.parent.bubbles, init.parent.cancelable,
                                    init.origin.clone(), init.lastEventId.clone());
         Ok(ev)
     }
@@ -76,10 +69,10 @@ impl MessageEvent {
 
 impl MessageEvent {
     pub fn dispatch_jsval(target: &EventTarget,
-                          scope: GlobalRef,
-                          message: HandleValue) {
+                          _scope: GlobalRef,
+                          _message: HandleValue) {
         let messageevent = MessageEvent::new(
-            scope, atom!("message"), false, false, message,
+            atom!("message"), false, false,
             DOMString::new(), DOMString::new());
         messageevent.upcast::<Event>().fire(target);
     }

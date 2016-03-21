@@ -1808,13 +1808,13 @@ impl DocumentMethods for Document {
             "mouseevents" | "mouseevent" =>
                 Ok(Root::upcast(MouseEvent::new_uninitialized(&self.window))),
             "customevent" =>
-                Ok(Root::upcast(CustomEvent::new_uninitialized(GlobalRef::Window(&self.window)))),
+                Ok(Root::upcast(CustomEvent::new_uninitialized())),
             "htmlevents" | "events" | "event" =>
-                Ok(Event::new_uninitialized(GlobalRef::Window(&self.window))),
+                Ok(Event::new_uninitialized()),
             "keyboardevent" | "keyevents" =>
                 Ok(Root::upcast(KeyboardEvent::new_uninitialized(&self.window))),
             "messageevent" =>
-                Ok(Root::upcast(MessageEvent::new_uninitialized(GlobalRef::Window(&self.window)))),
+                Ok(Root::upcast(MessageEvent::new_uninitialized())),
             "touchevent" =>
                 Ok(Root::upcast(
                     TouchEvent::new_uninitialized(&self.window,
@@ -2367,8 +2367,7 @@ impl DocumentProgressHandler {
     fn dispatch_load(&self) {
         let document = self.addr.root();
         let window = document.window();
-        let event = Event::new(GlobalRef::Window(window),
-                               atom!("load"),
+        let event = Event::new(atom!("load"),
                                EventBubbles::DoesNotBubble,
                                EventCancelable::NotCancelable);
         let wintarget = window.upcast::<EventTarget>();

@@ -1147,8 +1147,7 @@ impl Runnable for ChangeEventRunnable {
         let target = self.element.root();
         let window = window_from_node(target.r());
         let window = window.r();
-        let event = Event::new(GlobalRef::Window(window),
-                               atom!("input"),
+        let event = Event::new(atom!("input"),
                                EventBubbles::Bubbles,
                                EventCancelable::NotCancelable);
         target.upcast::<EventTarget>().dispatch_event(&event);

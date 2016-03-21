@@ -544,6 +544,16 @@ impl<T: Castable> Root<T> {
 }
 
 impl<T: Reflectable> Root<T> {
+
+    /// Create a new stack-bounded root for the provided JS-owned value.
+    /// It cannot not outlive its associated `RootCollection`, and it gives
+    /// out references which cannot outlive this new `Root`.
+    pub fn new_box(value: Box<T>) -> Root<T> {
+        unsafe {
+            Root::new(mem::transmute(Box::into_raw(value)))
+        }
+    }
+
     /// Create a new stack-bounded root for the provided JS-owned value.
     /// It cannot not outlive its associated `RootCollection`, and it gives
     /// out references which cannot outlive this new `Root`.

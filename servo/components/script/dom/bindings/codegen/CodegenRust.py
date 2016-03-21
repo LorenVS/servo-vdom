@@ -6175,6 +6175,7 @@ class GlobalGenRoots():
                    CGGeneric("use dom::bindings::js::{JS, LayoutJS, Root};\n"),
                    CGGeneric("use dom::bindings::trace::JSTraceable;\n"),
                    CGGeneric("use dom::bindings::reflector::Reflectable;\n"),
+                   CGGeneric("use dom::bindings::typed::Typed;\n"),
                    CGGeneric("use js::jsapi::JSTracer;\n\n"),
                    CGGeneric("use std::mem;\n\n")]
         allprotos = []
@@ -6239,13 +6240,11 @@ class GlobalGenRoots():
             if base in topTypes:
                 typeIdCode.append(CGGeneric("""\
 impl %(base)s {
-    pub fn type_id(&self) -> &'static %(base)sTypeId {
-        let domclass = unsafe {
-            get_dom_class(self.reflector().get_jsobject().get()).unwrap()
-        };
-        match domclass.type_id {
-            TopTypeId::%(base)s(ref type_id) => type_id,
-            _ => unreachable!(),
+    pub fn type_id(&self) -> %(base)sTypeId {
+        if let TopTypeId::%(base)s(type_id) = self.get_type() {
+            type_id
+        } else {
+            unreachable!();
         }
     }
 }

@@ -22,7 +22,8 @@ pub fn expand_reflector(cx: &mut ExtCtxt, span: Span, _: &MetaItem, annotatable:
                     let impl_item = quote_item!(cx,
                         impl ::dom::bindings::reflector::Reflectable for $struct_name {
                             fn reflector<'a>(&'a self) -> &'a ::dom::bindings::reflector::Reflector {
-                                &self.$field_name
+                                panic!("Panic b/c of retrieving reflector");
+                                //&self.$field_name
                             }
                             fn init_reflector(&mut self, obj: *mut ::js::jsapi::JSObject) {
                                 self.$field_name.set_jsobject(obj);
@@ -37,7 +38,8 @@ pub fn expand_reflector(cx: &mut ExtCtxt, span: Span, _: &MetaItem, annotatable:
                     let impl_item = quote_item!(cx,
                         impl ::dom::bindings::reflector::Reflectable for $struct_name {
                             fn reflector<'a>(&'a self) -> &'a ::dom::bindings::reflector::Reflector {
-                                self.$field_name.reflector()
+                                panic!("Panic b/c of retrieving reflector");
+                                //self.$field_name.reflector()
                             }
                             fn init_reflector(&mut self, obj: *mut ::js::jsapi::JSObject) {
                                 self.$field_name.init_reflector(obj);

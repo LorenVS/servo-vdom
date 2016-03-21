@@ -42,22 +42,18 @@ impl ErrorEvent {
         }
     }
 
-    pub fn new_uninitialized(global: GlobalRef) -> Root<ErrorEvent> {
-        reflect_dom_object(box ErrorEvent::new_inherited(),
-                           global,
-                           ErrorEventBinding::Wrap)
+    pub fn new_uninitialized() -> Root<ErrorEvent> {
+        Root::new_box(box ErrorEvent::new_inherited())
     }
 
-    pub fn new(global: GlobalRef,
-               type_: Atom,
+    pub fn new(type_: Atom,
                bubbles: EventBubbles,
                cancelable: EventCancelable,
                message: DOMString,
                filename: DOMString,
                lineno: u32,
-               colno: u32,
-               error: HandleValue) -> Root<ErrorEvent> {
-        let ev = ErrorEvent::new_uninitialized(global);
+               colno: u32) -> Root<ErrorEvent> {
+        let ev = ErrorEvent::new_uninitialized();
         {
             let event = ev.upcast::<Event>();
             event.init_event(type_, bubbles == EventBubbles::Bubbles,
@@ -67,11 +63,10 @@ impl ErrorEvent {
             ev.lineno.set(lineno);
             ev.colno.set(colno);
         }
-        ev.error.set(error.get());
         ev
     }
 
-    pub fn Constructor(global: GlobalRef,
+    pub fn Constructor(_global: GlobalRef,
                        type_: DOMString,
                        init: &ErrorEventBinding::ErrorEventInit) -> Fallible<Root<ErrorEvent>>{
         let msg = match init.message.as_ref() {
@@ -98,12 +93,10 @@ impl ErrorEvent {
 
         // Dictionaries need to be rooted
         // https://github.com/servo/servo/issues/6381
-        let error = RootedValue::new(global.get_cx(), init.error);
-        let event = ErrorEvent::new(global, Atom::from(type_),
+        let event = ErrorEvent::new(Atom::from(type_),
                                 bubbles, cancelable,
                                 msg, file_name,
-                                line_num, col_num,
-                                error.handle());
+                                line_num, col_num);
         Ok(event)
     }
 

@@ -81,27 +81,24 @@ impl Event {
         }
     }
 
-    pub fn new_uninitialized(global: GlobalRef) -> Root<Event> {
-        reflect_dom_object(box Event::new_inherited(EventTypeId::Event),
-                           global,
-                           EventBinding::Wrap)
+    pub fn new_uninitialized() -> Root<Event> {
+        Root::new_box(box Event::new_inherited(EventTypeId::Event))
     }
 
-    pub fn new(global: GlobalRef,
-               type_: Atom,
+    pub fn new(type_: Atom,
                bubbles: EventBubbles,
                cancelable: EventCancelable) -> Root<Event> {
-        let event = Event::new_uninitialized(global);
+        let event = Event::new_uninitialized();
         event.init_event(type_, bubbles == EventBubbles::Bubbles, cancelable == EventCancelable::Cancelable);
         event
     }
 
-    pub fn Constructor(global: GlobalRef,
+    pub fn Constructor(_global: GlobalRef,
                        type_: DOMString,
                        init: &EventBinding::EventInit) -> Fallible<Root<Event>> {
         let bubbles = if init.bubbles { EventBubbles::Bubbles } else { EventBubbles::DoesNotBubble };
         let cancelable = if init.cancelable { EventCancelable::Cancelable } else { EventCancelable::NotCancelable };
-        Ok(Event::new(global, Atom::from(type_), bubbles, cancelable))
+        Ok(Event::new(Atom::from(type_), bubbles, cancelable))
     }
 
     pub fn init_event(&self, type_: Atom, bubbles: bool, cancelable: bool) {

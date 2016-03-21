@@ -32,28 +32,24 @@ impl CustomEvent {
         }
     }
 
-    pub fn new_uninitialized(global: GlobalRef) -> Root<CustomEvent> {
-        reflect_dom_object(box CustomEvent::new_inherited(),
-                           global,
-                           CustomEventBinding::Wrap)
+    pub fn new_uninitialized() -> Root<CustomEvent> {
+        Root::new_box(box CustomEvent::new_inherited())
     }
-    pub fn new(global: GlobalRef,
-               type_: Atom,
+    pub fn new(type_: Atom,
                bubbles: bool,
                cancelable: bool,
                detail: HandleValue)
                -> Root<CustomEvent> {
-        let ev = CustomEvent::new_uninitialized(global);
+        let ev = CustomEvent::new_uninitialized();
         ev.init_custom_event(type_, bubbles, cancelable, detail);
         ev
     }
     #[allow(unsafe_code)]
-    pub fn Constructor(global: GlobalRef,
+    pub fn Constructor(_global: GlobalRef,
                        type_: DOMString,
                        init: &CustomEventBinding::CustomEventInit)
                        -> Fallible<Root<CustomEvent>> {
-        Ok(CustomEvent::new(global,
-                            Atom::from(type_),
+        Ok(CustomEvent::new(Atom::from(type_),
                             init.parent.bubbles,
                             init.parent.cancelable,
                             unsafe { HandleValue::from_marked_location(&init.detail) }))

@@ -13,10 +13,10 @@ use std::ptr;
 /// Create the reflector for a new DOM object and yield ownership to the
 /// reflector.
 pub fn reflect_dom_object<T: Reflectable>(obj: Box<T>,
-                                          global: GlobalRef,
-                                          wrap_fn: fn(*mut JSContext, GlobalRef, Box<T>) -> Root<T>)
+                                          _global: GlobalRef,
+                                          _wrap_fn: fn(*mut JSContext, GlobalRef, Box<T>) -> Root<T>)
                                           -> Root<T> {
-    wrap_fn(global.get_cx(), global, obj)
+    Root::new_box(obj)
 }
 
 /// A struct to store a reference to the reflector of a DOM object.

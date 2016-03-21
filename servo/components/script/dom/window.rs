@@ -1339,8 +1339,7 @@ impl Window {
             ignore_further_async_events: Arc::new(AtomicBool::new(false)),
             error_reporter: error_reporter
         };
-
-        WindowBinding::Wrap(runtime.cx(), win)
+        Root::new_box(win)
     }
     pub fn live_devtools_updates(&self) -> bool {
         return self.devtools_wants_updates.get();

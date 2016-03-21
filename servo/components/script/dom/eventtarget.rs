@@ -491,8 +491,7 @@ impl EventTarget {
                       bubbles: EventBubbles,
                       cancelable: EventCancelable)
                       -> Root<Event> {
-        let global = self.global();
-        let event = Event::new(global.r(), Atom::from(name), bubbles, cancelable);
+        let event = Event::new(Atom::from(name), bubbles, cancelable);
 
         event.fire(self);
 

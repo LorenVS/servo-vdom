@@ -31,26 +31,24 @@ impl ProgressEvent {
             total: total
         }
     }
-    pub fn new(global: GlobalRef, type_: Atom,
+    pub fn new(type_: Atom,
                can_bubble: EventBubbles, cancelable: EventCancelable,
                length_computable: bool, loaded: u64, total: u64) -> Root<ProgressEvent> {
-        let ev = reflect_dom_object(box ProgressEvent::new_inherited(length_computable, loaded, total),
-                                    global,
-                                    ProgressEventBinding::Wrap);
+        let ev = Root::new_box(box ProgressEvent::new_inherited(length_computable, loaded, total));
         {
             let event = ev.upcast::<Event>();
             event.init_event(type_, can_bubble == EventBubbles::Bubbles, cancelable == EventCancelable::Cancelable);
         }
         ev
     }
-    pub fn Constructor(global: GlobalRef,
+    pub fn Constructor(_global: GlobalRef,
                        type_: DOMString,
                        init: &ProgressEventBinding::ProgressEventInit)
                        -> Fallible<Root<ProgressEvent>> {
         let bubbles = if init.parent.bubbles { EventBubbles::Bubbles } else { EventBubbles::DoesNotBubble };
         let cancelable = if init.parent.cancelable { EventCancelable::Cancelable }
                          else { EventCancelable::NotCancelable };
-        let ev = ProgressEvent::new(global, Atom::from(type_), bubbles, cancelable,
+        let ev = ProgressEvent::new(Atom::from(type_), bubbles, cancelable,
                                     init.lengthComputable, init.loaded, init.total);
         Ok(ev)
     }

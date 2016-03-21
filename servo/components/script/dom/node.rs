@@ -368,7 +368,7 @@ impl Node {
 
     /// Returns the type ID of this node.
     pub fn type_id(&self) -> NodeTypeId {
-        match *self.eventtarget.type_id() {
+        match self.eventtarget.type_id() {
             EventTargetTypeId::Node(type_id) => type_id,
             _ => unreachable!(),
         }
