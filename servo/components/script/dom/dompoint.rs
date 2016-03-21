@@ -7,7 +7,7 @@ use dom::bindings::codegen::Bindings::DOMPointReadOnlyBinding::DOMPointReadOnlyM
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::js::Root;
-use dom::bindings::reflector::reflect_dom_object;
+
 use dom::bindings::inheritance::DOMPointReadOnlyTypeId;
 use dom::dompointreadonly::{DOMPointReadOnly, DOMPointWriteMethods};
 

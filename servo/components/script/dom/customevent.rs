@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::CustomEventBinding;
-use dom::bindings::codegen::Bindings::CustomEventBinding::CustomEventMethods;
+
+use dom::bindings::codegen::Bindings::CustomEventBinding::{CustomEventMethods, CustomEventInit};
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
@@ -46,7 +46,7 @@ impl CustomEvent {
     #[allow(unsafe_code)]
     pub fn Constructor(_global: GlobalRef,
                        type_: DOMString,
-                       init: &CustomEventBinding::CustomEventInit)
+                       init: &CustomEventInit)
                        -> Fallible<Root<CustomEvent>> {
         Ok(CustomEvent::new(Atom::from(type_),
                             init.parent.bubbles,

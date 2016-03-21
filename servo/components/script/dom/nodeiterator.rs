@@ -6,12 +6,12 @@ use dom::bindings::callback::ExceptionHandling::Rethrow;
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::codegen::Bindings::NodeFilterBinding::NodeFilter;
 use dom::bindings::codegen::Bindings::NodeFilterBinding::NodeFilterConstants;
-use dom::bindings::codegen::Bindings::NodeIteratorBinding;
+
 use dom::bindings::codegen::Bindings::NodeIteratorBinding::NodeIteratorMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::js::{JS, MutHeap, Root};
-use dom::bindings::reflector::{Reflector, reflect_dom_object};
+use dom::bindings::reflector::{Reflector};
 use dom::document::Document;
 use dom::node::Node;
 use std::cell::Cell;

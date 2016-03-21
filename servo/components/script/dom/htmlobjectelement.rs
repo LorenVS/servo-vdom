@@ -4,7 +4,7 @@
 
 use dom::attr::Attr;
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::HTMLObjectElementBinding;
+
 use dom::bindings::codegen::Bindings::HTMLObjectElementBinding::HTMLObjectElementMethods;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::Root;

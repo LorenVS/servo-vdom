@@ -3,13 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::codegen::Bindings::HTMLCollectionBinding::HTMLCollectionMethods;
-use dom::bindings::codegen::Bindings::HTMLFormControlsCollectionBinding;
+
 use dom::bindings::codegen::Bindings::HTMLFormControlsCollectionBinding::HTMLFormControlsCollectionMethods;
 use dom::bindings::codegen::UnionTypes::RadioNodeListOrElement;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, HTMLCollectionTypeId};
 use dom::bindings::js::Root;
-use dom::bindings::reflector::{Reflectable, reflect_dom_object};
+use dom::bindings::reflector::{Reflectable};
 use dom::element::Element;
 use dom::htmlcollection::{CollectionFilter, HTMLCollection};
 use dom::node::Node;

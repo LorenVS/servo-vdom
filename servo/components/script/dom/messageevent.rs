@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
-use dom::bindings::codegen::Bindings::MessageEventBinding;
-use dom::bindings::codegen::Bindings::MessageEventBinding::MessageEventMethods;
+
+use dom::bindings::codegen::Bindings::MessageEventBinding::{MessageEventMethods, MessageEventInit};
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, EventTypeId};
@@ -56,7 +56,7 @@ impl MessageEvent {
 
     pub fn Constructor(_global: GlobalRef,
                        type_: DOMString,
-                       init: &MessageEventBinding::MessageEventInit)
+                       init: &MessageEventInit)
                        -> Fallible<Root<MessageEvent>> {
         // Dictionaries need to be rooted
         // https://github.com/servo/servo/issues/6381

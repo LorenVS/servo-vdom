@@ -3,14 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::KeyboardEventBinding;
-use dom::bindings::codegen::Bindings::KeyboardEventBinding::{KeyboardEventConstants, KeyboardEventMethods};
+
+use dom::bindings::codegen::Bindings::KeyboardEventBinding::{KeyboardEventConstants, KeyboardEventMethods, KeyboardEventInit};
 use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, UIEventTypeId};
 use dom::bindings::js::{Root, RootedReference};
-use dom::bindings::reflector::{Reflectable, reflect_dom_object};
+use dom::bindings::reflector::{Reflectable};
 use dom::event::Event;
 use dom::uievent::UIEvent;
 use dom::window::Window;
@@ -96,7 +96,7 @@ impl KeyboardEvent {
 
     pub fn Constructor(global: GlobalRef,
                        type_: DOMString,
-                       init: &KeyboardEventBinding::KeyboardEventInit) -> Fallible<Root<KeyboardEvent>> {
+                       init: &KeyboardEventInit) -> Fallible<Root<KeyboardEvent>> {
         let event = KeyboardEvent::new(global.as_window(), type_,
                                        init.parent.parent.parent.bubbles,
                                        init.parent.parent.parent.cancelable,

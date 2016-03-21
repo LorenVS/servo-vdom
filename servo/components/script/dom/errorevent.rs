@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::ErrorEventBinding;
-use dom::bindings::codegen::Bindings::ErrorEventBinding::ErrorEventMethods;
+
+use dom::bindings::codegen::Bindings::ErrorEventBinding::{ErrorEventMethods, ErrorEventInit};
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
@@ -67,7 +67,7 @@ impl ErrorEvent {
 
     pub fn Constructor(_global: GlobalRef,
                        type_: DOMString,
-                       init: &ErrorEventBinding::ErrorEventInit) -> Fallible<Root<ErrorEvent>>{
+                       init: &ErrorEventInit) -> Fallible<Root<ErrorEvent>>{
         let msg = match init.message.as_ref() {
             Some(message) => message.clone(),
             None => DOMString::new(),

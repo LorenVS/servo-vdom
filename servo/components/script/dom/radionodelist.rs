@@ -4,12 +4,12 @@
 
 use dom::bindings::codegen::Bindings::HTMLInputElementBinding::HTMLInputElementMethods;
 use dom::bindings::codegen::Bindings::NodeListBinding::NodeListMethods;
-use dom::bindings::codegen::Bindings::RadioNodeListBinding;
+
 use dom::bindings::codegen::Bindings::RadioNodeListBinding::RadioNodeListMethods;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, NodeListTypeId};
 use dom::bindings::js::{JS, Root};
-use dom::bindings::reflector::reflect_dom_object;
+
 use dom::htmlinputelement::HTMLInputElement;
 use dom::node::Node;
 use dom::nodelist::{NodeList, NodeListType};

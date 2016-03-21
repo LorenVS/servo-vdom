@@ -4,7 +4,7 @@
 
 use cssparser::Parser as CssParser;
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::HTMLStyleElementBinding;
+
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::Root;

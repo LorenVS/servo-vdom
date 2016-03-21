@@ -2,14 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::MouseEventBinding;
-use dom::bindings::codegen::Bindings::MouseEventBinding::MouseEventMethods;
+
+use dom::bindings::codegen::Bindings::MouseEventBinding::{MouseEventMethods, MouseEventInit};
 use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, UIEventTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root, RootedReference};
-use dom::bindings::reflector::reflect_dom_object;
+
 use dom::event::{Event, EventBubbles, EventCancelable};
 use dom::eventtarget::EventTarget;
 use dom::uievent::UIEvent;
@@ -82,7 +82,7 @@ impl MouseEvent {
 
     pub fn Constructor(global: GlobalRef,
                        type_: DOMString,
-                       init: &MouseEventBinding::MouseEventInit) -> Fallible<Root<MouseEvent>> {
+                       init: &MouseEventInit) -> Fallible<Root<MouseEvent>> {
         let bubbles = if init.parent.parent.parent.bubbles {
             EventBubbles::Bubbles
         } else {

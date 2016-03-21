@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::EventBinding;
-use dom::bindings::codegen::Bindings::EventBinding::{EventConstants, EventMethods};
+
+use dom::bindings::codegen::Bindings::EventBinding::{EventConstants, EventMethods, EventInit};
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{TopTypeId, EventTypeId};
@@ -95,7 +95,7 @@ impl Event {
 
     pub fn Constructor(_global: GlobalRef,
                        type_: DOMString,
-                       init: &EventBinding::EventInit) -> Fallible<Root<Event>> {
+                       init: &EventInit) -> Fallible<Root<Event>> {
         let bubbles = if init.bubbles { EventBubbles::Bubbles } else { EventBubbles::DoesNotBubble };
         let cancelable = if init.cancelable { EventCancelable::Cancelable } else { EventCancelable::NotCancelable };
         Ok(Event::new(Atom::from(type_), bubbles, cancelable))

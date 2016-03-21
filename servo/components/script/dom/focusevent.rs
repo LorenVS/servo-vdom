@@ -2,14 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::FocusEventBinding;
-use dom::bindings::codegen::Bindings::FocusEventBinding::FocusEventMethods;
+
+use dom::bindings::codegen::Bindings::FocusEventBinding::{FocusEventMethods, FocusEventInit};
 use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, UIEventTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root, RootedReference};
-use dom::bindings::reflector::reflect_dom_object;
+
 use dom::event::{EventBubbles, EventCancelable};
 use dom::eventtarget::EventTarget;
 use dom::uievent::UIEvent;
@@ -50,7 +50,7 @@ impl FocusEvent {
 
     pub fn Constructor(global: GlobalRef,
                        type_: DOMString,
-                       init: &FocusEventBinding::FocusEventInit) -> Fallible<Root<FocusEvent>> {
+                       init: &FocusEventInit) -> Fallible<Root<FocusEvent>> {
         let bubbles = if init.parent.parent.bubbles {
             EventBubbles::Bubbles
         } else {

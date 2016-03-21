@@ -3,14 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
-use dom::bindings::codegen::Bindings::UIEventBinding;
-use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
+
+use dom::bindings::codegen::Bindings::UIEventBinding::{UIEventMethods, UIEventInit};
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, EventTypeId, UIEventTypeId};
 use dom::bindings::js::Root;
 use dom::bindings::js::{JS, MutNullableHeap, RootedReference};
-use dom::bindings::reflector::reflect_dom_object;
+
 use dom::event::{Event, EventBubbles, EventCancelable};
 use dom::window::Window;
 use std::cell::Cell;
@@ -53,7 +53,7 @@ impl UIEvent {
 
     pub fn Constructor(global: GlobalRef,
                        type_: DOMString,
-                       init: &UIEventBinding::UIEventInit) -> Fallible<Root<UIEvent>> {
+                       init: &UIEventInit) -> Fallible<Root<UIEvent>> {
         let bubbles = if init.parent.bubbles { EventBubbles::Bubbles } else { EventBubbles::DoesNotBubble };
         let cancelable = if init.parent.cancelable {
             EventCancelable::Cancelable

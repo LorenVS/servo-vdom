@@ -10,15 +10,6 @@ use js::jsapi::{HandleObject, JSContext, JSObject};
 use std::cell::UnsafeCell;
 use std::ptr;
 
-/// Create the reflector for a new DOM object and yield ownership to the
-/// reflector.
-pub fn reflect_dom_object<T: Reflectable>(obj: Box<T>,
-                                          _global: GlobalRef,
-                                          _wrap_fn: fn(*mut JSContext, GlobalRef, Box<T>) -> Root<T>)
-                                          -> Root<T> {
-    Root::new_box(obj)
-}
-
 /// A struct to store a reference to the reflector of a DOM object.
 #[allow(unrooted_must_root)]
 #[must_root]

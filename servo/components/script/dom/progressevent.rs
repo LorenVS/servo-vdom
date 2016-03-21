@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
-use dom::bindings::codegen::Bindings::ProgressEventBinding;
-use dom::bindings::codegen::Bindings::ProgressEventBinding::ProgressEventMethods;
+
+use dom::bindings::codegen::Bindings::ProgressEventBinding::{ProgressEventMethods, ProgressEventInit};
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, EventTypeId};
@@ -42,7 +42,7 @@ impl ProgressEvent {
     }
     pub fn Constructor(_global: GlobalRef,
                        type_: DOMString,
-                       init: &ProgressEventBinding::ProgressEventInit)
+                       init: &ProgressEventInit)
                        -> Fallible<Root<ProgressEvent>> {
         let bubbles = if init.parent.bubbles { EventBubbles::Bubbles } else { EventBubbles::DoesNotBubble };
         let cancelable = if init.parent.cancelable { EventCancelable::Cancelable }

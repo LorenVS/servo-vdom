@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::DOMStringMapBinding;
+
 use dom::bindings::codegen::Bindings::DOMStringMapBinding::DOMStringMapMethods;
 use dom::bindings::error::ErrorResult;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::js::{JS, Root};
-use dom::bindings::reflector::{Reflector, reflect_dom_object};
+use dom::bindings::reflector::{Reflector};
 use dom::htmlelement::HTMLElement;
 use dom::node::window_from_node;
 use util::str::DOMString;

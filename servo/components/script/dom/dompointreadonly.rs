@@ -6,7 +6,7 @@ use dom::bindings::codegen::Bindings::DOMPointReadOnlyBinding::{DOMPointReadOnly
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::js::Root;
-use dom::bindings::reflector::{Reflector, reflect_dom_object};
+use dom::bindings::reflector::{Reflector};
 use dom::bindings::typed::Typed;
 use dom::bindings::inheritance::{TopTypeId,DOMPointReadOnlyTypeId};
 use std::cell::Cell;

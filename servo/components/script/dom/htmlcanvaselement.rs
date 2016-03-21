@@ -5,7 +5,7 @@
 use canvas_traits::{CanvasMsg};
 use dom::attr::Attr;
 use dom::attr::AttrValue;
-use dom::bindings::codegen::Bindings::HTMLCanvasElementBinding;
+
 use dom::bindings::codegen::Bindings::HTMLCanvasElementBinding::HTMLCanvasElementMethods;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::{LayoutJS, Root};

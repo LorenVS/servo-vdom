@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::HTMLCollectionBinding;
+
 use dom::bindings::codegen::Bindings::HTMLCollectionBinding::HTMLCollectionMethods;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable,TopTypeId,HTMLCollectionTypeId};
 use dom::bindings::js::{JS, Root, MutNullableHeap};
-use dom::bindings::reflector::{Reflector, reflect_dom_object};
+use dom::bindings::reflector::{Reflector};
 use dom::bindings::trace::JSTraceable;
 use dom::bindings::typed::Typed;
 use dom::bindings::xmlname::namespace_from_domstring;

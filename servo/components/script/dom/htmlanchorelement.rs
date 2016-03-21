@@ -6,7 +6,7 @@
 use dom::activation::Activatable;
 use dom::attr::AttrValue;
 use dom::bindings::codegen::Bindings::AttrBinding::AttrMethods;
-use dom::bindings::codegen::Bindings::HTMLAnchorElementBinding;
+
 use dom::bindings::codegen::Bindings::HTMLAnchorElementBinding::HTMLAnchorElementMethods;
 use dom::bindings::codegen::Bindings::MouseEventBinding::MouseEventMethods;
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;

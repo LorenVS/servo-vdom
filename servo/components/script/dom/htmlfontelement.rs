@@ -4,7 +4,7 @@
 
 use cssparser::RGBA;
 use dom::attr::AttrValue;
-use dom::bindings::codegen::Bindings::HTMLFontElementBinding;
+
 use dom::bindings::codegen::Bindings::HTMLFontElementBinding::HTMLFontElementMethods;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::{LayoutJS, Root};

@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::CloseEventBinding;
-use dom::bindings::codegen::Bindings::CloseEventBinding::CloseEventMethods;
+
+use dom::bindings::codegen::Bindings::CloseEventBinding::{CloseEventInit,CloseEventMethods};
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
@@ -52,7 +52,7 @@ impl CloseEvent {
 
     pub fn Constructor(_global: GlobalRef,
                        type_: DOMString,
-                       init: &CloseEventBinding::CloseEventInit)
+                       init: &CloseEventInit)
                        -> Fallible<Root<CloseEvent>> {
         let bubbles = if init.parent.bubbles {
             EventBubbles::Bubbles

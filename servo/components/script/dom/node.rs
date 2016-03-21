@@ -28,7 +28,7 @@ use dom::bindings::inheritance::{EventTargetTypeId, NodeTypeId};
 use dom::bindings::js::Root;
 use dom::bindings::js::RootedReference;
 use dom::bindings::js::{JS, LayoutJS, MutNullableHeap};
-use dom::bindings::reflector::{Reflectable, reflect_dom_object};
+use dom::bindings::reflector::{Reflectable};
 use dom::bindings::trace::JSTraceable;
 use dom::bindings::trace::RootedVec;
 use dom::bindings::xmlname::namespace_from_domstring;
@@ -1265,14 +1265,6 @@ pub enum CloneChildrenFlag {
 fn as_uintptr<T>(t: &T) -> uintptr_t { t as *const T as uintptr_t }
 
 impl Node {
-    pub fn reflect_node<N: DerivedFrom<Node> + Reflectable>
-            (node:      Box<N>,
-             document:  &Document,
-             wrap_fn:   extern "Rust" fn(*mut JSContext, GlobalRef, Box<N>) -> Root<N>)
-             -> Root<N> {
-        let window = document.window();
-        reflect_dom_object(node, GlobalRef::Window(window), wrap_fn)
-    }
 
     pub fn new_inherited(type_id: NodeTypeId, doc: &Document) -> Node {
         Node::new_(type_id, NodeFlags::new(), Some(doc))

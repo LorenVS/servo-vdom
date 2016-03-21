@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::FormDataBinding;
-use dom::bindings::reflector::{Reflector, reflect_dom_object};
+
+use dom::bindings::reflector::{Reflector};
 use dom::bindings::error::{Fallible};
 use dom::bindings::global::GlobalRef;
 use dom::bindings::js::{JS, Root};

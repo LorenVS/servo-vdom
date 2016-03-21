@@ -9,7 +9,7 @@ use dom::bindings::error::{Error, Fallible};
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::EventTargetTypeId;
 use dom::bindings::js::Root;
-use dom::bindings::reflector::reflect_dom_object;
+
 use dom::eventtarget::EventTarget;
 use std::cell::Cell;
 use url::Url;

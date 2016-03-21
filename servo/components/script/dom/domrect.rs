@@ -2,14 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::DOMRectBinding;
+
 use dom::bindings::codegen::Bindings::DOMRectBinding::DOMRectMethods;
 use dom::bindings::codegen::Bindings::DOMRectReadOnlyBinding::DOMRectReadOnlyMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::DOMRectReadOnlyTypeId;
 use dom::bindings::js::Root;
-use dom::bindings::reflector::reflect_dom_object;
+
 use dom::domrectreadonly::DOMRectReadOnly;
 
 #[dom_struct]

@@ -6,7 +6,7 @@ use cssparser::Parser as CssParser;
 use document_loader::LoadType;
 use dom::attr::{Attr, AttrValue};
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::HTMLLinkElementBinding;
+
 use dom::bindings::codegen::Bindings::HTMLLinkElementBinding::HTMLLinkElementMethods;
 use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
