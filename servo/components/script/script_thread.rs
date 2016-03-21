@@ -28,10 +28,9 @@ use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::Castable;
 use dom::bindings::js::{JS, MutNullableHeap, Root, RootCollection};
-use dom::bindings::js::{RootCollectionPtr, RootedReference};
-use dom::bindings::refcounted::{LiveDOMReferences, Trusted, TrustedReference, trace_refcounted_objects};
-use dom::bindings::trace::{JSTraceable, trace_traceables};
-use dom::bindings::utils::{DOM_CALLBACKS, WRAP_CALLBACKS};
+use dom::bindings::js::{RootedReference};
+use dom::bindings::refcounted::{LiveDOMReferences, Trusted, TrustedReference};
+use dom::bindings::trace::{JSTraceable};
 use dom::browsingcontext::BrowsingContext;
 use dom::create::create_element_simple;
 use dom::document::{Document, DocumentProgressHandler, DocumentSource, IsHTMLDocument};
@@ -48,17 +47,11 @@ use gfx_traits::LayerId;
 use hyper::method::Method;
 use ipc_channel::ipc::{self, IpcSender};
 use ipc_channel::router::ROUTER;
-use js::glue::CollectServoSizes;
 use js::jsapi::{DOMProxyShadowsResult, HandleId, HandleObject};
-use js::jsapi::{DisableIncrementalGC, JS_AddExtraGCRootsTracer, JS_SetWrapObjectCallbacks};
-use js::jsapi::{GCDescription, GCProgress, JSGCInvocationKind, SetGCSliceCallback};
-use js::jsapi::{JSGCStatus, JS_GetRuntime, JS_SetGCCallback, SetDOMCallbacks};
-use js::jsapi::{JSContext, JSRuntime, JSTracer};
-use js::jsapi::{JSObject, SetPreserveWrapperCallback};
+use js::jsapi::{JSContext};
 use js::rust::Runtime;
 use layout_interface::{ReflowQueryType};
 use layout_interface::{self, LayoutChan, ScriptLayoutChan};
-use libc;
 use mem::heap_size_of_self_and_children;
 use msg::constellation_msg::{ConstellationChan, LoadData};
 use msg::constellation_msg::{PipelineId, PipelineNamespace};
@@ -80,10 +73,7 @@ use std::any::Any;
 use std::borrow::ToOwned;
 use std::cell::{Cell, RefCell};
 use std::collections::HashSet;
-use std::io::{Write, stdout};
-use std::marker::PhantomData;
 use std::option::Option;
-use std::ptr;
 use std::rc::Rc;
 use std::result::Result;
 use std::sync::atomic::{Ordering, AtomicBool};
@@ -96,7 +86,7 @@ use task_source::file_reading::FileReadingTaskSource;
 use task_source::history_traversal::HistoryTraversalTaskSource;
 use task_source::networking::NetworkingTaskSource;
 use task_source::user_interaction::UserInteractionTaskSource;
-use time::{Tm, now};
+use time::{Tm};
 use url::Url;
 use util::opts;
 use util::str::DOMString;
@@ -470,7 +460,6 @@ impl ScriptThreadFactory for ScriptThread {
                                                thread_state::SCRIPT,
                                                move || {
             PipelineNamespace::install(state.pipeline_namespace_id);
-            let roots = RootCollection::new();
             let chan = MainThreadScriptChan(script_chan.clone());
             let channel_for_reporter = chan.clone();
             let id = state.id;
@@ -931,7 +920,7 @@ impl ScriptThread {
     fn handle_msg_from_devtools(&self, msg: DevtoolScriptControlMsg) {
         let page = self.root_page();
         match msg {
-            DevtoolScriptControlMsg::EvaluateJS(id, s, reply) => {},
+            DevtoolScriptControlMsg::EvaluateJS(_,_,_) => {},
             DevtoolScriptControlMsg::GetRootNode(id, reply) =>
                 devtools::handle_get_root_node(&page, id, reply),
             DevtoolScriptControlMsg::GetDocumentElement(id, reply) =>

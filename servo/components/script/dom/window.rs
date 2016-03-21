@@ -29,7 +29,6 @@ use dom::screen::Screen;
 use euclid::{Point2D, Rect, Size2D};
 use gfx_traits::LayerId;
 use ipc_channel::ipc::{self, IpcSender};
-use js::jsapi::{MutableHandleValue};
 use js::jsapi::{HandleValue, JSContext};
 use layout_interface::{ContentBoxResponse, ContentBoxesResponse, ResolvedStyleResponse, ScriptReflow};
 use layout_interface::{LayoutChan, LayoutRPC, Msg, Reflow, ReflowQueryType, MarginStyleResponse};
