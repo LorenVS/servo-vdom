@@ -146,7 +146,6 @@ pub mod proxyhandler;
 pub mod refcounted;
 pub mod reflector;
 pub mod str;
-pub mod structuredclone;
 pub mod trace;
 pub mod typed;
 pub mod utils;

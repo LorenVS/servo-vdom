@@ -7,18 +7,16 @@
 use dom::bindings::error::{Error, Fallible};
 use dom::bindings::global::global_root_from_object;
 use dom::bindings::reflector::Reflectable;
-use js::jsapi::GetGlobalForObjectCrossCompartment;
 use js::jsapi::JSAutoCompartment;
 use js::jsapi::{Heap, MutableHandleObject, RootedObject, RootedValue};
 use js::jsapi::{IsCallable, JSContext, JSObject, JS_WrapObject};
-use js::jsapi::{JSCompartment, JS_EnterCompartment, JS_LeaveCompartment};
-use js::jsapi::{JS_BeginRequest, JS_EndRequest};
+use js::jsapi::{JSCompartment, JS_LeaveCompartment};
+use js::jsapi::{JS_EndRequest};
 use js::jsapi::{JS_GetProperty, JS_IsExceptionPending, JS_ReportPendingException};
 use js::jsapi::{JS_RestoreFrameChain, JS_SaveFrameChain};
 use js::jsval::{JSVal, UndefinedValue};
 use std::default::Default;
 use std::ffi::CString;
-use std::intrinsics::return_address;
 use std::ptr;
 use std::rc::Rc;
 

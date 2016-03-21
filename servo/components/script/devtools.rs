@@ -5,13 +5,12 @@
 use devtools_traits::TimelineMarkerType;
 use devtools_traits::{AutoMargins, CONSOLE_API, CachedConsoleMessage, CachedConsoleMessageTypes};
 use devtools_traits::{ComputedNodeLayout, ConsoleAPI, PageError, ScriptToDevtoolsControlMsg};
-use devtools_traits::{EvaluateJSReply, Modification, NodeInfo, PAGE_ERROR, TimelineMarker};
+use devtools_traits::{Modification, NodeInfo, PAGE_ERROR, TimelineMarker};
 use dom::bindings::codegen::Bindings::CSSStyleDeclarationBinding::CSSStyleDeclarationMethods;
 use dom::bindings::codegen::Bindings::DOMRectBinding::DOMRectMethods;
 use dom::bindings::codegen::Bindings::DocumentBinding::DocumentMethods;
 use dom::bindings::codegen::Bindings::ElementBinding::ElementMethods;
 use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
-use dom::bindings::conversions::{FromJSValConvertible, jsstring_to_str};
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::Castable;
 use dom::bindings::js::Root;
@@ -19,17 +18,12 @@ use dom::element::Element;
 use dom::node::Node;
 use dom::window::Window;
 use ipc_channel::ipc::IpcSender;
-use js::jsapi::{ObjectClassName, RootedObject, RootedValue};
-use js::jsval::UndefinedValue;
 use msg::constellation_msg::PipelineId;
 use page::{IterablePage, Page};
 use script_thread::get_page;
-use std::ffi::CStr;
 use std::rc::Rc;
-use std::str;
 use style::properties::longhands::{margin_top, margin_right, margin_bottom, margin_left};
 use util::str::DOMString;
-use uuid::Uuid;
 
 pub fn handle_get_root_node(page: &Rc<Page>, pipeline: PipelineId, reply: IpcSender<NodeInfo>) {
     let page = get_page(&*page, pipeline);
