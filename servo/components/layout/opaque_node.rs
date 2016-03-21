@@ -10,6 +10,7 @@ use script::dom::bindings::js::LayoutJS;
 use script::dom::node::Node;
 use script::layout_interface::{TrustedNodeAddress};
 use script_traits::UntrustedNodeAddress;
+use std::mem;
 
 pub trait OpaqueNodeMethods {
     /// Converts a DOM node (script view) to an `OpaqueNode`.
@@ -32,7 +33,7 @@ impl OpaqueNodeMethods for OpaqueNode {
 
     fn from_jsmanaged(node: &LayoutJS<Node>) -> OpaqueNode {
         unsafe {
-            let ptr: uintptr_t = node.get_jsobject() as uintptr_t;
+            let ptr: uintptr_t = mem::transmute(node.unsafe_get());
             OpaqueNode(ptr)
         }
     }

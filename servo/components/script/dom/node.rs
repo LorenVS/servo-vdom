@@ -911,14 +911,8 @@ pub fn from_untrusted_node_address(_runtime: *mut JSRuntime, candidate: Untruste
     unsafe {
         // https://github.com/servo/servo/issues/6383
         let candidate: uintptr_t = mem::transmute(candidate.0);
-//        let object: *mut JSObject = jsfriendapi::bindgen::JS_GetAddressableObject(runtime,
-//                                                                                  candidate);
-        let object: *mut JSObject = mem::transmute(candidate);
-        if object.is_null() {
-            panic!("Attempted to create a `JS<Node>` from an invalid pointer!")
-        }
-        let boxed_node = conversions::private_from_object(object) as *const Node;
-        Root::from_ref(&*boxed_node)
+        let object: *const Node = mem::transmute(candidate);
+        Root::from_ref(&*object)
     }
 }
 

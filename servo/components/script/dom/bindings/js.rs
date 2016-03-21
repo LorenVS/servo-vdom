@@ -142,14 +142,6 @@ impl<T: Castable> LayoutJS<T> {
     }
 }
 
-impl<T: Reflectable> LayoutJS<T> {
-    /// Get the reflector.
-    pub unsafe fn get_jsobject(&self) -> *mut JSObject {
-        debug_assert!(thread_state::get().is_layout());
-        (**self.ptr).reflector().get_jsobject().get()
-    }
-}
-
 impl<T> Copy for LayoutJS<T> {}
 
 impl<T> PartialEq for JS<T> {
