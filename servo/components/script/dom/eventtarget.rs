@@ -20,7 +20,6 @@ use dom::bindings::typed::Typed;
 use dom::element::Element;
 use dom::errorevent::ErrorEvent;
 use dom::event::{Event, EventBubbles, EventCancelable};
-use dom::eventdispatcher::dispatch_event;
 use dom::node::document_from_node;
 use dom::virtualmethods::VirtualMethods;
 use dom::window::Window;
@@ -309,11 +308,13 @@ impl EventTarget {
     pub fn dispatch_event_with_target(&self,
                                       target: &EventTarget,
                                       event: &Event) -> bool {
-        dispatch_event(self, Some(target), event)
+        true
+        //dispatch_event(self, Some(target), event)
     }
 
     pub fn dispatch_event(&self, event: &Event) -> bool {
-        dispatch_event(self, None, event)
+        true
+        //dispatch_event(self, None, event)
     }
 
     /// https://html.spec.whatwg.org/multipage/#event-handler-attributes:event-handlers-11
