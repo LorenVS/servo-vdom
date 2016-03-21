@@ -9,10 +9,9 @@ use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, EventTypeId};
 use dom::bindings::js::Root;
-use dom::bindings::reflector::reflect_dom_object;
 use dom::event::Event;
 use dom::eventtarget::EventTarget;
-use js::jsapi::{RootedValue, HandleValue, Heap, JSContext};
+use js::jsapi::{HandleValue, Heap, JSContext};
 use js::jsval::JSVal;
 use std::default::Default;
 use string_cache::Atom;
@@ -34,7 +33,7 @@ impl MessageEvent {
 
     pub fn new_initialized(origin: DOMString,
                            lastEventId: DOMString) -> Root<MessageEvent> {
-        let mut ev = box MessageEvent {
+        let ev = box MessageEvent {
             event: Event::new_inherited(EventTypeId::MessageEvent),
             data: Heap::default(),
             origin: origin,

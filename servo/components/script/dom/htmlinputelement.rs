@@ -12,7 +12,6 @@ use dom::bindings::codegen::Bindings::HTMLInputElementBinding;
 use dom::bindings::codegen::Bindings::HTMLInputElementBinding::HTMLInputElementMethods;
 use dom::bindings::codegen::Bindings::KeyboardEventBinding::KeyboardEventMethods;
 use dom::bindings::error::{Error, ErrorResult};
-use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::{JS, LayoutJS, Root, RootedReference};
 use dom::bindings::refcounted::Trusted;
@@ -1145,8 +1144,6 @@ impl ChangeEventRunnable {
 impl Runnable for ChangeEventRunnable {
     fn handler(self: Box<ChangeEventRunnable>) {
         let target = self.element.root();
-        let window = window_from_node(target.r());
-        let window = window.r();
         let event = Event::new(atom!("input"),
                                EventBubbles::Bubbles,
                                EventCancelable::NotCancelable);

@@ -9,7 +9,6 @@ use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, EventTypeId};
 use dom::bindings::js::Root;
-use dom::bindings::reflector::reflect_dom_object;
 use dom::event::{Event, EventBubbles, EventCancelable};
 use script_thread::ScriptChan;
 use string_cache::Atom;
@@ -51,7 +50,7 @@ impl CloseEvent {
         ev
     }
 
-    pub fn Constructor(global: GlobalRef,
+    pub fn Constructor(_global: GlobalRef,
                        type_: DOMString,
                        init: &CloseEventBinding::CloseEventInit)
                        -> Fallible<Root<CloseEvent>> {

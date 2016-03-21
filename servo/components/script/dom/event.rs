@@ -9,7 +9,7 @@ use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{TopTypeId, EventTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root};
-use dom::bindings::reflector::{Reflector, reflect_dom_object};
+use dom::bindings::reflector::{Reflector};
 use dom::bindings::typed::Typed;
 use dom::eventtarget::EventTarget;
 use std::cell::Cell;

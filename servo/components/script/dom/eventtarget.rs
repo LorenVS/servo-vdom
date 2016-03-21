@@ -306,13 +306,13 @@ impl EventTarget {
     }
 
     pub fn dispatch_event_with_target(&self,
-                                      target: &EventTarget,
-                                      event: &Event) -> bool {
+                                      _target: &EventTarget,
+                                      _event: &Event) -> bool {
         true
         //dispatch_event(self, Some(target), event)
     }
 
-    pub fn dispatch_event(&self, event: &Event) -> bool {
+    pub fn dispatch_event(&self, _event: &Event) -> bool {
         true
         //dispatch_event(self, None, event)
     }

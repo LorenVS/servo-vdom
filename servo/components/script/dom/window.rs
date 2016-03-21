@@ -10,7 +10,7 @@ use dom::bindings::codegen::Bindings::DocumentBinding::{DocumentMethods, Documen
 use dom::bindings::codegen::Bindings::EventHandlerBinding::{EventHandlerNonNull, OnErrorEventHandlerNonNull};
 use dom::bindings::codegen::Bindings::FunctionBinding::Function;
 use dom::bindings::codegen::Bindings::WindowBinding::{ScrollBehavior, ScrollToOptions};
-use dom::bindings::codegen::Bindings::WindowBinding::{self, FrameRequestCallback, WindowMethods};
+use dom::bindings::codegen::Bindings::WindowBinding::{FrameRequestCallback, WindowMethods};
 use dom::bindings::error::{Error, Fallible, report_pending_exception};
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable,EventTargetTypeId};
@@ -1052,8 +1052,6 @@ impl Window {
                     ReflowQueryType::OffsetParentQuery(node),
                     ReflowReason::Query);
         let response = self.layout_rpc.offset_parent();
-        let js_runtime = self.js_runtime.borrow();
-        let js_runtime = js_runtime.as_ref().unwrap();
         let element = response.node_address.and_then(|parent_node_address| {
             let node = from_untrusted_node_address(parent_node_address);
             Root::downcast(node)

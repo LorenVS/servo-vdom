@@ -31,7 +31,7 @@ use dom::bindings::trace::JSTraceable;
 use dom::bindings::trace::trace_reflector;
 use dom::node::Node;
 use heapsize::HeapSizeOf;
-use js::jsapi::{Heap, JSObject, JSTracer};
+use js::jsapi::{Heap, JSTracer};
 use js::jsval::JSVal;
 use layout_interface::TrustedNodeAddress;
 use script_thread::STACK_ROOTS;
@@ -483,18 +483,6 @@ impl RootCollection {
             roots: UnsafeCell::new(vec![]),
         }
     }
-
-    /// Start tracking a stack-based root
-    fn root(&self, untracked_reflector: *const Reflector) {
-        debug_assert!(thread_state::get().is_script());
-        unsafe {
-            let mut roots = &mut *self.roots.get();
-            if !(*untracked_reflector).get_jsobject().is_null() {
-                roots.push(untracked_reflector);
-            }
-        }
-    }
-
 }
 
 /// SM Callback that traces the rooted reflectors
@@ -517,9 +505,7 @@ pub unsafe fn trace_roots(tracer: *mut JSTracer) {
 #[allow_unrooted_interior]
 pub struct Root<T: Reflectable> {
     /// Reference to rooted value that must not outlive this container
-    ptr: NonZero<*const T>,
-    /// List that ensures correct dynamic root ordering
-    root_list: *const RootCollection,
+    ptr: NonZero<*const T>
 }
 
 impl<T: Castable> Root<T> {
@@ -559,13 +545,9 @@ impl<T: Reflectable> Root<T> {
     /// out references which cannot outlive this new `Root`.
     pub fn new(unrooted: NonZero<*const T>) -> Root<T> {
         debug_assert!(thread_state::get().is_script());
-        STACK_ROOTS.with(|ref collection| {
-            let RootCollectionPtr(collection) = collection.get().unwrap();
-            Root {
-                ptr: unrooted,
-                root_list: collection,
-            }
-        })
+        Root {
+            ptr: unrooted
+        }
     }
 
     /// Generate a new root from a reference
