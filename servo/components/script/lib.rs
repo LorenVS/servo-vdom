@@ -94,10 +94,6 @@ mod task_source;
 pub mod textinput;
 mod timers;
 
-use dom::bindings::codegen::RegisterBindings;
-use js::jsapi::SetDOMProxyInformation;
-use std::ptr;
-
 #[cfg(target_os = "linux")]
 #[allow(unsafe_code)]
 fn perform_platform_specific_initialization() {
@@ -141,14 +137,5 @@ fn perform_platform_specific_initialization() {}
 
 #[allow(unsafe_code)]
 pub fn init() {
-    unsafe {
-        assert_eq!(js::jsapi::JS_Init(), true);
-        SetDOMProxyInformation(ptr::null(), 0, Some(script_thread::shadow_check_callback));
-    }
-
-    // Create the global vtables used by the (generated) DOM
-    // bindings to implement JS proxies.
-    RegisterBindings::RegisterProxyHandlers();
-
     perform_platform_specific_initialization();
 }

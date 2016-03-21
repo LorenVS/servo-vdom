@@ -47,8 +47,6 @@ use gfx_traits::LayerId;
 use hyper::method::Method;
 use ipc_channel::ipc::{self, IpcSender};
 use ipc_channel::router::ROUTER;
-use js::jsapi::{DOMProxyShadowsResult, HandleId, HandleObject};
-use js::jsapi::{JSContext};
 use layout_interface::{ReflowQueryType};
 use layout_interface::{self, LayoutChan, ScriptLayoutChan};
 use mem::heap_size_of_self_and_children;
@@ -488,12 +486,6 @@ impl ScriptThreadFactory for ScriptThread {
             failsafe.neuter();
         }, ConstellationMsg::Failure(failure_info), const_chan);
     }
-}
-
-pub unsafe extern "C" fn shadow_check_callback(_cx: *mut JSContext,
-    _object: HandleObject, _id: HandleId) -> DOMProxyShadowsResult {
-    // XXX implement me
-    DOMProxyShadowsResult::ShadowCheckFailed
 }
 
 impl ScriptThread {
