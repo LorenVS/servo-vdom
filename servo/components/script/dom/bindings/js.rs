@@ -502,20 +502,6 @@ impl RootCollection {
         }
     }
 
-    /// Stop tracking a stack-based root, asserting if the reflector isn't found
-    fn unroot<T: Reflectable>(&self, rooted: &Root<T>) {
-        debug_assert!(thread_state::get().is_script());
-        unsafe {
-            let mut roots = &mut *self.roots.get();
-            let old_reflector = &*rooted.reflector();
-            match roots.iter().rposition(|r| *r == old_reflector) {
-                Some(idx) => {
-                    roots.remove(idx);
-                },
-                None => panic!("Can't remove a root that was never rooted!"),
-            }
-        }
-    }
 }
 
 /// SM Callback that traces the rooted reflectors
@@ -603,13 +589,5 @@ impl<T: Reflectable> Deref for Root<T> {
 impl<T: Reflectable> PartialEq for Root<T> {
     fn eq(&self, other: &Root<T>) -> bool {
         self.ptr == other.ptr
-    }
-}
-
-impl<T: Reflectable> Drop for Root<T> {
-    fn drop(&mut self) {
-        unsafe {
-            (*self.root_list).unroot(self);
-        }
     }
 }
