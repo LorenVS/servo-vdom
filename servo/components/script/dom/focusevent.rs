@@ -7,7 +7,7 @@ use dom::bindings::codegen::Bindings::FocusEventBinding::FocusEventMethods;
 use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, UIEventTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root, RootedReference};
 use dom::bindings::reflector::reflect_dom_object;
 use dom::event::{EventBubbles, EventCancelable};
@@ -26,7 +26,7 @@ pub struct FocusEvent {
 impl FocusEvent {
     fn new_inherited() -> FocusEvent {
         FocusEvent {
-            uievent: UIEvent::new_inherited(),
+            uievent: UIEvent::new_inherited(UIEventTypeId::FocusEvent),
             related_target: Default::default(),
         }
     }

@@ -8,6 +8,7 @@ use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::reflect_dom_object;
+use dom::bindings::inheritance::DOMPointReadOnlyTypeId;
 use dom::dompointreadonly::{DOMPointReadOnly, DOMPointWriteMethods};
 
 // http://dev.w3.org/fxtf/geometry/Overview.html#dompoint
@@ -19,7 +20,7 @@ pub struct DOMPoint {
 impl DOMPoint {
     fn new_inherited(x: f64, y: f64, z: f64, w: f64) -> DOMPoint {
         DOMPoint {
-            point: DOMPointReadOnly::new_inherited(x, y, z, w),
+            point: DOMPointReadOnly::new_inherited(DOMPointReadOnlyTypeId::DOMPoint, x, y, z, w),
         }
     }
 

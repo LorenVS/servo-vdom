@@ -7,12 +7,16 @@ use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflector, reflect_dom_object};
+use dom::bindings::typed::Typed;
+use dom::bindings::inheritance::{TopTypeId,DOMPointReadOnlyTypeId};
 use std::cell::Cell;
 
 // http://dev.w3.org/fxtf/geometry/Overview.html#dompointreadonly
 #[dom_struct]
 pub struct DOMPointReadOnly {
     reflector_: Reflector,
+    #[ignore_heap_size_of = "type_ids are new"]
+    type_id: DOMPointReadOnlyTypeId,
     x: Cell<f64>,
     y: Cell<f64>,
     z: Cell<f64>,
@@ -20,8 +24,9 @@ pub struct DOMPointReadOnly {
 }
 
 impl DOMPointReadOnly {
-    pub fn new_inherited(x: f64, y: f64, z: f64, w: f64) -> DOMPointReadOnly {
+    pub fn new_inherited(type_id: DOMPointReadOnlyTypeId, x: f64, y: f64, z: f64, w: f64) -> DOMPointReadOnly {
         DOMPointReadOnly {
+            type_id: type_id,
             x: Cell::new(x),
             y: Cell::new(y),
             z: Cell::new(z),
@@ -31,7 +36,7 @@ impl DOMPointReadOnly {
     }
 
     pub fn new(global: GlobalRef, x: f64, y: f64, z: f64, w: f64) -> Root<DOMPointReadOnly> {
-        reflect_dom_object(box DOMPointReadOnly::new_inherited(x, y, z, w),
+        reflect_dom_object(box DOMPointReadOnly::new_inherited(DOMPointReadOnlyTypeId::DOMPointReadOnly, x, y, z, w),
                            global,
                            Wrap)
     }
@@ -65,6 +70,19 @@ impl DOMPointReadOnlyMethods for DOMPointReadOnly {
     // https://dev.w3.org/fxtf/geometry/Overview.html#dom-dompointreadonly-w
     fn W(&self) -> f64 {
         self.w.get()
+    }
+}
+
+impl Typed for DOMPointReadOnly {
+    fn get_type(&self) -> TopTypeId {
+        TopTypeId::DOMPointReadOnly(self.type_id)
+    }
+
+    fn is_subtype(ty : TopTypeId) -> bool {
+        match ty {
+            TopTypeId::DOMPointReadOnly(_) => true,
+            _ => false
+        }
     }
 }
 

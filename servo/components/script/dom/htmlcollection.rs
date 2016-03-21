@@ -5,10 +5,11 @@
 use dom::bindings::codegen::Bindings::HTMLCollectionBinding;
 use dom::bindings::codegen::Bindings::HTMLCollectionBinding::HTMLCollectionMethods;
 use dom::bindings::global::GlobalRef;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable,TopTypeId,HTMLCollectionTypeId};
 use dom::bindings::js::{JS, Root, MutNullableHeap};
 use dom::bindings::reflector::{Reflector, reflect_dom_object};
 use dom::bindings::trace::JSTraceable;
+use dom::bindings::typed::Typed;
 use dom::bindings::xmlname::namespace_from_domstring;
 use dom::element::Element;
 use dom::node::{Node, FollowingNodeIterator, PrecedingNodeIterator};
@@ -52,6 +53,8 @@ impl OptionU32 {
 #[dom_struct]
 pub struct HTMLCollection {
     reflector_: Reflector,
+    #[ignore_heap_size_of = "type_ids are new"]
+    type_id: HTMLCollectionTypeId,
     root: JS<Node>,
     #[ignore_heap_size_of = "Contains a trait object; can't measure due to #6870"]
     filter: Box<CollectionFilter + 'static>,
@@ -66,9 +69,10 @@ pub struct HTMLCollection {
 
 impl HTMLCollection {
     #[allow(unrooted_must_root)]
-    pub fn new_inherited(root: &Node, filter: Box<CollectionFilter + 'static>) -> HTMLCollection {
+    pub fn new_inherited(type_id: HTMLCollectionTypeId, root: &Node, filter: Box<CollectionFilter + 'static>) -> HTMLCollection {
         HTMLCollection {
             reflector_: Reflector::new(),
+            type_id: type_id,
             root: JS::from_ref(root),
             filter: filter,
             // Default values for the cache
@@ -81,7 +85,7 @@ impl HTMLCollection {
 
     #[allow(unrooted_must_root)]
     pub fn new(window: &Window, root: &Node, filter: Box<CollectionFilter + 'static>) -> Root<HTMLCollection> {
-        reflect_dom_object(box HTMLCollection::new_inherited(root, filter),
+        reflect_dom_object(box HTMLCollection::new_inherited(HTMLCollectionTypeId::HTMLCollection, root, filter),
                            GlobalRef::Window(window), HTMLCollectionBinding::Wrap)
     }
 
@@ -227,7 +231,19 @@ impl HTMLCollection {
             filter: &self.filter,
         }
     }
+}
 
+impl Typed for HTMLCollection {
+    fn get_type(&self) -> TopTypeId {
+        TopTypeId::HTMLCollection(self.type_id)
+    }
+
+    fn is_subtype(ty : TopTypeId) -> bool {
+        match ty {
+            TopTypeId::HTMLCollection(_) => true,
+            _ => false
+        }
+    }
 }
 
 // TODO: Make this generic, and avoid code duplication

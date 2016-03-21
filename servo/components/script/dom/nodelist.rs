@@ -6,8 +6,10 @@ use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::codegen::Bindings::NodeListBinding;
 use dom::bindings::codegen::Bindings::NodeListBinding::NodeListMethods;
 use dom::bindings::global::GlobalRef;
+use dom::bindings::inheritance::{NodeListTypeId, TopTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root, RootedReference};
 use dom::bindings::reflector::{Reflector, reflect_dom_object};
+use dom::bindings::typed::Typed;
 use dom::node::{ChildrenMutation, Node};
 use dom::window::Window;
 use std::cell::Cell;
@@ -23,21 +25,24 @@ pub enum NodeListType {
 #[dom_struct]
 pub struct NodeList {
     reflector_: Reflector,
+    #[ignore_heap_size_of = "type_ids are new"]
+    type_id: NodeListTypeId,
     list_type: NodeListType,
 }
 
 impl NodeList {
     #[allow(unrooted_must_root)]
-    pub fn new_inherited(list_type: NodeListType) -> NodeList {
+    pub fn new_inherited(type_id: NodeListTypeId, list_type: NodeListType) -> NodeList {
         NodeList {
             reflector_: Reflector::new(),
+            type_id: type_id,
             list_type: list_type,
         }
     }
 
     #[allow(unrooted_must_root)]
     pub fn new(window: &Window, list_type: NodeListType) -> Root<NodeList> {
-        reflect_dom_object(box NodeList::new_inherited(list_type),
+        reflect_dom_object(box NodeList::new_inherited(NodeListTypeId::NodeList, list_type),
                            GlobalRef::Window(window), NodeListBinding::Wrap)
     }
 
@@ -97,6 +102,19 @@ impl NodeList {
             list
         } else {
             panic!("called as_simple_list() on a children node list")
+        }
+    }
+}
+
+impl Typed for NodeList {
+    fn get_type(&self) -> TopTypeId {
+        TopTypeId::NodeList(self.type_id)
+    }
+
+    fn is_subtype(ty: TopTypeId) -> bool {
+        match ty {
+            TopTypeId::NodeList(_) => true,
+            _ => false
         }
     }
 }

@@ -7,7 +7,7 @@ use dom::bindings::codegen::Bindings::ProgressEventBinding;
 use dom::bindings::codegen::Bindings::ProgressEventBinding::ProgressEventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, EventTypeId};
 use dom::bindings::js::Root;
 use dom::bindings::reflector::reflect_dom_object;
 use dom::event::{Event, EventBubbles, EventCancelable};
@@ -25,7 +25,7 @@ pub struct ProgressEvent {
 impl ProgressEvent {
     fn new_inherited(length_computable: bool, loaded: u64, total: u64) -> ProgressEvent {
         ProgressEvent {
-            event: Event::new_inherited(),
+            event: Event::new_inherited(EventTypeId::ProgressEvent),
             length_computable: length_computable,
             loaded: loaded,
             total: total

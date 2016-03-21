@@ -7,6 +7,7 @@ use dom::bindings::codegen::Bindings::DOMRectBinding::DOMRectMethods;
 use dom::bindings::codegen::Bindings::DOMRectReadOnlyBinding::DOMRectReadOnlyMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
+use dom::bindings::inheritance::DOMRectReadOnlyTypeId;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::reflect_dom_object;
 use dom::domrectreadonly::DOMRectReadOnly;
@@ -19,7 +20,7 @@ pub struct DOMRect {
 impl DOMRect {
     fn new_inherited(x: f64, y: f64, width: f64, height: f64) -> DOMRect {
         DOMRect {
-            rect: DOMRectReadOnly::new_inherited(x, y, width, height),
+            rect: DOMRectReadOnly::new_inherited(DOMRectReadOnlyTypeId::DOMRect, x, y, width, height),
         }
     }
 

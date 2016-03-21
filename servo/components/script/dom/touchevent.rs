@@ -6,7 +6,7 @@ use dom::bindings::codegen::Bindings::TouchEventBinding;
 use dom::bindings::codegen::Bindings::TouchEventBinding::TouchEventMethods;
 use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::global::GlobalRef;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, UIEventTypeId};
 use dom::bindings::js::{JS, MutHeap, Root};
 use dom::bindings::reflector::reflect_dom_object;
 use dom::event::{EventBubbles, EventCancelable};
@@ -33,7 +33,7 @@ impl TouchEvent {
                      changed_touches: &TouchList,
                      target_touches: &TouchList) -> TouchEvent {
         TouchEvent {
-            uievent: UIEvent::new_inherited(),
+            uievent: UIEvent::new_inherited(UIEventTypeId::TouchEvent),
             touches: MutHeap::new(touches),
             target_touches: MutHeap::new(target_touches),
             changed_touches: MutHeap::new(changed_touches),

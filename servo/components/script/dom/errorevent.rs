@@ -8,7 +8,7 @@ use dom::bindings::codegen::Bindings::ErrorEventBinding::ErrorEventMethods;
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable,EventTypeId};
 use dom::bindings::js::{MutHeapJSVal, Root};
 use dom::bindings::reflector::reflect_dom_object;
 use dom::bindings::trace::JSTraceable;
@@ -33,7 +33,7 @@ pub struct ErrorEvent {
 impl ErrorEvent {
     fn new_inherited() -> ErrorEvent {
         ErrorEvent {
-            event: Event::new_inherited(),
+            event: Event::new_inherited(EventTypeId::ErrorEvent),
             message: DOMRefCell::new(DOMString::new()),
             filename: DOMRefCell::new(DOMString::new()),
             lineno: Cell::new(0),

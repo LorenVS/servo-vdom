@@ -13,9 +13,10 @@ use dom::bindings::codegen::Bindings::EventTargetBinding::EventTargetMethods;
 use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::codegen::UnionTypes::EventOrString;
 use dom::bindings::error::{Error, Fallible, report_pending_exception};
-use dom::bindings::inheritance::{Castable, EventTargetTypeId};
+use dom::bindings::inheritance::{Castable, EventTargetTypeId, TopTypeId};
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflectable, Reflector};
+use dom::bindings::typed::Typed;
 use dom::element::Element;
 use dom::errorevent::ErrorEvent;
 use dom::event::{Event, EventBubbles, EventCancelable};
@@ -550,6 +551,16 @@ impl EventTargetMethods for EventTarget {
         }
         event.set_trusted(false);
         Ok(self.dispatch_event(event))
+    }
+}
+
+impl Typed for EventTarget {
+    fn get_type(&self) -> TopTypeId { TopTypeId::EventTarget(self.type_id) }
+    fn is_subtype(ty: TopTypeId) -> bool {
+        match ty {
+            TopTypeId::EventTarget(_) => true,
+            _ => false
+        }
     }
 }
 

@@ -7,7 +7,7 @@ use dom::bindings::codegen::Bindings::CloseEventBinding::CloseEventMethods;
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, EventTypeId};
 use dom::bindings::js::Root;
 use dom::bindings::reflector::reflect_dom_object;
 use dom::event::{Event, EventBubbles, EventCancelable};
@@ -26,7 +26,7 @@ pub struct CloseEvent {
 impl CloseEvent {
     pub fn new_inherited(wasClean: bool, code: u16, reason: DOMString) -> CloseEvent {
         CloseEvent {
-            event: Event::new_inherited(),
+            event: Event::new_inherited(EventTypeId::CloseEvent),
             wasClean: wasClean,
             code: code,
             reason: reason,

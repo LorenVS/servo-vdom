@@ -7,7 +7,7 @@ use dom::bindings::codegen::Bindings::HTMLFormControlsCollectionBinding;
 use dom::bindings::codegen::Bindings::HTMLFormControlsCollectionBinding::HTMLFormControlsCollectionMethods;
 use dom::bindings::codegen::UnionTypes::RadioNodeListOrElement;
 use dom::bindings::global::GlobalRef;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, HTMLCollectionTypeId};
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflectable, reflect_dom_object};
 use dom::element::Element;
@@ -26,7 +26,7 @@ pub struct HTMLFormControlsCollection {
 impl HTMLFormControlsCollection {
     fn new_inherited(root: &Node, filter: Box<CollectionFilter + 'static>) -> HTMLFormControlsCollection {
         HTMLFormControlsCollection {
-            collection: HTMLCollection::new_inherited(root, filter)
+            collection: HTMLCollection::new_inherited(HTMLCollectionTypeId::HTMLFormControlsCollection, root, filter)
         }
     }
 

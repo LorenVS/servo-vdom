@@ -9,11 +9,12 @@ pub use dom::bindings::codegen::InheritTypes::*;
 use dom::bindings::conversions::get_dom_class;
 use dom::bindings::conversions::{DerivedFrom, IDLInterface};
 use dom::bindings::reflector::Reflectable;
+use dom::bindings::typed::Typed;
 use std::mem;
 
 /// A trait to hold the cast functions of IDL interfaces that either derive
 /// or are derived from other interfaces.
-pub trait Castable: IDLInterface + Reflectable + Sized {
+pub trait Castable: IDLInterface + Reflectable + Sized + Typed {
     /// Check whether a DOM object implements one of its deriving interfaces.
     fn is<T>(&self) -> bool
         where T: DerivedFrom<Self>

@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::codegen::Bindings::DOMRectReadOnlyBinding::{DOMRectReadOnlyMethods, Wrap};
+use dom::bindings::inheritance::{DOMRectReadOnlyTypeId,TopTypeId};
+use dom::bindings::typed::Typed;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::js::Root;
@@ -12,6 +14,8 @@ use std::cell::Cell;
 #[dom_struct]
 pub struct DOMRectReadOnly {
     reflector_: Reflector,
+    #[ignore_heap_size_of = "type_ids are new"]
+    type_id: DOMRectReadOnlyTypeId,
     x: Cell<f64>,
     y: Cell<f64>,
     width: Cell<f64>,
@@ -19,8 +23,9 @@ pub struct DOMRectReadOnly {
 }
 
 impl DOMRectReadOnly {
-    pub fn new_inherited(x: f64, y: f64, width: f64, height: f64) -> DOMRectReadOnly {
+    pub fn new_inherited(type_id: DOMRectReadOnlyTypeId, x: f64, y: f64, width: f64, height: f64) -> DOMRectReadOnly {
         DOMRectReadOnly {
+            type_id: type_id,
             x: Cell::new(x),
             y: Cell::new(y),
             width: Cell::new(width),
@@ -35,7 +40,7 @@ impl DOMRectReadOnly {
                width: f64,
                height: f64)
                -> Root<DOMRectReadOnly> {
-        reflect_dom_object(box DOMRectReadOnly::new_inherited(x, y, width, height),
+        reflect_dom_object(box DOMRectReadOnly::new_inherited(DOMRectReadOnlyTypeId::DOMRectReadOnly, x, y, width, height),
                            global,
                            Wrap)
     }
@@ -124,6 +129,19 @@ impl DOMRectReadOnlyMethods for DOMRectReadOnly {
             self.x.get()
         } else {
             self.x.get() + width
+        }
+    }
+}
+
+impl Typed for DOMRectReadOnly {
+    fn get_type(&self) -> TopTypeId {
+        TopTypeId::DOMRectReadOnly(self.type_id)
+    }
+
+    fn is_subtype(ty : TopTypeId) -> bool{
+        match ty {
+            TopTypeId::DOMRectReadOnly(_) => true,
+            _ => false
         }
     }
 }

@@ -7,7 +7,7 @@ use dom::bindings::codegen::Bindings::MessageEventBinding;
 use dom::bindings::codegen::Bindings::MessageEventBinding::MessageEventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, EventTypeId};
 use dom::bindings::js::Root;
 use dom::bindings::reflector::reflect_dom_object;
 use dom::event::Event;
@@ -39,7 +39,7 @@ impl MessageEvent {
                            origin: DOMString,
                            lastEventId: DOMString) -> Root<MessageEvent> {
         let mut ev = box MessageEvent {
-            event: Event::new_inherited(),
+            event: Event::new_inherited(EventTypeId::MessageEvent),
             data: Heap::default(),
             origin: origin,
             lastEventId: lastEventId,

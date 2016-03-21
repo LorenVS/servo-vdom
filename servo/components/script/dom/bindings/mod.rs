@@ -148,6 +148,7 @@ pub mod reflector;
 pub mod str;
 pub mod structuredclone;
 pub mod trace;
+pub mod typed;
 pub mod utils;
 pub mod weakref;
 pub mod xmlname;

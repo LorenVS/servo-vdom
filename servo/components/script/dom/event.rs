@@ -7,8 +7,10 @@ use dom::bindings::codegen::Bindings::EventBinding;
 use dom::bindings::codegen::Bindings::EventBinding::{EventConstants, EventMethods};
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
+use dom::bindings::inheritance::{TopTypeId, EventTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root};
 use dom::bindings::reflector::{Reflector, reflect_dom_object};
+use dom::bindings::typed::Typed;
 use dom::eventtarget::EventTarget;
 use std::cell::Cell;
 use std::default::Default;
@@ -41,6 +43,8 @@ pub enum EventCancelable {
 #[dom_struct]
 pub struct Event {
     reflector_: Reflector,
+    #[ignore_heap_size_of = "type_ids are new"]
+    type_id: EventTypeId,
     current_target: MutNullableHeap<JS<EventTarget>>,
     target: MutNullableHeap<JS<EventTarget>>,
     type_: DOMRefCell<Atom>,
@@ -57,9 +61,10 @@ pub struct Event {
 }
 
 impl Event {
-    pub fn new_inherited() -> Event {
+    pub fn new_inherited(type_id: EventTypeId) -> Event {
         Event {
             reflector_: Reflector::new(),
+            type_id: type_id,
             current_target: Default::default(),
             target: Default::default(),
             type_: DOMRefCell::new(atom!("")),
@@ -77,7 +82,7 @@ impl Event {
     }
 
     pub fn new_uninitialized(global: GlobalRef) -> Root<Event> {
-        reflect_dom_object(box Event::new_inherited(),
+        reflect_dom_object(box Event::new_inherited(EventTypeId::Event),
                            global,
                            EventBinding::Wrap)
     }
@@ -259,5 +264,18 @@ impl Event {
     pub fn fire(&self, target: &EventTarget) -> bool {
         self.set_trusted(true);
         target.dispatch_event(self)
+    }
+}
+
+impl Typed for Event {
+    fn get_type(&self) -> TopTypeId {
+        TopTypeId::Event(self.type_id)
+    }
+
+    fn is_subtype(ty: TopTypeId) -> bool {
+        match ty {
+            TopTypeId::Event(_) => true,
+            _ => false
+        }
     }
 }

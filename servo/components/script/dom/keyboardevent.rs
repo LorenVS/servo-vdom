@@ -8,7 +8,7 @@ use dom::bindings::codegen::Bindings::KeyboardEventBinding::{KeyboardEventConsta
 use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, UIEventTypeId};
 use dom::bindings::js::{Root, RootedReference};
 use dom::bindings::reflector::{Reflectable, reflect_dom_object};
 use dom::event::Event;
@@ -41,7 +41,7 @@ pub struct KeyboardEvent {
 impl KeyboardEvent {
     fn new_inherited() -> KeyboardEvent {
         KeyboardEvent {
-            uievent: UIEvent::new_inherited(),
+            uievent: UIEvent::new_inherited(UIEventTypeId::KeyboardEvent),
             key: Cell::new(None),
             key_string: DOMRefCell::new(DOMString::new()),
             code: DOMRefCell::new(DOMString::new()),

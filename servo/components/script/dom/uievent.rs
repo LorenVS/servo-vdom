@@ -7,7 +7,7 @@ use dom::bindings::codegen::Bindings::UIEventBinding;
 use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, EventTypeId, UIEventTypeId};
 use dom::bindings::js::Root;
 use dom::bindings::js::{JS, MutNullableHeap, RootedReference};
 use dom::bindings::reflector::reflect_dom_object;
@@ -27,16 +27,16 @@ pub struct UIEvent {
 }
 
 impl UIEvent {
-    pub fn new_inherited() -> UIEvent {
+    pub fn new_inherited(type_id: UIEventTypeId) -> UIEvent {
         UIEvent {
-            event: Event::new_inherited(),
+            event: Event::new_inherited(EventTypeId::UIEvent(type_id)),
             view: Default::default(),
             detail: Cell::new(0),
         }
     }
 
     pub fn new_uninitialized(window: &Window) -> Root<UIEvent> {
-        reflect_dom_object(box UIEvent::new_inherited(),
+        reflect_dom_object(box UIEvent::new_inherited(UIEventTypeId::UIEvent),
                            GlobalRef::Window(window),
                            UIEventBinding::Wrap)
     }

@@ -7,7 +7,7 @@ use dom::bindings::codegen::Bindings::NodeListBinding::NodeListMethods;
 use dom::bindings::codegen::Bindings::RadioNodeListBinding;
 use dom::bindings::codegen::Bindings::RadioNodeListBinding::RadioNodeListMethods;
 use dom::bindings::global::GlobalRef;
-use dom::bindings::inheritance::Castable;
+use dom::bindings::inheritance::{Castable, NodeListTypeId};
 use dom::bindings::js::{JS, Root};
 use dom::bindings::reflector::reflect_dom_object;
 use dom::htmlinputelement::HTMLInputElement;
@@ -25,7 +25,7 @@ impl RadioNodeList {
     #[allow(unrooted_must_root)]
     fn new_inherited(list_type: NodeListType) -> RadioNodeList {
         RadioNodeList {
-            node_list: NodeList::new_inherited(list_type)
+            node_list: NodeList::new_inherited(NodeListTypeId::RadioNodeList, list_type)
         }
     }
 

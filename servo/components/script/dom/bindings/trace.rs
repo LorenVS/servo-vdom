@@ -35,7 +35,7 @@ use canvas_traits::{CompositionOrBlending, LineCapStyle, LineJoinStyle, Repetiti
 use cssparser::RGBA;
 use devtools_traits::CSSError;
 use devtools_traits::WorkerId;
-use dom::bindings::inheritance::EventTargetTypeId;
+use dom::bindings::inheritance::{DOMPointReadOnlyTypeId, DOMRectReadOnlyTypeId, EventTypeId,EventTargetTypeId, HTMLCollectionTypeId, NodeListTypeId};
 use dom::bindings::js::{JS, Root};
 use dom::bindings::refcounted::Trusted;
 use dom::bindings::reflector::{Reflectable, Reflector};
@@ -100,7 +100,12 @@ pub trait JSTraceable {
     fn trace(&self, trc: *mut JSTracer);
 }
 
+no_jsmanaged_fields!(DOMPointReadOnlyTypeId);
+no_jsmanaged_fields!(DOMRectReadOnlyTypeId);
+no_jsmanaged_fields!(EventTypeId);
 no_jsmanaged_fields!(EventTargetTypeId);
+no_jsmanaged_fields!(HTMLCollectionTypeId);
+no_jsmanaged_fields!(NodeListTypeId);
 
 no_jsmanaged_fields!(CSSError);
 
