@@ -46,23 +46,8 @@ impl BrowsingContext {
             let WindowProxyHandler(handler) = window.windowproxy_handler();
             assert!(!handler.is_null());
 
-            let cx = window.get_cx();
-            let _ar = JSAutoRequest::new(cx);
-            let parent = window.reflector().get_jsobject();
-            assert!(!parent.get().is_null());
-            assert!(((*JS_GetClass(parent.get())).flags & JSCLASS_IS_GLOBAL) != 0);
-            let _ac = JSAutoCompartment::new(cx, parent.get());
-            let window_proxy = RootedObject::new(cx,
-                NewWindowProxy(cx, parent, handler));
-            assert!(!window_proxy.ptr.is_null());
-
             let object = box BrowsingContext::new_inherited(frame_element);
-
             let raw = Box::into_raw(object);
-            SetProxyExtra(window_proxy.ptr, 0, PrivateValue(raw as *const _));
-
-            (*raw).init_reflector(window_proxy.ptr);
-
             Root::from_ref(&*raw)
         }
     }

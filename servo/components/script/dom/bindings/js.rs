@@ -489,8 +489,9 @@ impl RootCollection {
         debug_assert!(thread_state::get().is_script());
         unsafe {
             let mut roots = &mut *self.roots.get();
-            roots.push(untracked_reflector);
-            assert!(!(*untracked_reflector).get_jsobject().is_null())
+            if !(*untracked_reflector).get_jsobject().is_null() {
+                roots.push(untracked_reflector);
+            }
         }
     }
 
