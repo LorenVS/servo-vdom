@@ -33,9 +33,7 @@ impl HTMLFormControlsCollection {
     pub fn new(window: &Window, root: &Node, filter: Box<CollectionFilter + 'static>)
         -> Root<HTMLFormControlsCollection>
     {
-        reflect_dom_object(box HTMLFormControlsCollection::new_inherited(root, filter),
-                           GlobalRef::Window(window),
-                           HTMLFormControlsCollectionBinding::Wrap)
+        Root::new_box(box HTMLFormControlsCollection::new_inherited(root, filter))
     }
 
     // FIXME: This shouldn't need to be implemented here since HTMLCollection (the parent of

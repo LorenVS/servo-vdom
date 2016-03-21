@@ -28,6 +28,6 @@ impl HTMLFrameElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLFrameElement> {
         let element = HTMLFrameElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLFrameElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

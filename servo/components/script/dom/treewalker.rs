@@ -45,9 +45,7 @@ impl TreeWalker {
                            root_node: &Node,
                            what_to_show: u32,
                            filter: Filter) -> Root<TreeWalker> {
-        reflect_dom_object(box TreeWalker::new_inherited(root_node, what_to_show, filter),
-                           GlobalRef::Window(document.window()),
-                           TreeWalkerBinding::Wrap)
+        Root::new_box(box TreeWalker::new_inherited(root_node, what_to_show, filter))
     }
 
     pub fn new(document: &Document,

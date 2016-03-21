@@ -28,6 +28,6 @@ impl HTMLHtmlElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLHtmlElement> {
         let element = HTMLHtmlElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLHtmlElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

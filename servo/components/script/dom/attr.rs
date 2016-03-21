@@ -60,14 +60,12 @@ impl Attr {
                prefix: Option<Atom>,
                owner: Option<&Element>)
                -> Root<Attr> {
-        reflect_dom_object(box Attr::new_inherited(local_name,
+        Root::new_box(box Attr::new_inherited(local_name,
                                                    value,
                                                    name,
                                                    namespace,
                                                    prefix,
-                                                   owner),
-                           GlobalRef::Window(window),
-                           AttrBinding::Wrap)
+                                                   owner))
     }
 
     #[inline]

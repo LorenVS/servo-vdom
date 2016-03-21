@@ -30,6 +30,6 @@ impl HTMLDataElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLDataElement> {
         let element = HTMLDataElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLDataElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

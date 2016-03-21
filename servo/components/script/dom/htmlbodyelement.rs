@@ -45,7 +45,7 @@ impl HTMLBodyElement {
     pub fn new(localName: Atom, prefix: Option<DOMString>, document: &Document)
                -> Root<HTMLBodyElement> {
         let element = HTMLBodyElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLBodyElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

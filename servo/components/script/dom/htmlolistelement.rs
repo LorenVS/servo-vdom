@@ -30,6 +30,6 @@ impl HTMLOListElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLOListElement> {
         let element = HTMLOListElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLOListElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

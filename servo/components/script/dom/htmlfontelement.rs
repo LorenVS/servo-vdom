@@ -35,7 +35,7 @@ impl HTMLFontElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLFontElement> {
         let element = HTMLFontElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLFontElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

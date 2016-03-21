@@ -31,6 +31,6 @@ impl HTMLParamElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLParamElement> {
         let element = HTMLParamElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLParamElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

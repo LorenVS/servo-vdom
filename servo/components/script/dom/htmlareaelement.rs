@@ -37,7 +37,7 @@ impl HTMLAreaElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLAreaElement> {
         let element = HTMLAreaElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLAreaElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

@@ -42,7 +42,7 @@ impl DocumentType {
                document: &Document)
                -> Root<DocumentType> {
         let documenttype = DocumentType::new_inherited(name, public_id, system_id, document);
-        Node::reflect_node(box documenttype, document, DocumentTypeBinding::Wrap)
+        Root::new_box(box documenttype)
     }
 
     #[inline]

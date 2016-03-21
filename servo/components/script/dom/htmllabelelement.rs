@@ -39,7 +39,7 @@ impl HTMLLabelElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLLabelElement> {
         let element = HTMLLabelElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLLabelElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

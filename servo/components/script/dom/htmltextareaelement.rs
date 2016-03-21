@@ -112,7 +112,7 @@ impl HTMLTextAreaElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLTextAreaElement> {
         let element = HTMLTextAreaElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLTextAreaElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

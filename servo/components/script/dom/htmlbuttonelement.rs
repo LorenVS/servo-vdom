@@ -58,7 +58,7 @@ impl HTMLButtonElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLButtonElement> {
         let element = HTMLButtonElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLButtonElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

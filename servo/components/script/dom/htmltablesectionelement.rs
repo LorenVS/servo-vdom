@@ -36,7 +36,7 @@ impl HTMLTableSectionElement {
     pub fn new(localName: Atom, prefix: Option<DOMString>, document: &Document)
                -> Root<HTMLTableSectionElement> {
         let element = HTMLTableSectionElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLTableSectionElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

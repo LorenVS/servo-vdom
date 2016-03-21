@@ -31,6 +31,6 @@ impl HTMLUnknownElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLUnknownElement> {
         let element = HTMLUnknownElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLUnknownElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

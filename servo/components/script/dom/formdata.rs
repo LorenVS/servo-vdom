@@ -37,8 +37,7 @@ impl FormData {
     }
 
     pub fn new(form: Option<&HTMLFormElement>, global: GlobalRef) -> Root<FormData> {
-        reflect_dom_object(box FormData::new_inherited(form),
-                           global, FormDataBinding::Wrap)
+        Root::new_box(box FormData::new_inherited(form))
     }
 
     pub fn Constructor(global: GlobalRef, form: Option<&HTMLFormElement>) -> Fallible<Root<FormData>> {

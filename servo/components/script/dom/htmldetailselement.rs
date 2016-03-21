@@ -42,7 +42,7 @@ impl HTMLDetailsElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLDetailsElement> {
         let element = HTMLDetailsElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLDetailsElementBinding::Wrap)
+        Root::new_box(box element)
     }
 
     pub fn check_toggle_count(&self, number: u32) -> bool {

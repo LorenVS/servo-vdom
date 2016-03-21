@@ -31,6 +31,6 @@ impl HTMLSourceElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLSourceElement> {
         let element = HTMLSourceElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLSourceElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

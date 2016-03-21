@@ -40,7 +40,7 @@ impl HTMLTemplateElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLTemplateElement> {
         let element = HTMLTemplateElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLTemplateElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

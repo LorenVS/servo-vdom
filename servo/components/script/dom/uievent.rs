@@ -36,9 +36,7 @@ impl UIEvent {
     }
 
     pub fn new_uninitialized(window: &Window) -> Root<UIEvent> {
-        reflect_dom_object(box UIEvent::new_inherited(UIEventTypeId::UIEvent),
-                           GlobalRef::Window(window),
-                           UIEventBinding::Wrap)
+        Root::new_box(box UIEvent::new_inherited(UIEventTypeId::UIEvent))
     }
 
     pub fn new(window: &Window,

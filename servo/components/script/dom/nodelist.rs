@@ -42,8 +42,7 @@ impl NodeList {
 
     #[allow(unrooted_must_root)]
     pub fn new(window: &Window, list_type: NodeListType) -> Root<NodeList> {
-        reflect_dom_object(box NodeList::new_inherited(NodeListTypeId::NodeList, list_type),
-                           GlobalRef::Window(window), NodeListBinding::Wrap)
+        Root::new_box(box NodeList::new_inherited(NodeListTypeId::NodeList, list_type))
     }
 
     pub fn new_simple_list<T>(window: &Window, iter: T) -> Root<NodeList>

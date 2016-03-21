@@ -29,6 +29,6 @@ impl HTMLDListElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLDListElement> {
         let element = HTMLDListElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLDListElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

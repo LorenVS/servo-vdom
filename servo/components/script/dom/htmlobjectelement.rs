@@ -41,7 +41,7 @@ impl HTMLObjectElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLObjectElement> {
         let element = HTMLObjectElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLObjectElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

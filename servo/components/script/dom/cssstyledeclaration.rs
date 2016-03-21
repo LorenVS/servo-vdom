@@ -90,11 +90,9 @@ impl CSSStyleDeclaration {
                pseudo: Option<PseudoElement>,
                modification_access: CSSModificationAccess)
                -> Root<CSSStyleDeclaration> {
-        reflect_dom_object(box CSSStyleDeclaration::new_inherited(owner,
+        Root::new_box(box CSSStyleDeclaration::new_inherited(owner,
                                                                   pseudo,
-                                                                  modification_access),
-                           GlobalRef::Window(global),
-                           CSSStyleDeclarationBinding::Wrap)
+                                                                  modification_access))
     }
 
     fn get_computed_style(&self, property: &Atom) -> Option<DOMString> {

@@ -1399,16 +1399,14 @@ impl Document {
                source: DocumentSource,
                doc_loader: DocumentLoader)
                -> Root<Document> {
-        let document = reflect_dom_object(box Document::new_inherited(window,
+        let document = Root::new_box(box Document::new_inherited(window,
                                                                       browsing_context,
                                                                       url,
                                                                       doctype,
                                                                       content_type,
                                                                       last_modified,
                                                                       source,
-                                                                      doc_loader),
-                                          GlobalRef::Window(window),
-                                          DocumentBinding::Wrap);
+                                                                      doc_loader));
         {
             let node = document.upcast::<Node>();
             node.set_owner_doc(document.r());

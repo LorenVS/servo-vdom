@@ -28,8 +28,7 @@ impl ImageData {
             data: data.unwrap_or(Vec::new())
         };
 
-        reflect_dom_object(imagedata,
-                           global, ImageDataBinding::Wrap)
+        Root::new_box(imagedata)
     }
 
     #[allow(unsafe_code)]

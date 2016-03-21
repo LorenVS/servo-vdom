@@ -52,9 +52,7 @@ impl MouseEvent {
     }
 
     pub fn new_uninitialized(window: &Window) -> Root<MouseEvent> {
-        reflect_dom_object(box MouseEvent::new_inherited(),
-                           GlobalRef::Window(window),
-                           MouseEventBinding::Wrap)
+        Root::new_box(box MouseEvent::new_inherited())
     }
 
     pub fn new(window: &Window,

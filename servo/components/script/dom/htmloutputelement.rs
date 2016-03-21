@@ -34,7 +34,7 @@ impl HTMLOutputElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLOutputElement> {
         let element = HTMLOutputElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLOutputElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

@@ -27,9 +27,7 @@ impl Comment {
     }
 
     pub fn new(text: DOMString, document: &Document) -> Root<Comment> {
-        Node::reflect_node(box Comment::new_inherited(text, document),
-                           document,
-                           CommentBinding::Wrap)
+        Root::new_box(box Comment::new_inherited(text, document))
     }
 
     pub fn Constructor(global: GlobalRef, data: DOMString) -> Fallible<Root<Comment>> {

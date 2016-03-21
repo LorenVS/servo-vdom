@@ -32,7 +32,7 @@ impl HTMLBaseElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLBaseElement> {
         let element = HTMLBaseElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLBaseElementBinding::Wrap)
+        Root::new_box(box element)
     }
 
     /// https://html.spec.whatwg.org/multipage/#frozen-base-url

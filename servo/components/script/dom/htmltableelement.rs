@@ -42,7 +42,7 @@ impl HTMLTableElement {
     pub fn new(localName: Atom, prefix: Option<DOMString>, document: &Document)
                -> Root<HTMLTableElement> {
         let element = HTMLTableElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLTableElementBinding::Wrap)
+        Root::new_box(box element)
     }
 
     pub fn get_border(&self) -> Option<u32> {

@@ -31,6 +31,6 @@ impl HTMLFrameSetElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLFrameSetElement> {
         let element = HTMLFrameSetElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLFrameSetElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

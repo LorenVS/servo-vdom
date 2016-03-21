@@ -28,6 +28,6 @@ impl HTMLBRElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLBRElement> {
         let element = HTMLBRElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLBRElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

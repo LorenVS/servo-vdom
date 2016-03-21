@@ -32,8 +32,7 @@ impl NamedNodeMap {
     }
 
     pub fn new(window: &Window, elem: &Element) -> Root<NamedNodeMap> {
-        reflect_dom_object(box NamedNodeMap::new_inherited(elem),
-                           GlobalRef::Window(window), NamedNodeMapBinding::Wrap)
+        Root::new_box(box NamedNodeMap::new_inherited(elem))
     }
 }
 

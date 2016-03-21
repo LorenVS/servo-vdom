@@ -39,7 +39,7 @@ impl HTMLOptGroupElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLOptGroupElement> {
         let element = HTMLOptGroupElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLOptGroupElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

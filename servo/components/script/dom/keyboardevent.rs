@@ -58,9 +58,7 @@ impl KeyboardEvent {
     }
 
     pub fn new_uninitialized(window: &Window) -> Root<KeyboardEvent> {
-        reflect_dom_object(box KeyboardEvent::new_inherited(),
-                           GlobalRef::Window(window),
-                           KeyboardEventBinding::Wrap)
+        Root::new_box(box KeyboardEvent::new_inherited())
     }
 
     pub fn new(window: &Window,

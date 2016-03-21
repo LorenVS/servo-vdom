@@ -46,11 +46,10 @@ impl Touch {
               screen_x: Finite<f64>, screen_y: Finite<f64>,
               client_x: Finite<f64>, client_y: Finite<f64>,
               page_x: Finite<f64>, page_y: Finite<f64>) -> Root<Touch> {
-        reflect_dom_object(box Touch::new_inherited(identifier, target,
+        Root::new_box(box Touch::new_inherited(identifier, target,
                                                     screen_x, screen_y,
                                                     client_x, client_y,
-                                                    page_x, page_y),
-                           GlobalRef::Window(window), TouchBinding::Wrap)
+                                                    page_x, page_y))
     }
 }
 

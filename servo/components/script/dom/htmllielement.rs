@@ -28,6 +28,6 @@ impl HTMLLIElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLLIElement> {
         let element = HTMLLIElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLLIElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

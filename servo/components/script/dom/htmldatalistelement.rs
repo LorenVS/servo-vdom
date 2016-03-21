@@ -35,7 +35,7 @@ impl HTMLDataListElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLDataListElement> {
         let element = HTMLDataListElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLDataListElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

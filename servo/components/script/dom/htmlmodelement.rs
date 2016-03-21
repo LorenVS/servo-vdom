@@ -31,6 +31,6 @@ impl HTMLModElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLModElement> {
         let element = HTMLModElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLModElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

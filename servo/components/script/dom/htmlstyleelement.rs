@@ -42,7 +42,7 @@ impl HTMLStyleElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLStyleElement> {
         let element = HTMLStyleElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLStyleElementBinding::Wrap)
+        Root::new_box(box element)
     }
 
     pub fn parse_own_css(&self) {

@@ -31,6 +31,6 @@ impl HTMLPreElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLPreElement> {
         let element = HTMLPreElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLPreElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

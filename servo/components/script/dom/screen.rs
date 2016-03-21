@@ -22,9 +22,7 @@ impl Screen {
     }
 
     pub fn new(window: &Window) -> Root<Screen> {
-        reflect_dom_object(box Screen::new_inherited(),
-                           GlobalRef::Window(window),
-                           ScreenBinding::Wrap)
+        Root::new_box(box Screen::new_inherited())
     }
 }
 

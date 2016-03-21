@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::DOMRectReadOnlyBinding::{DOMRectReadOnlyMethods, Wrap};
+use dom::bindings::codegen::Bindings::DOMRectReadOnlyBinding::{DOMRectReadOnlyMethods};
 use dom::bindings::inheritance::{DOMRectReadOnlyTypeId,TopTypeId};
 use dom::bindings::typed::Typed;
 use dom::bindings::error::Fallible;
@@ -40,9 +40,7 @@ impl DOMRectReadOnly {
                width: f64,
                height: f64)
                -> Root<DOMRectReadOnly> {
-        reflect_dom_object(box DOMRectReadOnly::new_inherited(DOMRectReadOnlyTypeId::DOMRectReadOnly, x, y, width, height),
-                           global,
-                           Wrap)
+        Root::new_box(box DOMRectReadOnly::new_inherited(DOMRectReadOnlyTypeId::DOMRectReadOnly, x, y, width, height))
     }
 
     pub fn Constructor(global: GlobalRef,

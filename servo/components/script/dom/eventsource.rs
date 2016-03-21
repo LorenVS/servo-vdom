@@ -4,7 +4,7 @@
 
 use dom::bindings::cell::DOMRefCell;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
-use dom::bindings::codegen::Bindings::EventSourceBinding::{EventSourceInit, EventSourceMethods, Wrap};
+use dom::bindings::codegen::Bindings::EventSourceBinding::{EventSourceInit, EventSourceMethods};
 use dom::bindings::error::{Error, Fallible};
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::EventTargetTypeId;
@@ -44,7 +44,7 @@ impl EventSource {
     }
 
     fn new(global: GlobalRef, url: Url, with_credentials: bool) -> Root<EventSource> {
-        reflect_dom_object(box EventSource::new_inherited(url, with_credentials), global, Wrap)
+        Root::new_box(box EventSource::new_inherited(url, with_credentials))
     }
 
     pub fn Constructor(global: GlobalRef,

@@ -31,6 +31,6 @@ impl HTMLQuoteElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLQuoteElement> {
         let element = HTMLQuoteElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLQuoteElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

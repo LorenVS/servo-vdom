@@ -85,8 +85,7 @@ impl HTMLCollection {
 
     #[allow(unrooted_must_root)]
     pub fn new(window: &Window, root: &Node, filter: Box<CollectionFilter + 'static>) -> Root<HTMLCollection> {
-        reflect_dom_object(box HTMLCollection::new_inherited(HTMLCollectionTypeId::HTMLCollection, root, filter),
-                           GlobalRef::Window(window), HTMLCollectionBinding::Wrap)
+        Root::new_box(box HTMLCollection::new_inherited(HTMLCollectionTypeId::HTMLCollection, root, filter))
     }
 
     pub fn create(window: &Window, root: &Node,

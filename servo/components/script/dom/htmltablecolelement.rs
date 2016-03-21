@@ -31,6 +31,6 @@ impl HTMLTableColElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLTableColElement> {
         let element = HTMLTableColElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLTableColElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

@@ -32,7 +32,7 @@ impl HTMLProgressElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLProgressElement> {
         let element = HTMLProgressElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLProgressElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

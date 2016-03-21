@@ -29,9 +29,7 @@ impl DOMRectList {
     pub fn new<T>(window: &Window, rects: T) -> Root<DOMRectList>
         where T: Iterator<Item = Root<DOMRect>>
     {
-        reflect_dom_object(box DOMRectList::new_inherited(rects),
-                           GlobalRef::Window(window),
-                           DOMRectListBinding::Wrap)
+        Root::new_box(box DOMRectList::new_inherited(rects))
     }
 }
 

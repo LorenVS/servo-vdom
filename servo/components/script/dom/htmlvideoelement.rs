@@ -29,6 +29,6 @@ impl HTMLVideoElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLVideoElement> {
         let element = HTMLVideoElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLVideoElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

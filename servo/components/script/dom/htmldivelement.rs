@@ -30,7 +30,7 @@ impl HTMLDivElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLDivElement> {
         let element = HTMLDivElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLDivElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

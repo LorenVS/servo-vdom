@@ -41,7 +41,7 @@ impl HTMLFieldSetElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLFieldSetElement> {
         let element = HTMLFieldSetElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLFieldSetElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

@@ -31,6 +31,6 @@ impl HTMLAudioElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLAudioElement> {
         let element = HTMLAudioElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLAudioElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

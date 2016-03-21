@@ -31,6 +31,6 @@ impl HTMLDirectoryElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLDirectoryElement> {
         let element = HTMLDirectoryElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLDirectoryElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

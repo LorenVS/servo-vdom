@@ -70,7 +70,7 @@ impl HTMLLinkElement {
                document: &Document,
                creator: ElementCreator) -> Root<HTMLLinkElement> {
         let element = HTMLLinkElement::new_inherited(localName, prefix, document, creator);
-        Node::reflect_node(box element, document, HTMLLinkElementBinding::Wrap)
+        Root::new_box(box element)
     }
 
     pub fn get_stylesheet(&self) -> Option<Arc<Stylesheet>> {

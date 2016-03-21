@@ -28,6 +28,6 @@ impl HTMLSpanElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLSpanElement> {
         let element = HTMLSpanElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLSpanElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

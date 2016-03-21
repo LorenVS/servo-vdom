@@ -43,7 +43,7 @@ impl HTMLCanvasElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLCanvasElement> {
         let element = HTMLCanvasElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLCanvasElementBinding::Wrap)
+        Root::new_box(box element)
     }
 
     pub fn get_size(&self) -> Size2D<i32> {

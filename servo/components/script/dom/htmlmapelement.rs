@@ -30,6 +30,6 @@ impl HTMLMapElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLMapElement> {
         let element = HTMLMapElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLMapElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

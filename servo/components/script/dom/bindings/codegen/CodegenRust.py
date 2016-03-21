@@ -2228,62 +2228,6 @@ assert!(%(copyFunc)s(cx, %(obj)s.handle(), unforgeable_holder.handle()));
     return copyCode
 
 
-class CGWrapMethod(CGAbstractMethod):
-    """
-    Class that generates the FooBinding::Wrap function for non-callback
-    interfaces.
-    """
-    def __init__(self, descriptor):
-        assert not descriptor.interface.isCallback()
-        if not descriptor.isGlobal():
-            args = [Argument('*mut JSContext', 'cx'), Argument('GlobalRef', 'scope'),
-                    Argument("Box<%s>" % descriptor.concreteType, 'object')]
-        else:
-            args = [Argument('*mut JSContext', 'cx'),
-                    Argument("Box<%s>" % descriptor.concreteType, 'object')]
-        retval = 'Root<%s>' % descriptor.concreteType
-        CGAbstractMethod.__init__(self, descriptor, 'Wrap', retval, args,
-                                  pub=True, unsafe=True)
-
-    def definition_body(self):
-        unforgeable = CopyUnforgeablePropertiesToInstance(self.descriptor)
-        if not self.descriptor.isGlobal():
-            create = CreateBindingJSObject(self.descriptor, "scope")
-            return CGGeneric("""\
-let _ar = JSAutoRequest::new(cx);
-let scope = scope.reflector().get_jsobject();
-assert!(!scope.get().is_null());
-assert!(((*JS_GetClass(scope.get())).flags & JSCLASS_IS_GLOBAL) != 0);
-
-let mut proto = RootedObject::new(cx, ptr::null_mut());
-let _ac = JSAutoCompartment::new(cx, scope.get());
-GetProtoObject(cx, scope, proto.handle_mut());
-assert!(!proto.ptr.is_null());
-
-%(createObject)s
-
-%(copyUnforgeable)s
-(*raw).init_reflector(obj.ptr);
-
-Root::from_ref(&*raw)""" % {'copyUnforgeable': unforgeable, 'createObject': create})
-        else:
-            create = CreateBindingJSObject(self.descriptor)
-            return CGGeneric("""\
-let _ar = JSAutoRequest::new(cx);
-%(createObject)s
-
-let _ac = JSAutoCompartment::new(cx, obj.ptr);
-let mut proto = RootedObject::new(cx, ptr::null_mut());
-GetProtoObject(cx, obj.handle(), proto.handle_mut());
-JS_SetPrototype(cx, obj.handle(), proto.handle());
-
-%(copyUnforgeable)s
-(*raw).init_reflector(obj.ptr);
-
-Root::from_ref(&*raw)\
-""" % {'copyUnforgeable': unforgeable, 'createObject': create})
-
-
 class CGIDLInterface(CGThing):
     """
     Class for codegen of an implementation of the IDLInterface trait.
@@ -5057,8 +5001,6 @@ class CGDescriptor(CGThing):
             else:
                 cgThings.append(CGDOMJSClass(descriptor))
                 pass
-
-            cgThings.append(CGWrapMethod(descriptor))
 
         if not descriptor.interface.isCallback():
             if descriptor.concrete or descriptor.hasDescendants():

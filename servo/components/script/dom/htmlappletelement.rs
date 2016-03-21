@@ -35,7 +35,7 @@ impl HTMLAppletElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLAppletElement> {
         let element = HTMLAppletElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLAppletElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

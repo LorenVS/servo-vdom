@@ -32,7 +32,7 @@ impl HTMLHRElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLHRElement> {
         let element = HTMLHRElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLHRElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

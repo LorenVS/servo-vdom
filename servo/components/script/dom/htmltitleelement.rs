@@ -33,7 +33,7 @@ impl HTMLTitleElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLTitleElement> {
         let element = HTMLTitleElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLTitleElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

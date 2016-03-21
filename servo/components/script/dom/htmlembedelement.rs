@@ -28,6 +28,6 @@ impl HTMLEmbedElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLEmbedElement> {
         let element = HTMLEmbedElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLEmbedElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

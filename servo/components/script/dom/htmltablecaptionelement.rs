@@ -31,6 +31,6 @@ impl HTMLTableCaptionElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLTableCaptionElement> {
         let element = HTMLTableCaptionElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLTableCaptionElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

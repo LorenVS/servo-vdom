@@ -41,7 +41,7 @@ impl HTMLMetaElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLMetaElement> {
         let element = HTMLMetaElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLMetaElementBinding::Wrap)
+        Root::new_box(box element)
     }
 
     pub fn get_stylesheet(&self) -> Option<Arc<Stylesheet>> {

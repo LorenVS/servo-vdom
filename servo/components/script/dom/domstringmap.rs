@@ -28,9 +28,7 @@ impl DOMStringMap {
 
     pub fn new(element: &HTMLElement) -> Root<DOMStringMap> {
         let window = window_from_node(element);
-        reflect_dom_object(box DOMStringMap::new_inherited(element),
-                           GlobalRef::Window(window.r()),
-                           DOMStringMapBinding::Wrap)
+        Root::new_box(box DOMStringMap::new_inherited(element))
     }
 }
 

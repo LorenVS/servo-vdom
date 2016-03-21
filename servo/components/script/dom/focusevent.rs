@@ -39,7 +39,7 @@ impl FocusEvent {
                detail: i32,
                related_target: Option<&EventTarget>) -> Root<FocusEvent> {
         let event = box FocusEvent::new_inherited();
-        let ev = reflect_dom_object(event, GlobalRef::Window(window), FocusEventBinding::Wrap);
+        let ev = Root::new_box(event);
         ev.upcast::<UIEvent>().InitUIEvent(type_,
                                            can_bubble == EventBubbles::Bubbles,
                                            cancelable == EventCancelable::Cancelable,

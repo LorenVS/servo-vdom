@@ -35,7 +35,7 @@ impl HTMLDialogElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLDialogElement> {
         let element = HTMLDialogElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLDialogElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

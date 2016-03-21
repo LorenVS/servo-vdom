@@ -31,9 +31,7 @@ impl RadioNodeList {
 
     #[allow(unrooted_must_root)]
     pub fn new(window: &Window, list_type: NodeListType) -> Root<RadioNodeList> {
-        reflect_dom_object(box RadioNodeList::new_inherited(list_type),
-                           GlobalRef::Window(window),
-                           RadioNodeListBinding::Wrap)
+        Root::new_box(box RadioNodeList::new_inherited(list_type))
     }
 
     pub fn new_simple_list<T>(window: &Window, iter: T) -> Root<RadioNodeList>

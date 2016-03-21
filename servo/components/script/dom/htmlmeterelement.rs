@@ -31,7 +31,7 @@ impl HTMLMeterElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLMeterElement> {
         let element = HTMLMeterElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLMeterElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }
 

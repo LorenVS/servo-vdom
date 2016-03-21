@@ -4,7 +4,7 @@
 
 use dom::bindings::codegen::Bindings::DOMPointBinding::{DOMPointInit, DOMPointMethods};
 use dom::bindings::codegen::Bindings::DOMPointReadOnlyBinding::DOMPointReadOnlyMethods;
-use dom::bindings::codegen::Bindings::DOMQuadBinding::{DOMQuadInit, DOMQuadMethods, Wrap};
+use dom::bindings::codegen::Bindings::DOMQuadBinding::{DOMQuadInit, DOMQuadMethods};
 use dom::bindings::codegen::Bindings::DOMRectBinding::DOMRectMethods;
 use dom::bindings::codegen::Bindings::DOMRectReadOnlyBinding::{DOMRectInit, DOMRectReadOnlyMethods};
 use dom::bindings::error::Fallible;
@@ -45,9 +45,7 @@ impl DOMQuad {
                p2: &DOMPoint,
                p3: &DOMPoint,
                p4: &DOMPoint) -> Root<DOMQuad> {
-        reflect_dom_object(box DOMQuad::new_inherited(p1, p2, p3, p4),
-                           global,
-                           Wrap)
+        Root::new_box(box DOMQuad::new_inherited(p1, p2, p3, p4))
     }
 
     pub fn Constructor(global: GlobalRef,

@@ -28,6 +28,6 @@ impl HTMLTimeElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLTimeElement> {
         let element = HTMLTimeElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLTimeElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

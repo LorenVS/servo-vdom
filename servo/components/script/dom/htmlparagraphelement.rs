@@ -31,6 +31,6 @@ impl HTMLParagraphElement {
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLParagraphElement> {
         let element = HTMLParagraphElement::new_inherited(localName, prefix, document);
-        Node::reflect_node(box element, document, HTMLParagraphElementBinding::Wrap)
+        Root::new_box(box element)
     }
 }

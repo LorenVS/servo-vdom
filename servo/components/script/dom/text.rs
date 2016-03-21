@@ -31,8 +31,7 @@ impl Text {
     }
 
     pub fn new(text: DOMString, document: &Document) -> Root<Text> {
-        Node::reflect_node(box Text::new_inherited(text, document),
-                           document, TextBinding::Wrap)
+        Root::new_box(box Text::new_inherited(text, document))
     }
 
     pub fn Constructor(global: GlobalRef, text: DOMString) -> Fallible<Root<Text>> {

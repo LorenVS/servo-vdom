@@ -48,9 +48,7 @@ impl HTMLTableRowElement {
     #[allow(unrooted_must_root)]
     pub fn new(localName: Atom, prefix: Option<DOMString>, document: &Document)
                -> Root<HTMLTableRowElement> {
-        Node::reflect_node(box HTMLTableRowElement::new_inherited(localName, prefix, document),
-                           document,
-                           HTMLTableRowElementBinding::Wrap)
+        Root::new_box(box HTMLTableRowElement::new_inherited(localName, prefix, document))
     }
 }
 
