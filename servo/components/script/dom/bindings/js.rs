@@ -551,7 +551,6 @@ impl<T: Reflectable> Root<T> {
         debug_assert!(thread_state::get().is_script());
         STACK_ROOTS.with(|ref collection| {
             let RootCollectionPtr(collection) = collection.get().unwrap();
-            unsafe { (*collection).root(&*(**unrooted).reflector()) }
             Root {
                 ptr: unrooted,
                 root_list: collection,
