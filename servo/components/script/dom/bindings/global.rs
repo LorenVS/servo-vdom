@@ -12,7 +12,7 @@ use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::conversions::root_from_object;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflectable, Reflector};
-use dom::window::{self, ScriptHelpers};
+use dom::window::{self};
 use ipc_channel::ipc::IpcSender;
 use js::jsapi::GetGlobalForObjectCrossCompartment;
 use js::jsapi::{JSObject, JS_GetClass, MutableHandleValue};
@@ -183,13 +183,6 @@ impl<'a> GlobalRef<'a> {
     pub fn process_event(&self, msg: CommonScriptMsg) {
         match *self {
             GlobalRef::Window(_) => ScriptThread::process_event(msg)
-        }
-    }
-
-    /// Evaluate the JS messages on the `RootedValue` of this global
-    pub fn evaluate_js_on_global_with_result(&self, code: &str, rval: MutableHandleValue) {
-        match *self {
-            GlobalRef::Window(window) => window.evaluate_js_on_global_with_result(code, rval)
         }
     }
 

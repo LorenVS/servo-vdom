@@ -11,7 +11,7 @@ use dom::bindings::codegen::Bindings::EventHandlerBinding::{EventHandlerNonNull,
 use dom::bindings::codegen::Bindings::FunctionBinding::Function;
 use dom::bindings::codegen::Bindings::WindowBinding::{ScrollBehavior, ScrollToOptions};
 use dom::bindings::codegen::Bindings::WindowBinding::{FrameRequestCallback, WindowMethods};
-use dom::bindings::error::{Error, Fallible, report_pending_exception};
+use dom::bindings::error::{Error, Fallible};
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable,EventTargetTypeId};
 use dom::bindings::js::RootedReference;
@@ -29,14 +29,10 @@ use dom::screen::Screen;
 use euclid::{Point2D, Rect, Size2D};
 use gfx_traits::LayerId;
 use ipc_channel::ipc::{self, IpcSender};
-use js::jsapi::{Evaluate2, MutableHandleValue};
+use js::jsapi::{MutableHandleValue};
 use js::jsapi::{HandleValue, JSContext};
-use js::jsapi::{JSAutoCompartment, JSAutoRequest, JS_GC, JS_GetRuntime};
-use js::rust::CompileOptionsWrapper;
-use js::rust::Runtime;
 use layout_interface::{ContentBoxResponse, ContentBoxesResponse, ResolvedStyleResponse, ScriptReflow};
 use layout_interface::{LayoutChan, LayoutRPC, Msg, Reflow, ReflowQueryType, MarginStyleResponse};
-use libc;
 use msg::constellation_msg::{ConstellationChan, LoadData, PipelineId, SubpageId, WindowSizeData};
 use net_traits::ResourceThread;
 use net_traits::image_cache_thread::{ImageCacheChan, ImageCacheThread};
@@ -56,7 +52,6 @@ use std::borrow::ToOwned;
 use std::cell::Cell;
 use std::collections::HashSet;
 use std::default::Default;
-use std::ffi::CString;
 use std::io::{Write, stderr, stdout};
 use std::rc::Rc;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -229,11 +224,9 @@ pub struct Window {
 impl Window {
     #[allow(unsafe_code)]
     pub fn clear_js_runtime_for_script_deallocation(&self) {
-        unsafe {
-            self.browsing_context.set(None);
-            self.current_state.set(WindowState::Zombie);
-            self.ignore_further_async_events.store(true, Ordering::Relaxed);
-        }
+        self.browsing_context.set(None);
+        self.current_state.set(WindowState::Zombie);
+        self.ignore_further_async_events.store(true, Ordering::Relaxed);
     }
 
     pub fn dom_manipulation_task_source(&self) -> Box<TaskSource<DOMManipulationTask> + Send> {
@@ -704,26 +697,6 @@ impl WindowMethods for Window {
     fn DevicePixelRatio(&self) -> Finite<f64> {
         let dpr = self.window_size.get().map_or(1.0f32, |data| data.device_pixel_ratio.get());
         Finite::wrap(dpr as f64)
-    }
-}
-
-pub trait ScriptHelpers {
-    fn evaluate_js_on_global_with_result(self, code: &str,
-                                         rval: MutableHandleValue);
-    fn evaluate_script_on_global_with_result(self, code: &str, filename: &str,
-                                             rval: MutableHandleValue);
-}
-
-impl<'a, T: Reflectable> ScriptHelpers for &'a T {
-    fn evaluate_js_on_global_with_result(self, code: &str,
-                                         rval: MutableHandleValue) {
-        self.evaluate_script_on_global_with_result(code, "", rval)
-    }
-
-    #[allow(unsafe_code)]
-    fn evaluate_script_on_global_with_result(self, code: &str, filename: &str,
-                                             rval: MutableHandleValue) {
-        panic!("called evaluate_script_on_global_with_result");
     }
 }
 

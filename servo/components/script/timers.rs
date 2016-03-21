@@ -8,7 +8,6 @@ use dom::bindings::codegen::Bindings::FunctionBinding::Function;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::reflector::Reflectable;
 use dom::bindings::trace::JSTraceable;
-use dom::window::ScriptHelpers;
 use euclid::length::Length;
 use heapsize::HeapSizeOf;
 use ipc_channel::ipc::IpcSender;
