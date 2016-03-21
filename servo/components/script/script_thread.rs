@@ -27,7 +27,7 @@ use dom::bindings::codegen::Bindings::DocumentBinding::{DocumentMethods, Documen
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::Castable;
-use dom::bindings::js::{JS, MutNullableHeap, Root, RootCollection, trace_roots};
+use dom::bindings::js::{JS, MutNullableHeap, Root, RootCollection};
 use dom::bindings::js::{RootCollectionPtr, RootedReference};
 use dom::bindings::refcounted::{LiveDOMReferences, Trusted, TrustedReference, trace_refcounted_objects};
 use dom::bindings::trace::{JSTraceable, trace_traceables};
@@ -103,19 +103,8 @@ use util::str::DOMString;
 use util::thread;
 use util::thread_state;
 
-thread_local!(pub static STACK_ROOTS: Cell<Option<RootCollectionPtr>> = Cell::new(None));
 thread_local!(static SCRIPT_THREAD_ROOT: RefCell<Option<*const ScriptThread>> = RefCell::new(None));
 
-unsafe extern fn trace_rust_roots(tr: *mut JSTracer, _data: *mut libc::c_void) {
-    SCRIPT_THREAD_ROOT.with(|root| {
-        if let Some(script_thread) = *root.borrow() {
-            (*script_thread).trace(tr);
-        }
-    });
-
-    trace_traceables(tr);
-    trace_roots(tr);
-}
 
 /// A document load that is in the process of fetching the requested resource. Contains
 /// data that will need to be present when the document and frame tree entry are created,
@@ -338,24 +327,6 @@ impl MainThreadScriptChan {
     }
 }
 
-pub struct StackRootTLS<'a>(PhantomData<&'a u32>);
-
-impl<'a> StackRootTLS<'a> {
-    pub fn new(roots: &'a RootCollection) -> StackRootTLS<'a> {
-        STACK_ROOTS.with(|ref r| {
-            r.set(Some(RootCollectionPtr(roots as *const _)))
-        });
-        StackRootTLS(PhantomData)
-    }
-}
-
-impl<'a> Drop for StackRootTLS<'a> {
-    fn drop(&mut self) {
-        STACK_ROOTS.with(|ref r| r.set(None));
-    }
-}
-
-
 /// Information for an entire page. Pages are top-level browsing contexts and can contain multiple
 /// frames.
 #[derive(JSTraceable)]
@@ -500,7 +471,6 @@ impl ScriptThreadFactory for ScriptThread {
                                                move || {
             PipelineNamespace::install(state.pipeline_namespace_id);
             let roots = RootCollection::new();
-            let _stack_roots_tls = StackRootTLS::new(&roots);
             let chan = MainThreadScriptChan(script_chan.clone());
             let channel_for_reporter = chan.clone();
             let id = state.id;
@@ -530,56 +500,6 @@ impl ScriptThreadFactory for ScriptThread {
             // This must always be the very last operation performed before the thread completes
             failsafe.neuter();
         }, ConstellationMsg::Failure(failure_info), const_chan);
-    }
-}
-
-thread_local!(static GC_CYCLE_START: Cell<Option<Tm>> = Cell::new(None));
-thread_local!(static GC_SLICE_START: Cell<Option<Tm>> = Cell::new(None));
-
-unsafe extern "C" fn gc_slice_callback(_rt: *mut JSRuntime, progress: GCProgress, desc: *const GCDescription) {
-    match progress {
-        GCProgress::GC_CYCLE_BEGIN => {
-            GC_CYCLE_START.with(|start| {
-                start.set(Some(now()));
-                println!("GC cycle began");
-            })
-        },
-        GCProgress::GC_SLICE_BEGIN => {
-            GC_SLICE_START.with(|start| {
-                start.set(Some(now()));
-                println!("GC slice began");
-            })
-        },
-        GCProgress::GC_SLICE_END => {
-            GC_SLICE_START.with(|start| {
-                let dur = now() - start.get().unwrap();
-                start.set(None);
-                println!("GC slice ended: duration={}", dur);
-            })
-        },
-        GCProgress::GC_CYCLE_END => {
-            GC_CYCLE_START.with(|start| {
-                let dur = now() - start.get().unwrap();
-                start.set(None);
-                println!("GC cycle ended: duration={}", dur);
-            })
-        },
-    };
-    if !desc.is_null() {
-        let desc: &GCDescription = &*desc;
-        let invocationKind = match desc.invocationKind_ {
-            JSGCInvocationKind::GC_NORMAL => "GC_NORMAL",
-            JSGCInvocationKind::GC_SHRINK => "GC_SHRINK",
-        };
-        println!("  isCompartment={}, invocationKind={}", desc.isCompartment_, invocationKind);
-    }
-    let _ = stdout().flush();
-}
-
-unsafe extern "C" fn debug_gc_callback(_rt: *mut JSRuntime, status: JSGCStatus, _data: *mut libc::c_void) {
-    match status {
-        JSGCStatus::JSGC_BEGIN => thread_state::enter(thread_state::IN_GC),
-        JSGCStatus::JSGC_END   => thread_state::exit(thread_state::IN_GC),
     }
 }
 

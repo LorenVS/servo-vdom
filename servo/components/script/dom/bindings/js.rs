@@ -34,7 +34,6 @@ use heapsize::HeapSizeOf;
 use js::jsapi::{Heap, JSTracer};
 use js::jsval::JSVal;
 use layout_interface::TrustedNodeAddress;
-use script_thread::STACK_ROOTS;
 use std::cell::UnsafeCell;
 use std::default::Default;
 use std::hash::{Hash, Hasher};
@@ -483,17 +482,6 @@ impl RootCollection {
             roots: UnsafeCell::new(vec![]),
         }
     }
-}
-
-/// SM Callback that traces the rooted reflectors
-pub unsafe fn trace_roots(tracer: *mut JSTracer) {
-    STACK_ROOTS.with(|ref collection| {
-        let RootCollectionPtr(collection) = collection.get().unwrap();
-        let collection = &*(*collection).roots.get();
-        for root in collection {
-            trace_reflector(tracer, "reflector", &**root);
-        }
-    });
 }
 
 /// A rooted reference to a DOM object.
