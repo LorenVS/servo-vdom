@@ -1055,7 +1055,7 @@ impl Window {
         let js_runtime = self.js_runtime.borrow();
         let js_runtime = js_runtime.as_ref().unwrap();
         let element = response.node_address.and_then(|parent_node_address| {
-            let node = from_untrusted_node_address(js_runtime.rt(), parent_node_address);
+            let node = from_untrusted_node_address(parent_node_address);
             Root::downcast(node)
         });
         (element, response.rect)

@@ -906,7 +906,7 @@ fn first_node_not_in<I>(mut nodes: I, not_in: &[NodeOrString]) -> Option<Root<No
 /// If the given untrusted node address represents a valid DOM node in the given runtime,
 /// returns it.
 #[allow(unsafe_code)]
-pub fn from_untrusted_node_address(_runtime: *mut JSRuntime, candidate: UntrustedNodeAddress)
+pub fn from_untrusted_node_address(candidate: UntrustedNodeAddress)
     -> Root<Node> {
     unsafe {
         // https://github.com/servo/servo/issues/6383

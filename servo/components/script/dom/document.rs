@@ -618,7 +618,7 @@ impl Document {
     }
 
     pub fn handle_mouse_event(&self,
-                              js_runtime: *mut JSRuntime,
+                              _js_runtime: *mut JSRuntime,
                               _: MouseButton,
                               client_point: Point2D<f32>,
                               mouse_event_type: MouseEventType) {
@@ -634,7 +634,7 @@ impl Document {
         let node = match self.window.hit_test_query(page_point, false) {
             Some(node_address) => {
                 debug!("node address is {:?}", node_address);
-                node::from_untrusted_node_address(js_runtime, node_address)
+                node::from_untrusted_node_address(node_address)
             },
             None => return,
         };
@@ -727,7 +727,7 @@ impl Document {
     }
 
     pub fn handle_mouse_move_event(&self,
-                                   js_runtime: *mut JSRuntime,
+                                   _js_runtime: *mut JSRuntime,
                                    client_point: Option<Point2D<f32>>,
                                    prev_mouse_over_target: &MutNullableHeap<JS<Element>>) {
         let page_point = match client_point {
@@ -746,7 +746,7 @@ impl Document {
         let client_point = client_point.unwrap();
 
         let maybe_new_target = self.window.hit_test_query(page_point, true).and_then(|address| {
-            let node = node::from_untrusted_node_address(js_runtime, address);
+            let node = node::from_untrusted_node_address(address);
             node.inclusive_ancestors()
                 .filter_map(Root::downcast::<Element>)
                 .next()
@@ -814,7 +814,7 @@ impl Document {
     }
 
     pub fn handle_touch_event(&self,
-                              js_runtime: *mut JSRuntime,
+                              _js_runtime: *mut JSRuntime,
                               event_type: TouchEventType,
                               TouchId(identifier): TouchId,
                               point: Point2D<f32>)
@@ -827,7 +827,7 @@ impl Document {
         };
 
         let node = match self.window.hit_test_query(point, false) {
-            Some(node_address) => node::from_untrusted_node_address(js_runtime, node_address),
+            Some(node_address) => node::from_untrusted_node_address(node_address),
             None => return false,
         };
         let el = match node.downcast::<Element>() {
@@ -2320,11 +2320,9 @@ impl DocumentMethods for Document {
             return None;
         }
 
-        let js_runtime = unsafe { JS_GetRuntime(window.get_cx()) };
-
         match self.window.hit_test_query(*point, false) {
             Some(untrusted_node_address) => {
-                let node = node::from_untrusted_node_address(js_runtime, untrusted_node_address);
+                let node = node::from_untrusted_node_address(untrusted_node_address);
                 let parent_node = node.GetParentNode().unwrap();
                 let element_ref = node.downcast::<Element>().unwrap_or_else(|| {
                     parent_node.downcast::<Element>().unwrap()
