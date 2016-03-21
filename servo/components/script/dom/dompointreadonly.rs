@@ -78,9 +78,9 @@ impl Typed for DOMPointReadOnly {
         TopTypeId::DOMPointReadOnly(self.type_id)
     }
 
-    fn is_subtype(ty : TopTypeId) -> bool {
+    fn is_subtype(ty : &TopTypeId) -> bool {
         match ty {
-            TopTypeId::DOMPointReadOnly(_) => true,
+            &TopTypeId::DOMPointReadOnly(_) => true,
             _ => false
         }
     }

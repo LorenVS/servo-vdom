@@ -6,7 +6,6 @@
 
 pub use dom::bindings::codegen::InheritTypes::*;
 
-use dom::bindings::conversions::get_dom_class;
 use dom::bindings::conversions::{DerivedFrom, IDLInterface};
 use dom::bindings::reflector::Reflectable;
 use dom::bindings::typed::Typed;
@@ -17,10 +16,10 @@ use std::mem;
 pub trait Castable: IDLInterface + Reflectable + Sized + Typed {
     /// Check whether a DOM object implements one of its deriving interfaces.
     fn is<T>(&self) -> bool
-        where T: DerivedFrom<Self>
+        where T: DerivedFrom<Self> + Typed
     {
-        let class = unsafe { get_dom_class(self.reflector().get_jsobject().get()).unwrap() };
-        T::derives(class)
+        let ty = self.get_type();
+        T::is_subtype(&ty)
     }
 
     /// Cast a DOM object upwards to one of the interfaces it derives from.

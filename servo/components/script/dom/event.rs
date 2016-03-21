@@ -272,9 +272,9 @@ impl Typed for Event {
         TopTypeId::Event(self.type_id)
     }
 
-    fn is_subtype(ty: TopTypeId) -> bool {
+    fn is_subtype(ty: &TopTypeId) -> bool {
         match ty {
-            TopTypeId::Event(_) => true,
+            &TopTypeId::Event(_) => true,
             _ => false
         }
     }

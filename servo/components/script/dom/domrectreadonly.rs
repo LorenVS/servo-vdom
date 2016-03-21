@@ -138,9 +138,9 @@ impl Typed for DOMRectReadOnly {
         TopTypeId::DOMRectReadOnly(self.type_id)
     }
 
-    fn is_subtype(ty : TopTypeId) -> bool{
+    fn is_subtype(ty : &TopTypeId) -> bool{
         match ty {
-            TopTypeId::DOMRectReadOnly(_) => true,
+            &TopTypeId::DOMRectReadOnly(_) => true,
             _ => false
         }
     }

@@ -111,9 +111,9 @@ impl Typed for NodeList {
         TopTypeId::NodeList(self.type_id)
     }
 
-    fn is_subtype(ty: TopTypeId) -> bool {
+    fn is_subtype(ty: &TopTypeId) -> bool {
         match ty {
-            TopTypeId::NodeList(_) => true,
+            &TopTypeId::NodeList(_) => true,
             _ => false
         }
     }

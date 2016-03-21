@@ -14,7 +14,7 @@ pub trait Typed {
     fn get_type(&self) -> TopTypeId;
 
     /// Determines whether another top type is a subtype of this interface.
-    fn is_subtype(ty: TopTypeId) -> bool;
+    fn is_subtype(ty: &TopTypeId) -> bool;
 }
 
 #[macro_export]
@@ -25,9 +25,9 @@ macro_rules! make_typed(
                 self.upcast::<$upto>().get_type()
             }
 
-            fn is_subtype(ty: TopTypeId) -> bool {
+            fn is_subtype(ty: &TopTypeId) -> bool {
                 match ty {
-                    $pattern => true,
+                    &$pattern => true,
                     _ => false
                 }
             }
@@ -150,7 +150,7 @@ make_typed!(HTMLDListElement, EventTarget,
 	TopTypeId::EventTarget(EventTargetTypeId::Node(NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLDListElement)))));
 
 make_typed!(HTMLElement, EventTarget,
-	TopTypeId::EventTarget(EventTargetTypeId::Node(NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLElement)))));
+	TopTypeId::EventTarget(EventTargetTypeId::Node(NodeTypeId::Element(ElementTypeId::HTMLElement(_)))));
 
 make_typed!(HTMLEmbedElement, EventTarget,
 	TopTypeId::EventTarget(EventTargetTypeId::Node(NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLEmbedElement)))));

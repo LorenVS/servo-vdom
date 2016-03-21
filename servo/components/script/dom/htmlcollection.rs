@@ -238,9 +238,9 @@ impl Typed for HTMLCollection {
         TopTypeId::HTMLCollection(self.type_id)
     }
 
-    fn is_subtype(ty : TopTypeId) -> bool {
+    fn is_subtype(ty : &TopTypeId) -> bool {
         match ty {
-            TopTypeId::HTMLCollection(_) => true,
+            &TopTypeId::HTMLCollection(_) => true,
             _ => false
         }
     }

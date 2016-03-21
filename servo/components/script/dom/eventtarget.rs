@@ -556,9 +556,9 @@ impl EventTargetMethods for EventTarget {
 
 impl Typed for EventTarget {
     fn get_type(&self) -> TopTypeId { TopTypeId::EventTarget(self.type_id) }
-    fn is_subtype(ty: TopTypeId) -> bool {
+    fn is_subtype(ty: &TopTypeId) -> bool {
         match ty {
-            TopTypeId::EventTarget(_) => true,
+            &TopTypeId::EventTarget(_) => true,
             _ => false
         }
     }
