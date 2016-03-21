@@ -4,40 +4,27 @@
 
 use dom::bindings::callback::{CallbackContainer, ExceptionHandling, CallbackFunction};
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::ErrorEventBinding::ErrorEventMethods;
-use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::OnErrorEventHandlerNonNull;
 use dom::bindings::codegen::Bindings::EventListenerBinding::EventListener;
 use dom::bindings::codegen::Bindings::EventTargetBinding::EventTargetMethods;
-use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
-use dom::bindings::codegen::UnionTypes::EventOrString;
-use dom::bindings::error::{Error, Fallible, report_pending_exception};
-use dom::bindings::inheritance::{Castable, EventTargetTypeId, TopTypeId};
+use dom::bindings::error::{Error, Fallible};
+use dom::bindings::inheritance::{EventTargetTypeId, TopTypeId};
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflectable, Reflector};
 use dom::bindings::typed::Typed;
-use dom::element::Element;
-use dom::errorevent::ErrorEvent;
 use dom::event::{Event, EventBubbles, EventCancelable};
-use dom::node::document_from_node;
 use dom::virtualmethods::VirtualMethods;
-use dom::window::Window;
 use fnv::FnvHasher;
 use heapsize::HeapSizeOf;
-use js::jsapi::{CompileFunction, JS_GetFunctionObject, RootedValue, RootedFunction};
-use js::jsapi::{JSAutoCompartment, JSAutoRequest};
-use js::rust::{AutoObjectVectorWrapper, CompileOptionsWrapper};
-use libc::{c_char, size_t};
 use std::collections::HashMap;
 use std::collections::hash_map::Entry::{Occupied, Vacant};
 use std::default::Default;
-use std::ffi::CString;
 use std::hash::BuildHasherDefault;
 use std::mem;
 use std::ops::{Deref, DerefMut};
 use std::rc::Rc;
-use std::{intrinsics, ptr};
+use std::{intrinsics};
 use string_cache::Atom;
 use url::Url;
 use util::str::DOMString;
@@ -166,9 +153,9 @@ pub enum CompiledEventListener {
 impl CompiledEventListener {
     // https://html.spec.whatwg.org/multipage/#the-event-handler-processing-algorithm
     pub fn call_or_handle_event<T: Reflectable>(&self,
-                                                object: &T,
-                                                event: &Event,
-                                                exception_handle: ExceptionHandling) {
+                                                _object: &T,
+                                                _event: &Event,
+                                                _exception_handle: ExceptionHandling) {
     }
 }
 
@@ -320,8 +307,8 @@ impl EventTarget {
     // https://html.spec.whatwg.org/multipage/#getting-the-current-value-of-the-event-handler
     #[allow(unsafe_code)]
     pub fn get_compiled_event_handler(&self,
-                                      handler: InternalRawUncompiledHandler,
-                                      ty: &Atom)
+                                      _handler: InternalRawUncompiledHandler,
+                                      _ty: &Atom)
                                       -> Option<CommonEventHandler> {
         None
     }

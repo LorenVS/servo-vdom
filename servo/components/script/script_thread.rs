@@ -27,7 +27,7 @@ use dom::bindings::codegen::Bindings::DocumentBinding::{DocumentMethods, Documen
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::Castable;
-use dom::bindings::js::{JS, MutNullableHeap, Root, RootCollection};
+use dom::bindings::js::{JS, MutNullableHeap, Root};
 use dom::bindings::js::{RootedReference};
 use dom::bindings::refcounted::{LiveDOMReferences, Trusted, TrustedReference};
 use dom::bindings::trace::{JSTraceable};
@@ -49,7 +49,6 @@ use ipc_channel::ipc::{self, IpcSender};
 use ipc_channel::router::ROUTER;
 use js::jsapi::{DOMProxyShadowsResult, HandleId, HandleObject};
 use js::jsapi::{JSContext};
-use js::rust::Runtime;
 use layout_interface::{ReflowQueryType};
 use layout_interface::{self, LayoutChan, ScriptLayoutChan};
 use mem::heap_size_of_self_and_children;
@@ -71,7 +70,7 @@ use script_traits::{ScriptThreadFactory, ScriptToCompositorMsg, TimerEvent, Time
 use script_traits::{TouchEventType, TouchId};
 use std::any::Any;
 use std::borrow::ToOwned;
-use std::cell::{Cell, RefCell};
+use std::cell::{RefCell};
 use std::collections::HashSet;
 use std::option::Option;
 use std::rc::Rc;
@@ -86,7 +85,6 @@ use task_source::file_reading::FileReadingTaskSource;
 use task_source::history_traversal::HistoryTraversalTaskSource;
 use task_source::networking::NetworkingTaskSource;
 use task_source::user_interaction::UserInteractionTaskSource;
-use time::{Tm};
 use url::Url;
 use util::opts;
 use util::str::DOMString;
@@ -1027,7 +1025,6 @@ impl ScriptThread {
                 })
             }
         }
-        let path_seg = format!("url({})", urls.join(", "));
         reports_chan.send(reports);
     }
 

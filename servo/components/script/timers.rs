@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::callback::ExceptionHandling::Report;
 use dom::bindings::cell::DOMRefCell;
 use dom::bindings::codegen::Bindings::FunctionBinding::Function;
 use dom::bindings::global::GlobalRef;
@@ -11,8 +10,8 @@ use dom::bindings::trace::JSTraceable;
 use euclid::length::Length;
 use heapsize::HeapSizeOf;
 use ipc_channel::ipc::IpcSender;
-use js::jsapi::{HandleValue, Heap, RootedValue};
-use js::jsval::{JSVal, UndefinedValue};
+use js::jsapi::{HandleValue, Heap};
+use js::jsval::{JSVal};
 use num::traits::Saturating;
 use script_traits::{MsDuration, precise_time_ms};
 use script_traits::{TimerEvent, TimerEventId, TimerEventRequest, TimerSource};
@@ -443,33 +442,7 @@ fn clamp_duration(nesting_level: u32, unclamped: MsDuration) -> MsDuration {
 impl JsTimerTask {
     // see https://html.spec.whatwg.org/multipage/#timer-initialisation-steps
     #[allow(unsafe_code)]
-    pub fn invoke<T: Reflectable>(self, this: &T, timers: &JsTimers) {
-        // step 4.1 can be ignored, because we proactively prevent execution
-        // of this task when its scheduled execution is canceled.
-
-        // prep for step 6 in nested set_timeout_or_interval calls
-        timers.nesting_level.set(self.nesting_level);
-
-        // step 4.2
-        match *&self.callback {
-            InternalTimerCallback::StringTimerCallback(ref code_str) => {
-                panic!("StringTimerCallback");
-            },
-            InternalTimerCallback::FunctionTimerCallback(ref function, ref arguments) => {
-                panic!("StringTimerCallback");
-            },
-        };
-
-        // reset nesting level (see above)
-        timers.nesting_level.set(0);
-
-        // step 4.3
-        // Since we choose proactively prevent execution (see 4.1 above), we must only
-        // reschedule repeating timers when they were not canceled as part of step 4.2.
-        if self.is_interval == IsInterval::Interval &&
-            timers.active_timers.borrow().contains_key(&self.handle) {
-
-            timers.initialize_and_schedule(this.global().r(), self);
-        }
+    pub fn invoke<T: Reflectable>(self, _this: &T, _timers: &JsTimers) {
+        panic!("JsTimerTask invoke");
     }
 }

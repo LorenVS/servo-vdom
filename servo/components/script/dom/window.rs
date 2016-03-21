@@ -14,7 +14,6 @@ use dom::bindings::codegen::Bindings::WindowBinding::{FrameRequestCallback, Wind
 use dom::bindings::error::{Error, Fallible};
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable,EventTargetTypeId};
-use dom::bindings::js::RootedReference;
 use dom::bindings::js::{JS, MutNullableHeap, Root};
 use dom::bindings::num::Finite;
 use dom::bindings::reflector::Reflectable;

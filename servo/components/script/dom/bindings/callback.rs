@@ -5,7 +5,6 @@
 //! Base classes to work with IDL callbacks.
 
 use dom::bindings::error::{Error, Fallible};
-use dom::bindings::global::global_root_from_object;
 use dom::bindings::reflector::Reflectable;
 use js::jsapi::JSAutoCompartment;
 use js::jsapi::{Heap, MutableHandleObject, RootedObject, RootedValue};
@@ -163,23 +162,8 @@ pub struct CallSetup {
 impl CallSetup {
     /// Performs the setup needed to make a call.
     #[allow(unrooted_must_root)]
-    pub fn new<T: CallbackContainer>(callback: &T, handling: ExceptionHandling) -> CallSetup {
+    pub fn new<T: CallbackContainer>(_callback: &T, _handling: ExceptionHandling) -> CallSetup {
         panic!("Calling call setup");
-        /*
-        let global = global_root_from_object(callback.callback());
-
-        let exception_compartment = unsafe {
-            GetGlobalForObjectCrossCompartment(callback.callback())
-        };
-        CallSetup {
-            exception_compartment: RootedObject::new_with_addr(cx,
-                                                               exception_compartment,
-                                                               unsafe { return_address() }),
-            cx: cx,
-            old_compartment: unsafe { JS_EnterCompartment(cx, callback.callback()) },
-            handling: handling,
-        }
-        */
     }
 
     /// Returns the `JSContext` used for the call.

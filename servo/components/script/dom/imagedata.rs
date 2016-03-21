@@ -8,12 +8,6 @@ use dom::bindings::global::GlobalRef;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflector, reflect_dom_object};
 use euclid::size::Size2D;
-use js::jsapi::{Heap, JSContext, JSObject};
-use js::jsapi::{JS_GetUint8ClampedArrayData, JS_NewUint8ClampedArray};
-use libc::uint8_t;
-use std::default::Default;
-use std::ptr;
-use std::slice;
 use std::vec::Vec;
 
 #[dom_struct]
@@ -27,7 +21,7 @@ pub struct ImageData {
 impl ImageData {
     #[allow(unsafe_code)]
     pub fn new(global: GlobalRef, width: u32, height: u32, data: Option<Vec<u8>>) -> Root<ImageData> {
-        let mut imagedata = box ImageData {
+        let imagedata = box ImageData {
             reflector_: Reflector::new(),
             width: width,
             height: height,
@@ -39,7 +33,7 @@ impl ImageData {
     }
 
     #[allow(unsafe_code)]
-    pub fn get_data_array(&self, global: &GlobalRef) -> Vec<u8> {
+    pub fn get_data_array(&self, _global: &GlobalRef) -> Vec<u8> {
         self.data.clone()
     }
 

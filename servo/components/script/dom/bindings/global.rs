@@ -15,7 +15,7 @@ use dom::bindings::reflector::{Reflectable, Reflector};
 use dom::window::{self};
 use ipc_channel::ipc::IpcSender;
 use js::jsapi::GetGlobalForObjectCrossCompartment;
-use js::jsapi::{JSObject, JS_GetClass, MutableHandleValue};
+use js::jsapi::{JSObject, JS_GetClass};
 use js::{JSCLASS_IS_DOMJSCLASS, JSCLASS_IS_GLOBAL};
 use msg::constellation_msg::{ConstellationChan, PipelineId};
 use net_traits::ResourceThread;
