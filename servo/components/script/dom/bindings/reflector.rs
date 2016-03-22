@@ -4,9 +4,7 @@
 
 //! The `Reflector` struct.
 
-use dom::bindings::global::{GlobalRef, GlobalRoot};
-use dom::bindings::js::Root;
-use js::jsapi::{HandleObject, JSContext, JSObject};
+use js::jsapi::{HandleObject, JSObject};
 use std::cell::UnsafeCell;
 use std::ptr;
 

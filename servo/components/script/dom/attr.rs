@@ -4,8 +4,7 @@
 
 use devtools_traits::AttrInfo;
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::AttrBinding::{self, AttrMethods};
-use dom::bindings::global::GlobalRef;
+use dom::bindings::codegen::Bindings::AttrBinding::AttrMethods; 
 use dom::bindings::inheritance::Castable;
 use dom::bindings::js::{JS, MutNullableHeap};
 use dom::bindings::js::{LayoutJS, Root, RootedReference};
@@ -52,8 +51,7 @@ impl Attr {
         }
     }
 
-    pub fn new(window: &Window,
-               local_name: Atom,
+    pub fn new(local_name: Atom,
                value: AttrValue,
                name: Atom,
                namespace: Namespace,

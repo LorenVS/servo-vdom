@@ -860,9 +860,7 @@ impl Element {
                               name: Atom,
                               namespace: Namespace,
                               prefix: Option<Atom>) {
-        let window = window_from_node(self);
-        let attr = Attr::new(&window,
-                             local_name,
+        let attr = Attr::new(local_name,
                              value,
                              name,
                              namespace,

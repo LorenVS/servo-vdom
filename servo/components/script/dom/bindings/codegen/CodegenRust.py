@@ -1585,7 +1585,6 @@ def UnionTypes(descriptors, dictionaries, callbacks, config):
         'dom::bindings::conversions::ToJSValConvertible',
         'dom::bindings::conversions::ConversionBehavior',
         'dom::bindings::conversions::StringificationBehavior',
-        'dom::bindings::error::throw_not_in_union',
         'dom::bindings::js::Root',
         'dom::bindings::str::USVString',
         'dom::types::*',
@@ -1607,8 +1606,7 @@ def UnionTypes(descriptors, dictionaries, callbacks, config):
         if name not in unionStructs:
             provider = descriptor or config.getDescriptorProvider()
             unionStructs[name] = CGList([
-                CGUnionStruct(t, provider),
-                CGUnionConversionStruct(t, provider)
+                CGUnionStruct(t, provider)
             ])
 
     # Sort unionStructs by key, retrieve value
@@ -2239,26 +2237,8 @@ pub enum %s {
 }
 """ % (enum.identifier.name, ",\n    ".join(map(getEnumValueName, enum.values())))
 
-        inner = """\
-use dom::bindings::conversions::ToJSValConvertible;
-use js::jsapi::{JSContext, MutableHandleValue};
-use js::jsval::JSVal;
-
-pub const strings: &'static [&'static str] = &[
-    %s,
-];
-
-impl ToJSValConvertible for super::%s {
-    unsafe fn to_jsval(&self, cx: *mut JSContext, rval: MutableHandleValue) {
-        strings[*self as usize].to_jsval(cx, rval);
-    }
-}
-""" % (",\n    ".join(['"%s"' % val for val in enum.values()]), enum.identifier.name)
-
         self.cgRoot = CGList([
-            CGGeneric(decl),
-            CGNamespace.build([enum.identifier.name + "Values"],
-                              CGIndenter(CGGeneric(inner)), public=True),
+            CGGeneric(decl)
         ])
 
     def define(self):
@@ -2364,143 +2344,12 @@ class CGUnionStruct(CGThing):
         enumValues = [
             "    %s(%s)," % (v["name"], v["typeName"]) for v in templateVars
         ]
-        enumConversions = [
-            "            %s::%s(ref inner) => inner.to_jsval(cx, rval),"
-            % (self.type, v["name"]) for v in templateVars
-        ]
         return ("""\
 pub enum %s {
 %s
 }
+""") % (self.type, "\n".join(enumValues))
 
-impl ToJSValConvertible for %s {
-    unsafe fn to_jsval(&self, cx: *mut JSContext, rval: MutableHandleValue) {
-        match *self {
-%s
-        }
-    }
-}
-""") % (self.type, "\n".join(enumValues), self.type, "\n".join(enumConversions))
-
-
-class CGUnionConversionStruct(CGThing):
-    def __init__(self, type, descriptorProvider):
-        assert not type.nullable()
-        assert not type.hasNullableType
-
-        CGThing.__init__(self)
-        self.type = type
-        self.descriptorProvider = descriptorProvider
-
-    def from_jsval(self):
-        memberTypes = self.type.flatMemberTypes
-        names = []
-        conversions = []
-
-        def get_name(memberType):
-            if self.type.isGeckoInterface():
-                return memberType.inner.identifier.name
-
-            return memberType.name
-
-        interfaceMemberTypes = filter(lambda t: t.isNonCallbackInterface(), memberTypes)
-        if len(interfaceMemberTypes) > 0:
-            typeNames = [get_name(memberType) for memberType in interfaceMemberTypes]
-            interfaceObject = None
-            names.extend(typeNames)
-        else:
-            interfaceObject = None
-
-        arrayObjectMemberTypes = filter(lambda t: t.isArray() or t.isSequence(), memberTypes)
-        if len(arrayObjectMemberTypes) > 0:
-            assert len(arrayObjectMemberTypes) == 1
-            typeName = arrayObjectMemberTypes[0].name
-            arrayObject = None
-            names.append(typeName)
-        else:
-            arrayObject = None
-
-        dateObjectMemberTypes = filter(lambda t: t.isDate(), memberTypes)
-        if len(dateObjectMemberTypes) > 0:
-            assert len(dateObjectMemberTypes) == 1
-            raise TypeError("Can't handle dates in unions.")
-        else:
-            dateObject = None
-
-        callbackMemberTypes = filter(lambda t: t.isCallback() or t.isCallbackInterface(), memberTypes)
-        if len(callbackMemberTypes) > 0:
-            assert len(callbackMemberTypes) == 1
-            raise TypeError("Can't handle callbacks in unions.")
-        else:
-            callbackObject = None
-
-        dictionaryMemberTypes = filter(lambda t: t.isDictionary(), memberTypes)
-        if len(dictionaryMemberTypes) > 0:
-            raise TypeError("No support for unwrapping dictionaries as member "
-                            "of a union")
-        else:
-            dictionaryObject = None
-
-        if callbackObject or dictionaryObject:
-            assert False, "Not currently supported"
-        else:
-            nonPlatformObject = None
-
-        objectMemberTypes = filter(lambda t: t.isObject(), memberTypes)
-        if len(objectMemberTypes) > 0:
-            raise TypeError("Can't handle objects in unions.")
-        else:
-            object = None
-
-        hasObjectTypes = interfaceObject or arrayObject or dateObject or nonPlatformObject or object
-        if hasObjectTypes:
-            assert interfaceObject or arrayObject
-            templateBody = CGList([], "\n")
-            if interfaceObject:
-                templateBody.append(interfaceObject)
-            if arrayObject:
-                templateBody.append(arrayObject)
-            conversions.append(CGIfWrapper("value.get().is_object()", templateBody))
-        stringTypes = [t for t in memberTypes if t.isString() or t.isEnum()]
-        numericTypes = [t for t in memberTypes if t.isNumeric()]
-        booleanTypes = [t for t in memberTypes if t.isBoolean()]
-        conversions.append(CGGeneric(
-            "throw_not_in_union(cx, \"%s\");\n"
-            "Err(())" % ", ".join(names)))
-        method = CGWrapper(
-            CGIndenter(CGList(conversions, "\n\n")),
-            pre="unsafe fn from_jsval(cx: *mut JSContext,\n"
-                "                     value: HandleValue, _option: ()) -> Result<%s, ()> {\n" % self.type,
-            post="\n}")
-        return CGWrapper(
-            CGIndenter(CGList([
-                CGGeneric("type Config = ();"),
-                method,
-            ], "\n")),
-            pre="impl FromJSValConvertible for %s {\n" % self.type,
-            post="\n}")
-
-        conversions.append(CGGeneric(
-            "throw_not_in_union(cx, \"%s\");\n"
-            "Err(())" % ", ".join(names)))
-        method = CGWrapper(
-            CGIndenter(CGList(conversions, "\n\n")),
-            pre="unsafe fn from_jsval(cx: *mut JSContext,\n"
-                "                     value: HandleValue, _option: ()) -> Result<%s, ()> {\n" % self.type,
-            post="\n}")
-        return CGWrapper(
-            CGIndenter(CGList([
-                CGGeneric("type Config = ();"),
-                method,
-            ], "\n")),
-            pre="impl FromJSValConvertible for %s {\n" % self.type,
-            post="\n}")
-
-    def define(self):
-        from_jsval = self.from_jsval()
-        return """
-%s
-""" % (from_jsval.define())
 
 
 class ClassItem:
@@ -2825,18 +2674,19 @@ class CGClass(CGThing):
             result = result + memberString
 
         result += self.indent + '}\n\n'
-        result += 'impl %s {\n' % self.name
 
-        order = [(self.constructors + disallowedCopyConstructors, '\n'),
-                 (self.destructors, '\n'), (self.methods, '\n)')]
-        for (memberList, separator) in order:
-            memberString = declareMembers(self, memberList)
-            if self.indent:
-                memberString = CGIndenter(CGGeneric(memberString),
-                                          len(self.indent)).define()
-            result = result + memberString
-
-        result += "}"
+#        result += 'impl %s {\n' % self.name
+#
+#        order = [(self.constructors + disallowedCopyConstructors, '\n'),
+#                 (self.destructors, '\n'), (self.methods, '\n)')]
+#        for (memberList, separator) in order:
+#            memberString = declareMembers(self, memberList)
+#            if self.indent:
+#                memberString = CGIndenter(CGGeneric(memberString),
+#                                          len(self.indent)).define()
+#            result = result + memberString
+#
+#        result += "}"
         return result
 
 
@@ -3866,8 +3716,7 @@ class CGBindingRoot(CGThing):
             'dom::bindings::utils::{DOM_PROTO_UNFORGEABLE_HOLDER_SLOT, JSCLASS_DOM_GLOBAL}',
             'dom::bindings::utils::{ProtoOrIfaceArray, create_dom_global}',
             'dom::bindings::utils::{finalize_global, find_enum_string_index}',
-            'dom::bindings::utils::{generic_getter, generic_lenient_getter, generic_lenient_setter}',
-            'dom::bindings::utils::{generic_method, generic_setter, get_array_index_from_id}',
+            'dom::bindings::utils::get_array_index_from_id',
             'dom::bindings::utils::{get_dictionary_property, get_property_on_prototype}',
             'dom::bindings::utils::{get_proto_or_iface_array, has_property_on_prototype}',
             'dom::bindings::utils::{is_platform_object, set_dictionary_property}',
@@ -3885,7 +3734,6 @@ class CGBindingRoot(CGThing):
             'dom::bindings::codegen::Bindings::*',
             'dom::bindings::error::{Fallible, Error, ErrorResult}',
             'dom::bindings::error::Error::JSFailed',
-            'dom::bindings::error::throw_dom_exception',
             'dom::bindings::proxyhandler',
             'dom::bindings::proxyhandler::{ensure_expando_object, fill_property_descriptor}',
             'dom::bindings::proxyhandler::{get_expando_object, get_property_descriptor}',
@@ -4129,11 +3977,6 @@ impl CallbackContainer for ${type} {
     }
 }
 
-impl ToJSValConvertible for ${type} {
-    unsafe fn to_jsval(&self, cx: *mut JSContext, rval: MutableHandleValue) {
-        self.callback().to_jsval(cx, rval);
-    }
-}\
 """).substitute({"type": callback.identifier.name})
         CGGeneric.__init__(self, impl)
 

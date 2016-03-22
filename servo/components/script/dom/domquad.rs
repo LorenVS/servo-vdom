@@ -40,43 +40,38 @@ impl DOMQuad {
         }
     }
 
-    pub fn new(global: GlobalRef,
-               p1: &DOMPoint,
+    pub fn new(p1: &DOMPoint,
                p2: &DOMPoint,
                p3: &DOMPoint,
                p4: &DOMPoint) -> Root<DOMQuad> {
         Root::new_box(box DOMQuad::new_inherited(p1, p2, p3, p4))
     }
 
-    pub fn Constructor(global: GlobalRef,
-                       p1: &DOMPointInit,
+    pub fn Constructor(p1: &DOMPointInit,
                        p2: &DOMPointInit,
                        p3: &DOMPointInit,
                        p4: &DOMPointInit)
                        -> Fallible<Root<DOMQuad>> {
-        Ok(DOMQuad::new(global,
-                        &*DOMPoint::new_from_init(global, p1),
-                        &*DOMPoint::new_from_init(global, p2),
-                        &*DOMPoint::new_from_init(global, p3),
-                        &*DOMPoint::new_from_init(global, p4)))
+        Ok(DOMQuad::new(&*DOMPoint::new_from_init(p1),
+                        &*DOMPoint::new_from_init(p2),
+                        &*DOMPoint::new_from_init(p3),
+                        &*DOMPoint::new_from_init(p4)))
     }
 
     // https://drafts.fxtf.org/geometry/#dom-domquad-fromrect
-    pub fn FromRect(global: GlobalRef, other: &DOMRectInit) -> Root<DOMQuad> {
-        DOMQuad::new(global,
-                     &*DOMPoint::new(global, other.x, other.y, 0f64, 1f64),
-                     &*DOMPoint::new(global, other.x + other.width, other.y, 0f64, 1f64),
-                     &*DOMPoint::new(global, other.x + other.width, other.y + other.height, 0f64, 1f64),
-                     &*DOMPoint::new(global, other.x, other.y + other.height, 0f64, 1f64))
+    pub fn FromRect(other: &DOMRectInit) -> Root<DOMQuad> {
+        DOMQuad::new(&*DOMPoint::new(other.x, other.y, 0f64, 1f64),
+                     &*DOMPoint::new(other.x + other.width, other.y, 0f64, 1f64),
+                     &*DOMPoint::new(other.x + other.width, other.y + other.height, 0f64, 1f64),
+                     &*DOMPoint::new(other.x, other.y + other.height, 0f64, 1f64))
     }
 
     // https://drafts.fxtf.org/geometry/#dom-domquad-fromquad
-    pub fn FromQuad(global: GlobalRef, other: &DOMQuadInit) -> Root<DOMQuad> {
-        DOMQuad::new(global,
-                     &DOMPoint::new_from_init(global, &other.p1),
-                     &DOMPoint::new_from_init(global, &other.p2),
-                     &DOMPoint::new_from_init(global, &other.p3),
-                     &DOMPoint::new_from_init(global, &other.p4))
+    pub fn FromQuad(other: &DOMQuadInit) -> Root<DOMQuad> {
+        DOMQuad::new(&DOMPoint::new_from_init(&other.p1),
+                     &DOMPoint::new_from_init(&other.p2),
+                     &DOMPoint::new_from_init(&other.p3),
+                     &DOMPoint::new_from_init(&other.p4))
     }
 }
 

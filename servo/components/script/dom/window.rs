@@ -10,7 +10,7 @@ use dom::bindings::codegen::Bindings::DocumentBinding::{DocumentMethods, Documen
 use dom::bindings::codegen::Bindings::EventHandlerBinding::{EventHandlerNonNull, OnErrorEventHandlerNonNull};
 use dom::bindings::codegen::Bindings::FunctionBinding::Function;
 use dom::bindings::codegen::Bindings::WindowBinding::{ScrollBehavior, ScrollToOptions};
-use dom::bindings::codegen::Bindings::WindowBinding::{FrameRequestCallback, WindowMethods};
+use dom::bindings::codegen::Bindings::WindowBinding::{WindowMethods};
 use dom::bindings::error::{Error, Fallible};
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable,EventTargetTypeId};
@@ -496,19 +496,6 @@ impl WindowMethods for Window {
     // https://html.spec.whatwg.org/multipage/#dom-windowbase64-atob
     fn Atob(&self, atob: DOMString) -> Fallible<DOMString> {
         base64_atob(atob)
-    }
-
-    /// https://html.spec.whatwg.org/multipage/#dom-window-requestanimationframe
-    fn RequestAnimationFrame(&self, callback: Rc<FrameRequestCallback>) -> u32 {
-        let doc = self.Document();
-
-        let callback = move |now: f64| {
-            // TODO: @jdm The spec says that any exceptions should be suppressed;
-            // https://github.com/servo/servo/issues/6928
-            let _ = callback.Call__(Finite::wrap(now), ExceptionHandling::Report);
-        };
-
-        doc.request_animation_frame(Box::new(callback))
     }
 
     /// https://html.spec.whatwg.org/multipage/#dom-window-cancelanimationframe

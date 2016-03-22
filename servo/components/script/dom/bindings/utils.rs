@@ -8,27 +8,23 @@ use dom::bindings::codegen::PrototypeList;
 use dom::bindings::codegen::PrototypeList::{MAX_PROTO_CHAIN_LENGTH, PROTO_OR_IFACE_LENGTH};
 use dom::bindings::conversions::{DOM_OBJECT_SLOT, is_dom_class};
 use dom::bindings::conversions::{private_from_proto_check};
-use dom::bindings::error::throw_invalid_this;
 use dom::bindings::inheritance::TopTypeId;
 use dom::bindings::trace::trace_object;
-use dom::browsingcontext;
-use dom::window;
-use heapsize::HeapSizeOf;
 use js;
 use js::error::throw_type_error;
 use js::glue::{CallJitGetterOp, CallJitMethodOp, CallJitSetterOp, IsWrapper};
 use js::glue::{GetCrossCompartmentWrapper, WrapperNew};
-use js::glue::{RUST_FUNCTION_VALUE_TO_JITINFO, RUST_JSID_IS_INT, RUST_JSID_IS_STRING};
-use js::glue::{RUST_JSID_TO_INT, RUST_JSID_TO_STRING, UnwrapObject};
+use js::glue::{RUST_FUNCTION_VALUE_TO_JITINFO, RUST_JSID_IS_INT};
+use js::glue::{RUST_JSID_TO_INT, UnwrapObject};
 use js::jsapi::{CallArgs, CompartmentOptions, DOMCallbacks, GetGlobalForObjectCrossCompartment};
 use js::jsapi::{HandleId, HandleObject, HandleValue, Heap, JSAutoCompartment, JSClass, JSContext};
 use js::jsapi::{JSJitInfo, JSObject, JSTraceOp, JSTracer, JSVersion, JSWrapObjectCallbacks};
-use js::jsapi::{JS_DeletePropertyById1, JS_EnumerateStandardClasses, JS_FireOnNewGlobalObject};
-use js::jsapi::{JS_ForwardGetPropertyTo, JS_GetClass, JS_GetLatin1StringCharsAndLength};
+use js::jsapi::{JS_DeletePropertyById1, JS_FireOnNewGlobalObject};
+use js::jsapi::{JS_ForwardGetPropertyTo, JS_GetClass};
 use js::jsapi::{JS_GetProperty, JS_GetPrototype, JS_GetReservedSlot, JS_HasProperty};
-use js::jsapi::{JS_HasPropertyById, JS_IsExceptionPending, JS_IsGlobalObject, JS_NewGlobalObject};
-use js::jsapi::{JS_ObjectToOuterObject, JS_ResolveStandardClass, JS_SetProperty};
-use js::jsapi::{JS_SetReservedSlot, JS_StringHasLatin1Chars, MutableHandleValue, ObjectOpResult};
+use js::jsapi::{JS_HasPropertyById, JS_IsExceptionPending, JS_NewGlobalObject};
+use js::jsapi::{JS_ObjectToOuterObject, JS_SetProperty};
+use js::jsapi::{JS_SetReservedSlot, MutableHandleValue, ObjectOpResult};
 use js::jsapi::{OnNewGlobalHookOption, RootedObject};
 use js::jsval::{JSVal};
 use js::jsval::{PrivateValue, UndefinedValue};
@@ -39,7 +35,6 @@ use std::default::Default;
 use std::ffi::CString;
 use std::os::raw::c_void;
 use std::ptr;
-use std::slice;
 use util::non_geckolib::jsstring_to_str;
 
 /// The index of the slot where the object holder of that interface's
@@ -374,71 +369,6 @@ pub unsafe fn delete_property_by_id(cx: *mut JSContext,
     JS_DeletePropertyById1(cx, object, id, bp)
 }
 
-unsafe fn generic_call(cx: *mut JSContext,
-                       argc: libc::c_uint,
-                       vp: *mut JSVal,
-                       is_lenient: bool,
-                       call: unsafe extern fn(*const JSJitInfo, *mut JSContext,
-                                              HandleObject, *mut libc::c_void, u32,
-                                              *mut JSVal)
-                                              -> bool)
-                       -> bool {
-    let args = CallArgs::from_vp(vp, argc);
-    let thisobj = args.thisv();
-    if !thisobj.get().is_null_or_undefined() && !thisobj.get().is_object() {
-        return false;
-    }
-    let obj = if thisobj.get().is_object() {
-        thisobj.get().to_object()
-    } else {
-        GetGlobalForObjectCrossCompartment(JS_CALLEE(cx, vp).to_object_or_null())
-    };
-    let obj = RootedObject::new(cx, obj);
-    let info = RUST_FUNCTION_VALUE_TO_JITINFO(JS_CALLEE(cx, vp));
-    let proto_id = (*info).protoID;
-    let depth = (*info).depth;
-    let proto_check = |class: &'static DOMClass| {
-        class.interface_chain[depth as usize] as u16 == proto_id
-    };
-    let this = match private_from_proto_check(obj.ptr, proto_check) {
-        Ok(val) => val,
-        Err(()) => {
-            if is_lenient {
-                debug_assert!(!JS_IsExceptionPending(cx));
-                *vp = UndefinedValue();
-                return true;
-            } else {
-                throw_invalid_this(cx, proto_id);
-                return false;
-            }
-        }
-    };
-    call(info, cx, obj.handle(), this as *mut libc::c_void, argc, vp)
-}
-
-/// Generic method of IDL interface.
-pub unsafe extern "C" fn generic_method(cx: *mut JSContext,
-                                        argc: libc::c_uint,
-                                        vp: *mut JSVal)
-                                        -> bool {
-    generic_call(cx, argc, vp, false, CallJitMethodOp)
-}
-
-/// Generic getter of IDL interface.
-pub unsafe extern "C" fn generic_getter(cx: *mut JSContext,
-                                        argc: libc::c_uint,
-                                        vp: *mut JSVal)
-                                        -> bool {
-    generic_call(cx, argc, vp, false, CallJitGetterOp)
-}
-
-/// Generic lenient getter of IDL interface.
-pub unsafe extern "C" fn generic_lenient_getter(cx: *mut JSContext,
-                                                argc: libc::c_uint,
-                                                vp: *mut JSVal)
-                                                -> bool {
-    generic_call(cx, argc, vp, true, CallJitGetterOp)
-}
 
 unsafe extern "C" fn call_setter(info: *const JSJitInfo,
                                  cx: *mut JSContext,
@@ -454,21 +384,6 @@ unsafe extern "C" fn call_setter(info: *const JSJitInfo,
     true
 }
 
-/// Generic setter of IDL interface.
-pub unsafe extern "C" fn generic_setter(cx: *mut JSContext,
-                                        argc: libc::c_uint,
-                                        vp: *mut JSVal)
-                                        -> bool {
-    generic_call(cx, argc, vp, false, call_setter)
-}
-
-/// Generic lenient setter of IDL interface.
-pub unsafe extern "C" fn generic_lenient_setter(cx: *mut JSContext,
-                                                argc: libc::c_uint,
-                                                vp: *mut JSVal)
-                                                -> bool {
-    generic_call(cx, argc, vp, true, call_setter)
-}
 
 unsafe extern "C" fn instance_class_has_proto_at_depth(clasp: *const js::jsapi::Class,
                                                        proto_id: u32,

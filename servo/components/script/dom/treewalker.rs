@@ -52,10 +52,7 @@ impl TreeWalker {
                root_node: &Node,
                what_to_show: u32,
                node_filter: Option<Rc<NodeFilter>>) -> Root<TreeWalker> {
-        let filter = match node_filter {
-            None => Filter::None,
-            Some(jsfilter) => Filter::JS(jsfilter)
-        };
+        let filter = Filter::None;
         TreeWalker::new_with_filter(document, root_node, what_to_show, filter)
     }
 }
@@ -75,7 +72,6 @@ impl TreeWalkerMethods for TreeWalker {
     fn GetFilter(&self) -> Option<Rc<NodeFilter>> {
         match self.filter {
             Filter::None => None,
-            Filter::JS(ref nf) => Some(nf.clone()),
             Filter::Native(_) => panic!("Cannot convert native node filter to DOM NodeFilter")
         }
     }
@@ -434,8 +430,7 @@ impl TreeWalker {
         // "6. Return result."
         match self.filter {
             Filter::None => Ok(NodeFilterConstants::FILTER_ACCEPT),
-            Filter::Native(f) => Ok((f)(node)),
-            Filter::JS(ref callback) => callback.AcceptNode_(self, node, Rethrow)
+            Filter::Native(f) => Ok((f)(node))
         }
     }
 
@@ -468,6 +463,5 @@ impl<'a> Iterator for &'a TreeWalker {
 #[derive(JSTraceable)]
 pub enum Filter {
     None,
-    Native(fn (node: &Node) -> u16),
-    JS(Rc<NodeFilter>)
+    Native(fn (node: &Node) -> u16)
 }

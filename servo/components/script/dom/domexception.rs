@@ -52,7 +52,7 @@ impl DOMException {
         }
     }
 
-    pub fn new(global: GlobalRef, code: DOMErrorName) -> Root<DOMException> {
+    pub fn new(code: DOMErrorName) -> Root<DOMException> {
         Root::new_box(box DOMException::new_inherited(code))
     }
 }

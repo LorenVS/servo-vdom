@@ -24,21 +24,20 @@ impl DOMPoint {
         }
     }
 
-    pub fn new(global: GlobalRef, x: f64, y: f64, z: f64, w: f64) -> Root<DOMPoint> {
+    pub fn new(x: f64, y: f64, z: f64, w: f64) -> Root<DOMPoint> {
         Root::new_box(box DOMPoint::new_inherited(x, y, z, w))
     }
 
-    pub fn Constructor(global: GlobalRef,
-                       x: f64,
+    pub fn Constructor(x: f64,
                        y: f64,
                        z: f64,
                        w: f64)
                        -> Fallible<Root<DOMPoint>> {
-        Ok(DOMPoint::new(global, x, y, z, w))
+        Ok(DOMPoint::new(x, y, z, w))
     }
 
-    pub fn new_from_init(global: GlobalRef, p: &DOMPointInit) -> Root<DOMPoint> {
-        DOMPoint::new(global, p.x, p.y, p.z, p.w)
+    pub fn new_from_init(p: &DOMPointInit) -> Root<DOMPoint> {
+        DOMPoint::new(p.x, p.y, p.z, p.w)
     }
 }
 

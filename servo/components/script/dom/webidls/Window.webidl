@@ -3,8 +3,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-typedef double DOMHighResTimeStamp;
-
 // https://html.spec.whatwg.org/multipage/#window
 [PrimaryGlobal]
 /*sealed*/ interface Window : EventTarget {
@@ -55,7 +53,6 @@ typedef double DOMHighResTimeStamp;
   //void print();
   //any showModalDialog(DOMString url, optional any argument);
 
-  unsigned long requestAnimationFrame(FrameRequestCallback callback);
   void cancelAnimationFrame(unsigned long handle);
 
   //void postMessage(any message, DOMString targetOrigin, optional sequence<Transferable> transfer);
@@ -154,5 +151,3 @@ partial interface Window {
   void trap();
 };
 
-// http://w3c.github.io/animation-timing/#framerequestcallback
-callback FrameRequestCallback = void (DOMHighResTimeStamp time);

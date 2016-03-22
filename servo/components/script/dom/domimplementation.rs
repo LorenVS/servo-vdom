@@ -39,7 +39,6 @@ impl DOMImplementation {
     }
 
     pub fn new(document: &Document) -> Root<DOMImplementation> {
-        let window = document.window();
         Root::new_box(box DOMImplementation::new_inherited(document))
     }
 }

@@ -1707,7 +1707,7 @@ impl DocumentMethods for Document {
         let name = Atom::from(local_name);
         let value = AttrValue::String(DOMString::new());
 
-        Ok(Attr::new(&self.window, name.clone(), value, name, ns!(), None, None))
+        Ok(Attr::new(name.clone(), value, name, ns!(), None, None))
     }
 
     // https://dom.spec.whatwg.org/#dom-document-createattributens
@@ -1719,8 +1719,7 @@ impl DocumentMethods for Document {
                                                                         &qualified_name));
         let value = AttrValue::String(DOMString::new());
         let qualified_name = Atom::from(qualified_name);
-        Ok(Attr::new(&self.window,
-                     local_name,
+        Ok(Attr::new(local_name,
                      value,
                      qualified_name,
                      namespace,
