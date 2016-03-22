@@ -40,10 +40,7 @@ impl DOMImplementation {
     pub fn new(document: &Document) -> Root<DOMImplementation> {
         Root::new_box(box DOMImplementation::new_inherited(document))
     }
-}
-
-// https://dom.spec.whatwg.org/#domimplementation
-impl DOMImplementationMethods for DOMImplementation {
+    
     // https://dom.spec.whatwg.org/#dom-domimplementation-createdocumenttype
     fn CreateDocumentType(&self,
                           qualified_name: DOMString,

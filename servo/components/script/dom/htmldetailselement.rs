@@ -48,9 +48,7 @@ impl HTMLDetailsElement {
     pub fn check_toggle_count(&self, number: u32) -> bool {
         number == self.toggle_counter.get()
     }
-}
-
-impl HTMLDetailsElementMethods for HTMLDetailsElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-details-open
     make_bool_getter!(Open, "open");
 

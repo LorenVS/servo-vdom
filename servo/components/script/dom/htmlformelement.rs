@@ -80,9 +80,7 @@ impl HTMLFormElement {
     pub fn generation_id(&self) -> GenerationId {
         self.generation_id.get()
     }
-}
-
-impl HTMLFormElementMethods for HTMLFormElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-form-acceptcharset
     make_getter!(AcceptCharset, "accept-charset");
 

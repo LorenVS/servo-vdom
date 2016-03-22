@@ -34,9 +34,7 @@ impl HTMLProgressElement {
         let element = HTMLProgressElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl HTMLProgressElementMethods for HTMLProgressElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-lfe-labels
     fn Labels(&self) -> Root<NodeList> {
         self.upcast::<HTMLElement>().labels()

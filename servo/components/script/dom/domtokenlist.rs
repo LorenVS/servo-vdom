@@ -42,10 +42,7 @@ impl DOMTokenList {
             slice => Ok(Atom::from(slice)),
         }
     }
-}
-
-// https://dom.spec.whatwg.org/#domtokenlist
-impl DOMTokenListMethods for DOMTokenList {
+    
     // https://dom.spec.whatwg.org/#dom-domtokenlist-length
     fn Length(&self) -> u32 {
         self.attribute().map_or(0, |attr| {

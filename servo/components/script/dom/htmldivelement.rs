@@ -32,9 +32,7 @@ impl HTMLDivElement {
         let element = HTMLDivElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl HTMLDivElementMethods for HTMLDivElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-div-align
     make_getter!(Align, "align");
 

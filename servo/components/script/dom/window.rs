@@ -292,77 +292,7 @@ impl Window {
     pub fn css_error_reporter(&self) -> Box<ParseErrorReporter + Send> {
         self.error_reporter.clone()
     }
-}
 
-// https://html.spec.whatwg.org/multipage/#atob
-pub fn base64_btoa(input: DOMString) -> Fallible<DOMString> {
-    // "The btoa() method must throw an InvalidCharacterError exception if
-    //  the method's first argument contains any character whose code point
-    //  is greater than U+00FF."
-    if input.chars().any(|c: char| c > '\u{FF}') {
-        Err(Error::InvalidCharacter)
-    } else {
-        // "Otherwise, the user agent must convert that argument to a
-        //  sequence of octets whose nth octet is the eight-bit
-        //  representation of the code point of the nth character of
-        //  the argument,"
-        let octets = input.chars().map(|c: char| c as u8).collect::<Vec<u8>>();
-
-        // "and then must apply the base64 algorithm to that sequence of
-        //  octets, and return the result. [RFC4648]"
-        Ok(DOMString::from(octets.to_base64(STANDARD)))
-    }
-}
-
-// https://html.spec.whatwg.org/multipage/#atob
-pub fn base64_atob(input: DOMString) -> Fallible<DOMString> {
-    // "Remove all space characters from input."
-    // serialize::base64::from_base64 ignores \r and \n,
-    // but it treats the other space characters as
-    // invalid input.
-    fn is_html_space(c: char) -> bool {
-        HTML_SPACE_CHARACTERS.iter().any(|&m| m == c)
-    }
-    let without_spaces = input.chars()
-        .filter(|&c| !is_html_space(c))
-        .collect::<String>();
-    let mut input = &*without_spaces;
-
-    // "If the length of input divides by 4 leaving no remainder, then:
-    //  if input ends with one or two U+003D EQUALS SIGN (=) characters,
-    //  remove them from input."
-    if input.len() % 4 == 0 {
-        if input.ends_with("==") {
-            input = &input[..input.len() - 2]
-        } else if input.ends_with("=") {
-            input = &input[..input.len() - 1]
-        }
-    }
-
-    // "If the length of input divides by 4 leaving a remainder of 1,
-    //  throw an InvalidCharacterError exception and abort these steps."
-    if input.len() % 4 == 1 {
-        return Err(Error::InvalidCharacter)
-    }
-
-    // "If input contains a character that is not in the following list of
-    //  characters and character ranges, throw an InvalidCharacterError
-    //  exception and abort these steps:
-    //
-    //  U+002B PLUS SIGN (+)
-    //  U+002F SOLIDUS (/)
-    //  Alphanumeric ASCII characters"
-    if input.chars().any(|c| c != '+' && c != '/' && !c.is_alphanumeric()) {
-        return Err(Error::InvalidCharacter)
-    }
-
-    match input.from_base64() {
-        Ok(data) => Ok(DOMString::from(data.iter().map(|&b| b as char).collect::<String>())),
-        Err(..) => Err(Error::InvalidCharacter)
-    }
-}
-
-impl WindowMethods for Window {
     // https://html.spec.whatwg.org/multipage/#dom-alert
     fn Alert(&self, s: DOMString) {
         // Right now, just print to the console
@@ -383,7 +313,7 @@ impl WindowMethods for Window {
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-document-2
-    fn Document(&self) -> Root<Document> {
+    pub fn Document(&self) -> Root<Document> {
         self.browsing_context().active_document()
     }
 
@@ -468,7 +398,7 @@ impl WindowMethods for Window {
     }
 
     // https://drafts.csswg.org/cssom/#dom-window-getcomputedstyle
-    fn GetComputedStyle(&self,
+    pub fn GetComputedStyle(&self,
                         element: &Element,
                         pseudo: Option<DOMString>) -> Root<CSSStyleDeclaration> {
         // Steps 1-4.
@@ -486,7 +416,7 @@ impl WindowMethods for Window {
 
     // https://drafts.csswg.org/cssom-view/#dom-window-innerheight
     //TODO Include Scrollbar
-    fn InnerHeight(&self) -> i32 {
+    pub fn InnerHeight(&self) -> i32 {
         self.window_size.get()
                         .and_then(|e| e.visible_viewport.height.get().to_i32())
                         .unwrap_or(0)
@@ -494,29 +424,29 @@ impl WindowMethods for Window {
 
     // https://drafts.csswg.org/cssom-view/#dom-window-innerwidth
     //TODO Include Scrollbar
-    fn InnerWidth(&self) -> i32 {
+    pub fn InnerWidth(&self) -> i32 {
         self.window_size.get()
                         .and_then(|e| e.visible_viewport.width.get().to_i32())
                         .unwrap_or(0)
     }
 
     // https://drafts.csswg.org/cssom-view/#dom-window-scrollx
-    fn ScrollX(&self) -> i32 {
+    pub fn ScrollX(&self) -> i32 {
         self.current_viewport.get().origin.x.to_px()
     }
 
     // https://drafts.csswg.org/cssom-view/#dom-window-pagexoffset
-    fn PageXOffset(&self) -> i32 {
+    pub fn PageXOffset(&self) -> i32 {
         self.ScrollX()
     }
 
     // https://drafts.csswg.org/cssom-view/#dom-window-scrolly
-    fn ScrollY(&self) -> i32 {
+    pub fn ScrollY(&self) -> i32 {
         self.current_viewport.get().origin.y.to_px()
     }
 
     // https://drafts.csswg.org/cssom-view/#dom-window-pageyoffset
-    fn PageYOffset(&self) -> i32 {
+    pub fn PageYOffset(&self) -> i32 {
         self.ScrollY()
     }
 
@@ -622,6 +552,74 @@ impl WindowMethods for Window {
     fn DevicePixelRatio(&self) -> Finite<f64> {
         let dpr = self.window_size.get().map_or(1.0f32, |data| data.device_pixel_ratio.get());
         Finite::wrap(dpr as f64)
+    }
+}
+
+// https://html.spec.whatwg.org/multipage/#atob
+pub fn base64_btoa(input: DOMString) -> Fallible<DOMString> {
+    // "The btoa() method must throw an InvalidCharacterError exception if
+    //  the method's first argument contains any character whose code point
+    //  is greater than U+00FF."
+    if input.chars().any(|c: char| c > '\u{FF}') {
+        Err(Error::InvalidCharacter)
+    } else {
+        // "Otherwise, the user agent must convert that argument to a
+        //  sequence of octets whose nth octet is the eight-bit
+        //  representation of the code point of the nth character of
+        //  the argument,"
+        let octets = input.chars().map(|c: char| c as u8).collect::<Vec<u8>>();
+
+        // "and then must apply the base64 algorithm to that sequence of
+        //  octets, and return the result. [RFC4648]"
+        Ok(DOMString::from(octets.to_base64(STANDARD)))
+    }
+}
+
+// https://html.spec.whatwg.org/multipage/#atob
+pub fn base64_atob(input: DOMString) -> Fallible<DOMString> {
+    // "Remove all space characters from input."
+    // serialize::base64::from_base64 ignores \r and \n,
+    // but it treats the other space characters as
+    // invalid input.
+    fn is_html_space(c: char) -> bool {
+        HTML_SPACE_CHARACTERS.iter().any(|&m| m == c)
+    }
+    let without_spaces = input.chars()
+        .filter(|&c| !is_html_space(c))
+        .collect::<String>();
+    let mut input = &*without_spaces;
+
+    // "If the length of input divides by 4 leaving no remainder, then:
+    //  if input ends with one or two U+003D EQUALS SIGN (=) characters,
+    //  remove them from input."
+    if input.len() % 4 == 0 {
+        if input.ends_with("==") {
+            input = &input[..input.len() - 2]
+        } else if input.ends_with("=") {
+            input = &input[..input.len() - 1]
+        }
+    }
+
+    // "If the length of input divides by 4 leaving a remainder of 1,
+    //  throw an InvalidCharacterError exception and abort these steps."
+    if input.len() % 4 == 1 {
+        return Err(Error::InvalidCharacter)
+    }
+
+    // "If input contains a character that is not in the following list of
+    //  characters and character ranges, throw an InvalidCharacterError
+    //  exception and abort these steps:
+    //
+    //  U+002B PLUS SIGN (+)
+    //  U+002F SOLIDUS (/)
+    //  Alphanumeric ASCII characters"
+    if input.chars().any(|c| c != '+' && c != '/' && !c.is_alphanumeric()) {
+        return Err(Error::InvalidCharacter)
+    }
+
+    match input.from_base64() {
+        Ok(data) => Ok(DOMString::from(data.iter().map(|&b| b as char).collect::<String>())),
+        Err(..) => Err(Error::InvalidCharacter)
     }
 }
 

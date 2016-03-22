@@ -37,9 +37,7 @@ impl HTMLDialogElement {
         let element = HTMLDialogElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl HTMLDialogElementMethods for HTMLDialogElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-dialog-open
     make_bool_getter!(Open, "open");
 

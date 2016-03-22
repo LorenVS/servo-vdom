@@ -38,46 +38,44 @@ impl DOMPoint {
     pub fn new_from_init(p: &DOMPointInit) -> Root<DOMPoint> {
         DOMPoint::new(p.x, p.y, p.z, p.w)
     }
-}
 
-impl DOMPointMethods for DOMPoint {
     // https://dev.w3.org/fxtf/geometry/Overview.html#dom-dompointreadonly-x
-    fn X(&self) -> f64 {
+    pub fn X(&self) -> f64 {
         self.point.X()
     }
 
     // https://dev.w3.org/fxtf/geometry/Overview.html#dom-dompointreadonly-x
-    fn SetX(&self, value: f64) {
+    pub fn SetX(&self, value: f64) {
         self.point.SetX(value);
     }
 
     // https://dev.w3.org/fxtf/geometry/Overview.html#dom-dompointreadonly-y
-    fn Y(&self) -> f64 {
+    pub fn Y(&self) -> f64 {
         self.point.Y()
     }
 
     // https://dev.w3.org/fxtf/geometry/Overview.html#dom-dompointreadonly-y
-    fn SetY(&self, value: f64) {
+    pub fn SetY(&self, value: f64) {
         self.point.SetY(value);
     }
 
     // https://dev.w3.org/fxtf/geometry/Overview.html#dom-dompointreadonly-z
-    fn Z(&self) -> f64 {
+    pub fn Z(&self) -> f64 {
         self.point.Z()
     }
 
     // https://dev.w3.org/fxtf/geometry/Overview.html#dom-dompointreadonly-z
-    fn SetZ(&self, value: f64) {
+    pub fn SetZ(&self, value: f64) {
         self.point.SetZ(value);
     }
 
     // https://dev.w3.org/fxtf/geometry/Overview.html#dom-dompointreadonly-w
-    fn W(&self) -> f64 {
+    pub fn W(&self) -> f64 {
         self.point.W()
     }
 
     // https://dev.w3.org/fxtf/geometry/Overview.html#dom-dompointreadonly-w
-    fn SetW(&self, value: f64) {
+    pub fn SetW(&self, value: f64) {
         self.point.SetW(value);
     }
 }

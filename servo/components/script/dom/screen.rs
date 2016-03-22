@@ -22,9 +22,7 @@ impl Screen {
     pub fn new() -> Root<Screen> {
         Root::new_box(box Screen::new_inherited())
     }
-}
-
-impl ScreenMethods for Screen {
+    
     // https://drafts.csswg.org/cssom-view/#dom-screen-colordepth
     fn ColorDepth(&self) -> u32 {
         24

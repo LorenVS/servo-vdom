@@ -47,9 +47,7 @@ impl HTMLBodyElement {
         let element = HTMLBodyElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl HTMLBodyElementMethods for HTMLBodyElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-body-bgcolor
     make_getter!(BgColor, "bgcolor");
 

@@ -46,9 +46,7 @@ impl RadioNodeList {
     pub fn Length(&self) -> u32 {
         self.node_list.Length()
     }
-}
-
-impl RadioNodeListMethods for RadioNodeList {
+    
     // https://html.spec.whatwg.org/multipage/#dom-radionodelist-value
     fn Value(&self) -> DOMString {
         self.upcast::<NodeList>().as_simple_list().iter().filter_map(|node| {

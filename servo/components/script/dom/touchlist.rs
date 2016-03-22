@@ -25,9 +25,7 @@ impl TouchList {
     pub fn new(touches: &[&Touch]) -> Root<TouchList> {
         Root::new_box(box TouchList::new_inherited(touches))
     }
-}
-
-impl TouchListMethods for TouchList {
+    
     /// https://w3c.github.io/touch-events/#widl-TouchList-length
     fn Length(&self) -> u32 {
         self.touches.len() as u32

@@ -37,9 +37,7 @@ impl HTMLDataListElement {
         let element = HTMLDataListElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl HTMLDataListElementMethods for HTMLDataListElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-datalist-options
     fn Options(&self) -> Root<HTMLCollection> {
         

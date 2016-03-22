@@ -124,9 +124,7 @@ impl HTMLSelectElement {
              self.Size()
          }
      }
-}
 
-impl HTMLSelectElementMethods for HTMLSelectElement {
 
     // Note: this function currently only exists for union.html.
     // https://html.spec.whatwg.org/multipage/#dom-select-add

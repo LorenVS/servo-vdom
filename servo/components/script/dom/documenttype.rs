@@ -59,9 +59,7 @@ impl DocumentType {
     pub fn system_id(&self) -> &DOMString {
         &self.system_id
     }
-}
-
-impl DocumentTypeMethods for DocumentType {
+    
     // https://dom.spec.whatwg.org/#dom-documenttype-name
     fn Name(&self) -> DOMString {
         self.name.clone()

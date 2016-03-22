@@ -34,9 +34,6 @@ impl HTMLFormControlsCollection {
     pub fn Length(&self) -> u32 {
         self.collection.Length()
     }
-}
-
-impl HTMLFormControlsCollectionMethods for HTMLFormControlsCollection {
 
 
     // FIXME: This shouldn't need to be implemented here since HTMLCollection (the parent of

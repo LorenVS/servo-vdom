@@ -38,9 +38,7 @@ impl ImageData {
     pub fn get_size(&self) -> Size2D<i32> {
         Size2D::new(self.Width() as i32, self.Height() as i32)
     }
-}
-
-impl ImageDataMethods for ImageData {
+    
     // https://html.spec.whatwg.org/multipage/#dom-imagedata-width
     fn Width(&self) -> u32 {
         self.width

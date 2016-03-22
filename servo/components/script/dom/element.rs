@@ -1139,9 +1139,7 @@ impl Element {
         let node = self.upcast::<Node>();
         node.owner_doc().element_attr_will_change(self);
     }
-}
 
-impl ElementMethods for Element {
     // https://dom.spec.whatwg.org/#dom-element-namespaceuri
     fn GetNamespaceURI(&self) -> Option<DOMString> {
         Node::namespace_to_string(self.namespace.clone())
@@ -1159,7 +1157,7 @@ impl ElementMethods for Element {
     }
 
     // https://dom.spec.whatwg.org/#dom-element-tagname
-    fn TagName(&self) -> DOMString {
+    pub fn TagName(&self) -> DOMString {
         let qualified_name = match self.prefix {
             Some(ref prefix) => {
                 Cow::Owned(format!("{}:{}", &**prefix, &*self.local_name))
@@ -1174,7 +1172,7 @@ impl ElementMethods for Element {
     }
 
     // https://dom.spec.whatwg.org/#dom-element-id
-    fn Id(&self) -> DOMString {
+    pub fn Id(&self) -> DOMString {
         self.get_string_attribute(&atom!("id"))
     }
 
@@ -1238,7 +1236,7 @@ impl ElementMethods for Element {
     }
 
     // https://dom.spec.whatwg.org/#dom-element-setattribute
-    fn SetAttribute(&self, name: DOMString, value: DOMString) -> ErrorResult {
+    pub fn SetAttribute(&self, name: DOMString, value: DOMString) -> ErrorResult {
         // Step 1.
         if xml_name_type(&name) == InvalidXMLName {
             return Err(Error::InvalidCharacter);
@@ -1271,7 +1269,7 @@ impl ElementMethods for Element {
     }
 
     // https://dom.spec.whatwg.org/#dom-element-setattributenode
-    fn SetAttributeNode(&self, attr: &Attr) -> Fallible<Option<Root<Attr>>> {
+    pub fn SetAttributeNode(&self, attr: &Attr) -> Fallible<Option<Root<Attr>>> {
         // Step 1.
         if let Some(owner) = attr.GetOwnerElement() {
             if &*owner != self {
@@ -1321,7 +1319,7 @@ impl ElementMethods for Element {
     }
 
     // https://dom.spec.whatwg.org/#dom-element-removeattribute
-    fn RemoveAttribute(&self, name: DOMString) {
+    pub fn RemoveAttribute(&self, name: DOMString) {
         let name = self.parsed_name(name);
         self.remove_attribute_by_name(&name);
     }
@@ -1380,7 +1378,7 @@ impl ElementMethods for Element {
     }
 
     // https://drafts.csswg.org/cssom-view/#dom-element-getboundingclientrect
-    fn GetBoundingClientRect(&self) -> Root<DOMRect> {
+    pub fn GetBoundingClientRect(&self) -> Root<DOMRect> {
         let rect = self.upcast::<Node>().get_bounding_content_box();
         DOMRect::new(rect.origin.x.to_f64_px(),
                      rect.origin.y.to_f64_px(),

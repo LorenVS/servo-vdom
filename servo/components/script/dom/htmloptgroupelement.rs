@@ -41,9 +41,7 @@ impl HTMLOptGroupElement {
         let element = HTMLOptGroupElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl HTMLOptGroupElementMethods for HTMLOptGroupElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-optgroup-disabled
     make_bool_getter!(Disabled, "disabled");
 

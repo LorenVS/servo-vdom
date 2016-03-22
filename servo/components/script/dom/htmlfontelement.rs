@@ -37,9 +37,7 @@ impl HTMLFontElement {
         let element = HTMLFontElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl HTMLFontElementMethods for HTMLFontElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-font-color
     make_getter!(Color, "color");
 

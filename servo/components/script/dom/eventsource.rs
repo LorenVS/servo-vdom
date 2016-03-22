@@ -69,9 +69,7 @@ impl EventSource {
         Ok(event_source)
         // Step 12
     }
-}
-
-impl EventSourceMethods for EventSource {
+    
     // https://html.spec.whatwg.org/multipage/#handler-eventsource-onopen
     event_handler!(open, GetOnopen, SetOnopen);
 

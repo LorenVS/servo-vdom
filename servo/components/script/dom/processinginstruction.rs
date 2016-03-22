@@ -29,18 +29,13 @@ impl ProcessingInstruction {
     pub fn new(target: DOMString, data: DOMString, document: &Document) -> Root<ProcessingInstruction> {
         Root::new_box(box ProcessingInstruction::new_inherited(target, data, document))
     }
-}
 
-
-impl ProcessingInstruction {
     pub fn target(&self) -> &DOMString {
         &self.target
     }
-}
 
-impl ProcessingInstructionMethods for ProcessingInstruction {
     // https://dom.spec.whatwg.org/#dom-processinginstruction-target
-    fn Target(&self) -> DOMString {
+    pub fn Target(&self) -> DOMString {
         self.target.clone()
     }
 }

@@ -176,9 +176,7 @@ impl Event {
     pub fn type_(&self) -> Atom {
         self.type_.borrow().clone()
     }
-}
 
-impl EventMethods for Event {
     // https://dom.spec.whatwg.org/#dom-event-eventphase
     fn EventPhase(&self) -> u16 {
         self.phase.get() as u16
@@ -200,12 +198,12 @@ impl EventMethods for Event {
     }
 
     // https://dom.spec.whatwg.org/#dom-event-defaultprevented
-    fn DefaultPrevented(&self) -> bool {
+    pub fn DefaultPrevented(&self) -> bool {
         self.canceled.get()
     }
 
     // https://dom.spec.whatwg.org/#dom-event-preventdefault
-    fn PreventDefault(&self) {
+    pub fn PreventDefault(&self) {
         if self.cancelable.get() {
             self.canceled.set(true)
         }
@@ -246,7 +244,7 @@ impl EventMethods for Event {
     }
 
     // https://dom.spec.whatwg.org/#dom-event-istrusted
-    fn IsTrusted(&self) -> bool {
+    pub fn IsTrusted(&self) -> bool {
         self.trusted.get()
     }
 }

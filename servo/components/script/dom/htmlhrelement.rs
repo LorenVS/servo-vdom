@@ -34,9 +34,7 @@ impl HTMLHRElement {
         let element = HTMLHRElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl HTMLHRElementMethods for HTMLHRElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-hr-color
     make_getter!(Color, "color");
 

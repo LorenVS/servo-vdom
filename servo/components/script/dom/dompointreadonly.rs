@@ -45,26 +45,24 @@ impl DOMPointReadOnly {
                        -> Fallible<Root<DOMPointReadOnly>> {
         Ok(DOMPointReadOnly::new(x, y, z, w))
     }
-}
 
-impl DOMPointReadOnlyMethods for DOMPointReadOnly {
     // https://dev.w3.org/fxtf/geometry/Overview.html#dom-dompointreadonly-x
-    fn X(&self) -> f64 {
+    pub fn X(&self) -> f64 {
         self.x.get()
     }
 
     // https://dev.w3.org/fxtf/geometry/Overview.html#dom-dompointreadonly-y
-    fn Y(&self) -> f64 {
+    pub fn Y(&self) -> f64 {
         self.y.get()
     }
 
     // https://dev.w3.org/fxtf/geometry/Overview.html#dom-dompointreadonly-z
-    fn Z(&self) -> f64 {
+    pub fn Z(&self) -> f64 {
         self.z.get()
     }
 
     // https://dev.w3.org/fxtf/geometry/Overview.html#dom-dompointreadonly-w
-    fn W(&self) -> f64 {
+    pub fn W(&self) -> f64 {
         self.w.get()
     }
 }

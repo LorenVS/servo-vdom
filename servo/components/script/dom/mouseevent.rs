@@ -100,51 +100,49 @@ impl MouseEvent {
                                     init.button, init.relatedTarget.r());
         Ok(event)
     }
-}
 
-impl MouseEventMethods for MouseEvent {
     // https://w3c.github.io/uievents/#widl-MouseEvent-screenX
-    fn ScreenX(&self) -> i32 {
+    pub fn ScreenX(&self) -> i32 {
         self.screen_x.get()
     }
 
     // https://w3c.github.io/uievents/#widl-MouseEvent-screenY
-    fn ScreenY(&self) -> i32 {
+    pub fn ScreenY(&self) -> i32 {
         self.screen_y.get()
     }
 
     // https://w3c.github.io/uievents/#widl-MouseEvent-clientX
-    fn ClientX(&self) -> i32 {
+    pub fn ClientX(&self) -> i32 {
         self.client_x.get()
     }
 
     // https://w3c.github.io/uievents/#widl-MouseEvent-clientY
-    fn ClientY(&self) -> i32 {
+    pub fn ClientY(&self) -> i32 {
         self.client_y.get()
     }
 
     // https://w3c.github.io/uievents/#widl-MouseEvent-ctrlKey
-    fn CtrlKey(&self) -> bool {
+    pub fn CtrlKey(&self) -> bool {
         self.ctrl_key.get()
     }
 
     // https://w3c.github.io/uievents/#widl-MouseEvent-shiftKey
-    fn ShiftKey(&self) -> bool {
+    pub fn ShiftKey(&self) -> bool {
         self.shift_key.get()
     }
 
     // https://w3c.github.io/uievents/#widl-MouseEvent-altKey
-    fn AltKey(&self) -> bool {
+    pub fn AltKey(&self) -> bool {
         self.alt_key.get()
     }
 
     // https://w3c.github.io/uievents/#widl-MouseEvent-metaKey
-    fn MetaKey(&self) -> bool {
+    pub fn MetaKey(&self) -> bool {
         self.meta_key.get()
     }
 
     // https://w3c.github.io/uievents/#widl-MouseEvent-button
-    fn Button(&self) -> i16 {
+    pub fn Button(&self) -> i16 {
         self.button.get()
     }
 

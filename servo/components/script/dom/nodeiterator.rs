@@ -50,9 +50,7 @@ impl NodeIterator {
         let filter = Filter::None;
         NodeIterator::new_with_filter(root_node, what_to_show, filter)
     }
-}
-
-impl NodeIteratorMethods for NodeIterator {
+    
     // https://dom.spec.whatwg.org/#dom-nodeiterator-root
     fn Root(&self) -> Root<Node> {
         Root::from_ref(&*self.root_node)

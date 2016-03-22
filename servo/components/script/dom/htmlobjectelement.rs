@@ -41,6 +41,17 @@ impl HTMLObjectElement {
         let element = HTMLObjectElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
+
+    // https://html.spec.whatwg.org/multipage/#dom-object-type
+    make_getter!(Type, "type");
+
+    // https://html.spec.whatwg.org/multipage/#dom-object-type
+    make_setter!(SetType, "type");
+
+    // https://html.spec.whatwg.org/multipage/#dom-fae-form
+    fn GetForm(&self) -> Option<Root<HTMLFormElement>> {
+        self.form_owner()
+    }
 }
 
 trait ProcessDataURL {
@@ -69,19 +80,6 @@ pub fn is_image_data(uri: &str) -> bool {
     TYPES.iter().any(|&type_| uri.starts_with(type_))
 }
 
-impl HTMLObjectElementMethods for HTMLObjectElement {
-
-    // https://html.spec.whatwg.org/multipage/#dom-object-type
-    make_getter!(Type, "type");
-
-    // https://html.spec.whatwg.org/multipage/#dom-object-type
-    make_setter!(SetType, "type");
-
-    // https://html.spec.whatwg.org/multipage/#dom-fae-form
-    fn GetForm(&self) -> Option<Root<HTMLFormElement>> {
-        self.form_owner()
-    }
-}
 
 impl VirtualMethods for HTMLObjectElement {
     fn super_type(&self) -> Option<&VirtualMethods> {

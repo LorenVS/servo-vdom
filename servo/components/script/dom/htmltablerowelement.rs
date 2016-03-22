@@ -50,9 +50,7 @@ impl HTMLTableRowElement {
                -> Root<HTMLTableRowElement> {
         Root::new_box(box HTMLTableRowElement::new_inherited(localName, prefix, document))
     }
-}
-
-impl HTMLTableRowElementMethods for HTMLTableRowElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-tr-bgcolor
     make_getter!(BgColor, "bgcolor");
 

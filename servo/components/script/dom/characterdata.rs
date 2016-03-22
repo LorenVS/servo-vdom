@@ -66,16 +66,14 @@ impl CharacterData {
         let node = self.upcast::<Node>();
         node.owner_doc().content_changed(node, NodeDamage::OtherNodeDamage);
     }
-}
 
-impl CharacterDataMethods for CharacterData {
     // https://dom.spec.whatwg.org/#dom-characterdata-data
-    fn Data(&self) -> DOMString {
+    pub fn Data(&self) -> DOMString {
         self.data.borrow().clone()
     }
 
     // https://dom.spec.whatwg.org/#dom-characterdata-data
-    fn SetData(&self, data: DOMString) {
+    pub fn SetData(&self, data: DOMString) {
         let old_length = self.Length();
         let new_length = data.encode_utf16().count() as u32;
         *self.data.borrow_mut() = data;
@@ -85,12 +83,12 @@ impl CharacterDataMethods for CharacterData {
     }
 
     // https://dom.spec.whatwg.org/#dom-characterdata-length
-    fn Length(&self) -> u32 {
+    pub fn Length(&self) -> u32 {
         self.data.borrow().encode_utf16().count() as u32
     }
 
     // https://dom.spec.whatwg.org/#dom-characterdata-substringdata
-    fn SubstringData(&self, offset: u32, count: u32) -> Fallible<DOMString> {
+    pub fn SubstringData(&self, offset: u32, count: u32) -> Fallible<DOMString> {
         let data = self.data.borrow();
         // Step 1.
         let data_from_offset = match find_utf16_code_unit_offset(&data, offset) {
@@ -108,23 +106,23 @@ impl CharacterDataMethods for CharacterData {
     }
 
     // https://dom.spec.whatwg.org/#dom-characterdata-appenddatadata
-    fn AppendData(&self, data: DOMString) {
+    pub fn AppendData(&self, data: DOMString) {
         // FIXME(ajeffrey): Efficient append on DOMStrings?
         self.append_data(&*data);
     }
 
     // https://dom.spec.whatwg.org/#dom-characterdata-insertdataoffset-data
-    fn InsertData(&self, offset: u32, arg: DOMString) -> ErrorResult {
+    pub fn InsertData(&self, offset: u32, arg: DOMString) -> ErrorResult {
         self.ReplaceData(offset, 0, arg)
     }
 
     // https://dom.spec.whatwg.org/#dom-characterdata-deletedataoffset-count
-    fn DeleteData(&self, offset: u32, count: u32) -> ErrorResult {
+    pub fn DeleteData(&self, offset: u32, count: u32) -> ErrorResult {
         self.ReplaceData(offset, count, DOMString::new())
     }
 
     // https://dom.spec.whatwg.org/#dom-characterdata-replacedata
-    fn ReplaceData(&self, offset: u32, count: u32, arg: DOMString) -> ErrorResult {
+    pub fn ReplaceData(&self, offset: u32, count: u32, arg: DOMString) -> ErrorResult {
         let new_data = {
             let data = self.data.borrow();
             let (prefix, data_from_offset) = match find_utf16_code_unit_offset(&data, offset) {

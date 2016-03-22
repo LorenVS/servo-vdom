@@ -71,9 +71,7 @@ impl CloseEvent {
                            init.code,
                            init.reason.clone()))
     }
-}
-
-impl CloseEventMethods for CloseEvent {
+    
     // https://html.spec.whatwg.org/multipage/#dom-closeevent-wasclean
     fn WasClean(&self) -> bool {
         self.wasClean

@@ -69,26 +69,7 @@ impl HTMLOptionElement {
             select.ask_for_reset();
         }
     }
-}
 
-// FIXME(ajeffrey): Provide a way of buffering DOMStrings other than using Strings
-fn collect_text(element: &Element, value: &mut String) {
-    let svg_script = *element.namespace() == ns!(svg) && element.local_name() == &atom!("script");
-    if svg_script  {
-        return;
-    }
-
-    for child in element.upcast::<Node>().children() {
-        if child.is::<Text>() {
-            let characterdata = child.downcast::<CharacterData>().unwrap();
-            value.push_str(&characterdata.Data());
-        } else if let Some(element_child) = child.downcast() {
-            collect_text(element_child, value);
-        }
-    }
-}
-
-impl HTMLOptionElementMethods for HTMLOptionElement {
     // https://html.spec.whatwg.org/multipage/#dom-option-disabled
     make_bool_getter!(Disabled, "disabled");
 
@@ -108,7 +89,7 @@ impl HTMLOptionElementMethods for HTMLOptionElement {
     }
 
     // https://html.spec.whatwg.org/multipage/#attr-option-value
-    fn Value(&self) -> DOMString {
+    pub fn Value(&self) -> DOMString {
         let element = self.upcast::<Element>();
         let attr = &atom!("value");
         if element.has_attribute(attr) {
@@ -142,15 +123,32 @@ impl HTMLOptionElementMethods for HTMLOptionElement {
     make_bool_setter!(SetDefaultSelected, "selected");
 
     // https://html.spec.whatwg.org/multipage/#dom-option-selected
-    fn Selected(&self) -> bool {
+    pub fn Selected(&self) -> bool {
         self.selectedness.get()
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-option-selected
-    fn SetSelected(&self, selected: bool) {
+    pub fn SetSelected(&self, selected: bool) {
         self.dirtiness.set(true);
         self.selectedness.set(selected);
         self.pick_if_selected_and_reset();
+    }
+}
+
+// FIXME(ajeffrey): Provide a way of buffering DOMStrings other than using Strings
+fn collect_text(element: &Element, value: &mut String) {
+    let svg_script = *element.namespace() == ns!(svg) && element.local_name() == &atom!("script");
+    if svg_script  {
+        return;
+    }
+
+    for child in element.upcast::<Node>().children() {
+        if child.is::<Text>() {
+            let characterdata = child.downcast::<CharacterData>().unwrap();
+            value.push_str(&characterdata.Data());
+        } else if let Some(element_child) = child.downcast() {
+            collect_text(element_child, value);
+        }
     }
 }
 

@@ -57,9 +57,7 @@ impl CustomEvent {
 
         event.init_event(type_, can_bubble, cancelable);
     }
-}
-
-impl CustomEventMethods for CustomEvent {
+    
     // https://dom.spec.whatwg.org/#dom-customevent-initcustomevent
     fn InitCustomEvent(&self,
                        type_: DOMString,

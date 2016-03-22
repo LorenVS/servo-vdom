@@ -60,9 +60,7 @@ impl UIEvent {
                                  init.view.r(), init.detail);
         Ok(event)
     }
-}
 
-impl UIEventMethods for UIEvent {
     // https://w3c.github.io/uievents/#widl-UIEvent-view
     fn GetView(&self) -> Option<Root<Window>> {
         self.view.get()
@@ -74,7 +72,7 @@ impl UIEventMethods for UIEvent {
     }
 
     // https://w3c.github.io/uievents/#widl-UIEvent-initUIEvent
-    fn InitUIEvent(&self,
+    pub fn InitUIEvent(&self,
                    type_: DOMString,
                    can_bubble: bool,
                    cancelable: bool,
@@ -91,7 +89,7 @@ impl UIEventMethods for UIEvent {
     }
 
     // https://dom.spec.whatwg.org/#dom-event-istrusted
-    fn IsTrusted(&self) -> bool {
+    pub fn IsTrusted(&self) -> bool {
         self.event.IsTrusted()
     }
 }

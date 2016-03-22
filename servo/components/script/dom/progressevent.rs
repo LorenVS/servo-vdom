@@ -51,9 +51,7 @@ impl ProgressEvent {
                                     init.lengthComputable, init.loaded, init.total);
         Ok(ev)
     }
-}
-
-impl ProgressEventMethods for ProgressEvent {
+    
     // https://xhr.spec.whatwg.org/#dom-progressevent-lengthcomputable
     fn LengthComputable(&self) -> bool {
         self.length_computable

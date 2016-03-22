@@ -180,9 +180,7 @@ impl Range {
         // Step 6.
         Ok(Ordering::Equal)
     }
-}
-
-impl RangeMethods for Range {
+    
     // https://dom.spec.whatwg.org/#dom-range-startcontainer
     fn StartContainer(&self) -> Root<Node> {
         self.start.node.get()

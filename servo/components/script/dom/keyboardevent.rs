@@ -114,6 +114,106 @@ impl KeyboardEvent {
                 key_code: key_keycode(key),
             }
     }
+
+    // https://w3c.github.io/uievents/#widl-KeyboardEvent-initKeyboardEvent
+    fn InitKeyboardEvent(&self,
+                         typeArg: DOMString,
+                         canBubbleArg: bool,
+                         cancelableArg: bool,
+                         viewArg: Option<&Window>,
+                         keyArg: DOMString,
+                         locationArg: u32,
+                         _modifiersListArg: DOMString,
+                         repeat: bool,
+                         _locale: DOMString) {
+        if self.upcast::<Event>().dispatching() {
+            return;
+        }
+
+        self.upcast::<UIEvent>()
+            .InitUIEvent(typeArg, canBubbleArg, cancelableArg, viewArg, 0);
+        *self.key_string.borrow_mut() = keyArg;
+        self.location.set(locationArg);
+        self.repeat.set(repeat);
+    }
+
+    // https://w3c.github.io/uievents/#widl-KeyboardEvent-key
+    fn Key(&self) -> DOMString {
+        self.key_string.borrow().clone()
+    }
+
+    // https://w3c.github.io/uievents/#widl-KeyboardEvent-code
+    fn Code(&self) -> DOMString {
+        self.code.borrow().clone()
+    }
+
+    // https://w3c.github.io/uievents/#widl-KeyboardEvent-location
+    fn Location(&self) -> u32 {
+        self.location.get()
+    }
+
+    // https://w3c.github.io/uievents/#widl-KeyboardEvent-ctrlKey
+    pub fn CtrlKey(&self) -> bool {
+        self.ctrl.get()
+    }
+
+    // https://w3c.github.io/uievents/#widl-KeyboardEvent-shiftKey
+    pub fn ShiftKey(&self) -> bool {
+        self.shift.get()
+    }
+
+    // https://w3c.github.io/uievents/#widl-KeyboardEvent-altKey
+    pub fn AltKey(&self) -> bool {
+        self.alt.get()
+    }
+
+    // https://w3c.github.io/uievents/#widl-KeyboardEvent-metaKey
+    pub fn MetaKey(&self) -> bool {
+        self.meta.get()
+    }
+
+    // https://w3c.github.io/uievents/#widl-KeyboardEvent-repeat
+    fn Repeat(&self) -> bool {
+        self.repeat.get()
+    }
+
+    // https://w3c.github.io/uievents/#widl-KeyboardEvent-isComposing
+    fn IsComposing(&self) -> bool {
+        self.is_composing.get()
+    }
+
+    // https://dvcs.w3.org/hg/dom3events/raw-file/tip/html/DOM3-Events.html#widl-KeyboardEvent-getModifierState
+    fn GetModifierState(&self, keyArg: DOMString) -> bool {
+        match &*keyArg {
+            "Ctrl" => self.CtrlKey(),
+            "Alt" => self.AltKey(),
+            "Shift" => self.ShiftKey(),
+            "Meta" => self.MetaKey(),
+            "AltGraph" | "CapsLock" | "NumLock" | "ScrollLock" | "Accel" |
+            "Fn" | "FnLock" | "Hyper" | "OS" | "Symbol" | "SymbolLock" => false, //FIXME
+            _ => false,
+        }
+    }
+
+    // https://w3c.github.io/uievents/#widl-KeyboardEvent-charCode
+    fn CharCode(&self) -> u32 {
+        self.char_code.get().unwrap_or(0)
+    }
+
+    // https://w3c.github.io/uievents/#widl-KeyboardEvent-keyCode
+    fn KeyCode(&self) -> u32 {
+        self.key_code.get()
+    }
+
+    // https://w3c.github.io/uievents/#widl-KeyboardEvent-which
+    fn Which(&self) -> u32 {
+        self.char_code.get().unwrap_or(self.KeyCode())
+    }
+
+    // https://dom.spec.whatwg.org/#dom-event-istrusted
+    fn IsTrusted(&self) -> bool {
+        self.uievent.IsTrusted()
+    }
 }
 
 
@@ -738,104 +838,3 @@ impl KeyEventProperties {
     }
 }
 
-impl KeyboardEventMethods for KeyboardEvent {
-    // https://w3c.github.io/uievents/#widl-KeyboardEvent-initKeyboardEvent
-    fn InitKeyboardEvent(&self,
-                         typeArg: DOMString,
-                         canBubbleArg: bool,
-                         cancelableArg: bool,
-                         viewArg: Option<&Window>,
-                         keyArg: DOMString,
-                         locationArg: u32,
-                         _modifiersListArg: DOMString,
-                         repeat: bool,
-                         _locale: DOMString) {
-        if self.upcast::<Event>().dispatching() {
-            return;
-        }
-
-        self.upcast::<UIEvent>()
-            .InitUIEvent(typeArg, canBubbleArg, cancelableArg, viewArg, 0);
-        *self.key_string.borrow_mut() = keyArg;
-        self.location.set(locationArg);
-        self.repeat.set(repeat);
-    }
-
-    // https://w3c.github.io/uievents/#widl-KeyboardEvent-key
-    fn Key(&self) -> DOMString {
-        self.key_string.borrow().clone()
-    }
-
-    // https://w3c.github.io/uievents/#widl-KeyboardEvent-code
-    fn Code(&self) -> DOMString {
-        self.code.borrow().clone()
-    }
-
-    // https://w3c.github.io/uievents/#widl-KeyboardEvent-location
-    fn Location(&self) -> u32 {
-        self.location.get()
-    }
-
-    // https://w3c.github.io/uievents/#widl-KeyboardEvent-ctrlKey
-    fn CtrlKey(&self) -> bool {
-        self.ctrl.get()
-    }
-
-    // https://w3c.github.io/uievents/#widl-KeyboardEvent-shiftKey
-    fn ShiftKey(&self) -> bool {
-        self.shift.get()
-    }
-
-    // https://w3c.github.io/uievents/#widl-KeyboardEvent-altKey
-    fn AltKey(&self) -> bool {
-        self.alt.get()
-    }
-
-    // https://w3c.github.io/uievents/#widl-KeyboardEvent-metaKey
-    fn MetaKey(&self) -> bool {
-        self.meta.get()
-    }
-
-    // https://w3c.github.io/uievents/#widl-KeyboardEvent-repeat
-    fn Repeat(&self) -> bool {
-        self.repeat.get()
-    }
-
-    // https://w3c.github.io/uievents/#widl-KeyboardEvent-isComposing
-    fn IsComposing(&self) -> bool {
-        self.is_composing.get()
-    }
-
-    // https://dvcs.w3.org/hg/dom3events/raw-file/tip/html/DOM3-Events.html#widl-KeyboardEvent-getModifierState
-    fn GetModifierState(&self, keyArg: DOMString) -> bool {
-        match &*keyArg {
-            "Ctrl" => self.CtrlKey(),
-            "Alt" => self.AltKey(),
-            "Shift" => self.ShiftKey(),
-            "Meta" => self.MetaKey(),
-            "AltGraph" | "CapsLock" | "NumLock" | "ScrollLock" | "Accel" |
-            "Fn" | "FnLock" | "Hyper" | "OS" | "Symbol" | "SymbolLock" => false, //FIXME
-            _ => false,
-        }
-    }
-
-    // https://w3c.github.io/uievents/#widl-KeyboardEvent-charCode
-    fn CharCode(&self) -> u32 {
-        self.char_code.get().unwrap_or(0)
-    }
-
-    // https://w3c.github.io/uievents/#widl-KeyboardEvent-keyCode
-    fn KeyCode(&self) -> u32 {
-        self.key_code.get()
-    }
-
-    // https://w3c.github.io/uievents/#widl-KeyboardEvent-which
-    fn Which(&self) -> u32 {
-        self.char_code.get().unwrap_or(self.KeyCode())
-    }
-
-    // https://dom.spec.whatwg.org/#dom-event-istrusted
-    fn IsTrusted(&self) -> bool {
-        self.uievent.IsTrusted()
-    }
-}

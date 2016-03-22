@@ -60,9 +60,7 @@ impl HTMLButtonElement {
         let element = HTMLButtonElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl HTMLButtonElementMethods for HTMLButtonElement {
+    
 
     // https://html.spec.whatwg.org/multipage/#dom-fe-disabled
     make_bool_getter!(Disabled, "disabled");

@@ -35,9 +35,7 @@ impl HTMLOutputElement {
         let element = HTMLOutputElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl HTMLOutputElementMethods for HTMLOutputElement {
+    
 
     // https://html.spec.whatwg.org/multipage/#dom-fae-form
     fn GetForm(&self) -> Option<Root<HTMLFormElement>> {

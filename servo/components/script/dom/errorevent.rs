@@ -91,10 +91,7 @@ impl ErrorEvent {
                                 line_num, col_num);
         Ok(event)
     }
-
-}
-
-impl ErrorEventMethods for ErrorEvent {
+    
     // https://html.spec.whatwg.org/multipage/#dom-errorevent-lineno
     fn Lineno(&self) -> u32 {
         self.lineno.get()

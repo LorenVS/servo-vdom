@@ -29,9 +29,7 @@ impl DOMRectList {
     {
         Root::new_box(box DOMRectList::new_inherited(rects))
     }
-}
-
-impl DOMRectListMethods for DOMRectList {
+    
     // https://drafts.fxtf.org/geometry/#dom-domrectlist-length
     fn Length(&self) -> u32 {
         self.rects.len() as u32

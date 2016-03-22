@@ -54,9 +54,7 @@ impl DOMException {
     pub fn new(code: DOMErrorName) -> Root<DOMException> {
         Root::new_box(box DOMException::new_inherited(code))
     }
-}
-
-impl DOMExceptionMethods for DOMException {
+    
     // https://heycam.github.io/webidl/#dfn-DOMException
     fn Code(&self) -> u16 {
         match self.code {

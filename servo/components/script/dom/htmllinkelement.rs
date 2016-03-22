@@ -241,6 +241,59 @@ impl HTMLLinkElement {
             Err(e) => debug!("Parsing url {} failed: {}", href, e)
         }
     }
+    
+    // https://html.spec.whatwg.org/multipage/#dom-link-href
+    make_url_getter!(Href, "href");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-href
+    make_setter!(SetHref, "href");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-rel
+    make_getter!(Rel, "rel");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-rel
+    make_setter!(SetRel, "rel");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-media
+    make_getter!(Media, "media");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-media
+    make_setter!(SetMedia, "media");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-hreflang
+    make_getter!(Hreflang, "hreflang");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-hreflang
+    make_setter!(SetHreflang, "hreflang");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-type
+    make_getter!(Type, "type");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-type
+    make_setter!(SetType, "type");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-rellist
+    fn RelList(&self) -> Root<DOMTokenList> {
+        self.rel_list.or_init(|| DOMTokenList::new(self.upcast(), &atom!("rel")))
+    }
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-charset
+    make_getter!(Charset, "charset");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-charset
+    make_setter!(SetCharset, "charset");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-rev
+    make_getter!(Rev, "rev");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-rev
+    make_setter!(SetRev, "rev");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-target
+    make_getter!(Target, "target");
+
+    // https://html.spec.whatwg.org/multipage/#dom-link-target
+    make_setter!(SetTarget, "target");
 }
 
 /// The context required for asynchronously loading an external stylesheet.
@@ -301,59 +354,4 @@ impl AsyncResponseListener for StylesheetContext {
         }
         document.finish_load(LoadType::Stylesheet(self.url.clone()));
     }
-}
-
-impl HTMLLinkElementMethods for HTMLLinkElement {
-    // https://html.spec.whatwg.org/multipage/#dom-link-href
-    make_url_getter!(Href, "href");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-href
-    make_setter!(SetHref, "href");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-rel
-    make_getter!(Rel, "rel");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-rel
-    make_setter!(SetRel, "rel");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-media
-    make_getter!(Media, "media");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-media
-    make_setter!(SetMedia, "media");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-hreflang
-    make_getter!(Hreflang, "hreflang");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-hreflang
-    make_setter!(SetHreflang, "hreflang");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-type
-    make_getter!(Type, "type");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-type
-    make_setter!(SetType, "type");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-rellist
-    fn RelList(&self) -> Root<DOMTokenList> {
-        self.rel_list.or_init(|| DOMTokenList::new(self.upcast(), &atom!("rel")))
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-charset
-    make_getter!(Charset, "charset");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-charset
-    make_setter!(SetCharset, "charset");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-rev
-    make_getter!(Rev, "rev");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-rev
-    make_setter!(SetRev, "rev");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-target
-    make_getter!(Target, "target");
-
-    // https://html.spec.whatwg.org/multipage/#dom-link-target
-    make_setter!(SetTarget, "target");
 }

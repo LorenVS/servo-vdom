@@ -72,9 +72,7 @@ impl DOMQuad {
                      &DOMPoint::new_from_init(&other.p3),
                      &DOMPoint::new_from_init(&other.p4))
     }
-}
-
-impl DOMQuadMethods for DOMQuad {
+    
     // https://drafts.fxtf.org/geometry/#dom-domquad-p1
     fn P1(&self) -> Root<DOMPoint> {
         Root::from_ref(&self.p1)

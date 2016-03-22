@@ -48,9 +48,7 @@ impl HTMLTableElement {
     pub fn get_border(&self) -> Option<u32> {
         self.border.get()
     }
-}
-
-impl HTMLTableElementMethods for HTMLTableElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-table-caption
     fn GetCaption(&self) -> Option<Root<HTMLTableCaptionElement>> {
         self.upcast::<Node>().children().filter_map(Root::downcast).next()

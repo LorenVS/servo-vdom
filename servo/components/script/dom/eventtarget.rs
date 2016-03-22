@@ -221,9 +221,7 @@ impl EventTarget {
 
         event
     }
-}
-
-impl EventTargetMethods for EventTarget {
+    
     // https://dom.spec.whatwg.org/#dom-eventtarget-addeventlistener
     fn AddEventListener(&self,
                         ty: DOMString,

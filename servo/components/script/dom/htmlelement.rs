@@ -105,9 +105,7 @@ impl HTMLElement {
             }
         }
     }
-}
-
-impl HTMLElementMethods for HTMLElement {
+    
     // https://html.spec.whatwg.org/multipage/#the-style-attribute
     fn Style(&self) -> Root<CSSStyleDeclaration> {
         self.style_decl.or_init(|| {

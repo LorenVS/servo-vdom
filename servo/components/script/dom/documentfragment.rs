@@ -41,9 +41,7 @@ impl DocumentFragment {
 
         Ok(DocumentFragment::new(document.r()))
     }
-}
-
-impl DocumentFragmentMethods for DocumentFragment {
+    
     // https://dom.spec.whatwg.org/#dom-parentnode-children
     fn Children(&self) -> Root<HTMLCollection> {
         HTMLCollection::children(self.upcast())

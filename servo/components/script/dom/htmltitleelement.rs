@@ -35,9 +35,7 @@ impl HTMLTitleElement {
         let element = HTMLTitleElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl HTMLTitleElementMethods for HTMLTitleElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-title-text
     fn Text(&self) -> DOMString {
         let mut content = String::new();

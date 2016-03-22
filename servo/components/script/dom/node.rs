@@ -1777,11 +1777,9 @@ impl Node {
                  }
         }
     }
-}
 
-impl NodeMethods for Node {
     // https://dom.spec.whatwg.org/#dom-node-nodetype
-    fn NodeType(&self) -> u16 {
+    pub fn NodeType(&self) -> u16 {
         match self.type_id() {
             NodeTypeId::CharacterData(CharacterDataTypeId::Text) =>
                 NodeConstants::TEXT_NODE,
@@ -1836,44 +1834,44 @@ impl NodeMethods for Node {
     }
 
     // https://dom.spec.whatwg.org/#dom-node-parentnode
-    fn GetParentNode(&self) -> Option<Root<Node>> {
+    pub fn GetParentNode(&self) -> Option<Root<Node>> {
         self.parent_node.get()
     }
 
     // https://dom.spec.whatwg.org/#dom-node-parentelement
-    fn GetParentElement(&self) -> Option<Root<Element>> {
+    pub fn GetParentElement(&self) -> Option<Root<Element>> {
         self.GetParentNode().and_then(Root::downcast)
     }
 
     // https://dom.spec.whatwg.org/#dom-node-haschildnodes
-    fn HasChildNodes(&self) -> bool {
+    pub fn HasChildNodes(&self) -> bool {
         self.first_child.get().is_some()
     }
 
     // https://dom.spec.whatwg.org/#dom-node-childnodes
-    fn ChildNodes(&self) -> Root<NodeList> {
+    pub fn ChildNodes(&self) -> Root<NodeList> {
         self.child_list.or_init(|| {
             NodeList::new_child_list(self)
         })
     }
 
     // https://dom.spec.whatwg.org/#dom-node-firstchild
-    fn GetFirstChild(&self) -> Option<Root<Node>> {
+    pub fn GetFirstChild(&self) -> Option<Root<Node>> {
         self.first_child.get()
     }
 
     // https://dom.spec.whatwg.org/#dom-node-lastchild
-    fn GetLastChild(&self) -> Option<Root<Node>> {
+    pub fn GetLastChild(&self) -> Option<Root<Node>> {
         self.last_child.get()
     }
 
     // https://dom.spec.whatwg.org/#dom-node-previoussibling
-    fn GetPreviousSibling(&self) -> Option<Root<Node>> {
+    pub fn GetPreviousSibling(&self) -> Option<Root<Node>> {
         self.prev_sibling.get()
     }
 
     // https://dom.spec.whatwg.org/#dom-node-nextsibling
-    fn GetNextSibling(&self) -> Option<Root<Node>> {
+    pub fn GetNextSibling(&self) -> Option<Root<Node>> {
         self.next_sibling.get()
     }
 
@@ -1890,7 +1888,7 @@ impl NodeMethods for Node {
     }
 
     // https://dom.spec.whatwg.org/#dom-node-textcontent
-    fn GetTextContent(&self) -> Option<DOMString> {
+    pub fn GetTextContent(&self) -> Option<DOMString> {
         match self.type_id() {
             NodeTypeId::DocumentFragment |
             NodeTypeId::Element(..) => {
@@ -1909,7 +1907,7 @@ impl NodeMethods for Node {
     }
 
     // https://dom.spec.whatwg.org/#dom-node-textcontent
-    fn SetTextContent(&self, value: Option<DOMString>) {
+    pub fn SetTextContent(&self, value: Option<DOMString>) {
         let value = value.unwrap_or_default();
         match self.type_id() {
             NodeTypeId::DocumentFragment |
@@ -1934,17 +1932,17 @@ impl NodeMethods for Node {
     }
 
     // https://dom.spec.whatwg.org/#dom-node-insertbefore
-    fn InsertBefore(&self, node: &Node, child: Option<&Node>) -> Fallible<Root<Node>> {
+    pub fn InsertBefore(&self, node: &Node, child: Option<&Node>) -> Fallible<Root<Node>> {
         Node::pre_insert(node, self, child)
     }
 
     // https://dom.spec.whatwg.org/#dom-node-appendchild
-    fn AppendChild(&self, node: &Node) -> Fallible<Root<Node>> {
+    pub fn AppendChild(&self, node: &Node) -> Fallible<Root<Node>> {
         Node::pre_insert(node, self, None)
     }
 
     // https://dom.spec.whatwg.org/#concept-node-replace
-    fn ReplaceChild(&self, node: &Node, child: &Node) -> Fallible<Root<Node>> {
+    pub fn ReplaceChild(&self, node: &Node, child: &Node) -> Fallible<Root<Node>> {
 
         // Step 1.
         match self.type_id() {
@@ -2079,7 +2077,7 @@ impl NodeMethods for Node {
     }
 
     // https://dom.spec.whatwg.org/#dom-node-removechild
-    fn RemoveChild(&self, node: &Node)
+    pub fn RemoveChild(&self, node: &Node)
                        -> Fallible<Root<Node>> {
         Node::pre_remove(node, self)
     }
@@ -2111,7 +2109,7 @@ impl NodeMethods for Node {
     }
 
     // https://dom.spec.whatwg.org/#dom-node-clonenode
-    fn CloneNode(&self, deep: bool) -> Root<Node> {
+    pub fn CloneNode(&self, deep: bool) -> Root<Node> {
         Node::clone(self, None, if deep {
             CloneChildrenFlag::CloneChildren
         } else {
@@ -2201,7 +2199,7 @@ impl NodeMethods for Node {
     }
 
     // https://dom.spec.whatwg.org/#dom-node-comparedocumentposition
-    fn CompareDocumentPosition(&self, other: &Node) -> u16 {
+    pub fn CompareDocumentPosition(&self, other: &Node) -> u16 {
         if self == other {
             // step 2.
             0

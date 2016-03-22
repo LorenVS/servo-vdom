@@ -49,16 +49,14 @@ impl Touch {
                                                     client_x, client_y,
                                                     page_x, page_y))
     }
-}
 
-impl TouchMethods for Touch {
     /// https://w3c.github.io/touch-events/#widl-Touch-identifier
-    fn Identifier(&self) -> i32 {
+    pub fn Identifier(&self) -> i32 {
         self.identifier
     }
 
     /// https://w3c.github.io/touch-events/#widl-Touch-target
-    fn Target(&self) -> Root<EventTarget> {
+    pub fn Target(&self) -> Root<EventTarget> {
         self.target.get()
     }
 

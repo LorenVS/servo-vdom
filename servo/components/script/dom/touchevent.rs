@@ -72,9 +72,7 @@ impl TouchEvent {
         ev.meta_key.set(metaKey);
         ev
     }
-}
-
-impl<'a> TouchEventMethods for &'a TouchEvent {
+    
     /// https://w3c.github.io/touch-events/#widl-TouchEvent-ctrlKey
     fn CtrlKey(&self) -> bool {
         self.ctrl_key.get()

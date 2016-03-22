@@ -1483,33 +1483,14 @@ impl Document {
             snapshot.attrs = Some(attrs);
         }
     }
-}
 
-
-impl Element {
-    fn click_event_filter_by_disabled_state(&self) -> bool {
-        let node = self.upcast::<Node>();
-        match node.type_id() {
-            NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLButtonElement)) |
-            NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLInputElement)) |
-            // NodeTypeId::Element(ElementTypeId::HTMLKeygenElement) |
-            NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLOptionElement)) |
-            NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLSelectElement)) |
-            NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTextAreaElement))
-                if self.get_disabled_state() => true,
-            _ => false,
-        }
-    }
-}
-
-impl DocumentMethods for Document {
     // https://dom.spec.whatwg.org/#dom-document-implementation
     fn Implementation(&self) -> Root<DOMImplementation> {
         self.implementation.or_init(|| DOMImplementation::new(self))
     }
 
     // https://dom.spec.whatwg.org/#dom-document-url
-    fn URL(&self) -> DOMString {
+    pub fn URL(&self) -> DOMString {
         DOMString::from(self.url().serialize())
     }
 
@@ -1595,7 +1576,7 @@ impl DocumentMethods for Document {
     }
 
     // https://dom.spec.whatwg.org/#dom-document-documentelement
-    fn GetDocumentElement(&self) -> Option<Root<Element>> {
+    pub fn GetDocumentElement(&self) -> Option<Root<Element>> {
         self.upcast::<Node>().child_elements().next()
     }
 
@@ -1652,12 +1633,12 @@ impl DocumentMethods for Document {
     }
 
     // https://dom.spec.whatwg.org/#dom-nonelementparentnode-getelementbyid
-    fn GetElementById(&self, id: DOMString) -> Option<Root<Element>> {
+    pub fn GetElementById(&self, id: DOMString) -> Option<Root<Element>> {
         self.get_element_by_id(&Atom::from(id))
     }
 
     // https://dom.spec.whatwg.org/#dom-document-createelement
-    fn CreateElement(&self, mut local_name: DOMString) -> Fallible<Root<Element>> {
+    pub fn CreateElement(&self, mut local_name: DOMString) -> Fallible<Root<Element>> {
         if xml_name_type(&local_name) == InvalidXMLName {
             debug!("Not a valid element name");
             return Err(Error::InvalidCharacter);
@@ -1670,7 +1651,7 @@ impl DocumentMethods for Document {
     }
 
     // https://dom.spec.whatwg.org/#dom-document-createelementns
-    fn CreateElementNS(&self,
+    pub fn CreateElementNS(&self,
                        namespace: Option<DOMString>,
                        qualified_name: DOMString)
                        -> Fallible<Root<Element>> {
@@ -1713,12 +1694,12 @@ impl DocumentMethods for Document {
     }
 
     // https://dom.spec.whatwg.org/#dom-document-createdocumentfragment
-    fn CreateDocumentFragment(&self) -> Root<DocumentFragment> {
+    pub fn CreateDocumentFragment(&self) -> Root<DocumentFragment> {
         DocumentFragment::new(self)
     }
 
     // https://dom.spec.whatwg.org/#dom-document-createtextnode
-    fn CreateTextNode(&self, data: DOMString) -> Root<Text> {
+    pub fn CreateTextNode(&self, data: DOMString) -> Root<Text> {
         Text::new(data, self)
     }
 
@@ -1847,7 +1828,7 @@ impl DocumentMethods for Document {
     }
 
     // https://html.spec.whatwg.org/multipage/#document.title
-    fn Title(&self) -> DOMString {
+    pub fn Title(&self) -> DOMString {
         let title = self.GetDocumentElement().and_then(|root| {
             if root.namespace() == &ns!(svg) && root.local_name() == &atom!("svg") {
                 // Step 1.
@@ -1933,7 +1914,7 @@ impl DocumentMethods for Document {
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-document-body
-    fn GetBody(&self) -> Option<Root<HTMLElement>> {
+    pub fn GetBody(&self) -> Option<Root<HTMLElement>> {
         self.get_html_element().and_then(|root| {
             let node = root.upcast::<Node>();
             node.children().find(|child| {
@@ -2098,7 +2079,7 @@ impl DocumentMethods for Document {
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-document-readystate
-    fn ReadyState(&self) -> DocumentReadyState {
+    pub fn ReadyState(&self) -> DocumentReadyState {
         self.ready_state.get()
     }
 
@@ -2198,6 +2179,23 @@ impl DocumentMethods for Document {
                 Some(Root::from_ref(element_ref))
             },
             None => self.GetDocumentElement()
+        }
+    }
+}
+
+
+impl Element {
+    fn click_event_filter_by_disabled_state(&self) -> bool {
+        let node = self.upcast::<Node>();
+        match node.type_id() {
+            NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLButtonElement)) |
+            NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLInputElement)) |
+            // NodeTypeId::Element(ElementTypeId::HTMLKeygenElement) |
+            NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLOptionElement)) |
+            NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLSelectElement)) |
+            NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLTextAreaElement))
+                if self.get_disabled_state() => true,
+            _ => false,
         }
     }
 }

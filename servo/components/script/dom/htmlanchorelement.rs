@@ -51,22 +51,7 @@ impl HTMLAnchorElement {
         let element = HTMLAnchorElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl VirtualMethods for HTMLAnchorElement {
-    fn super_type(&self) -> Option<&VirtualMethods> {
-        Some(self.upcast::<HTMLElement>() as &VirtualMethods)
-    }
-
-    fn parse_plain_attribute(&self, name: &Atom, value: DOMString) -> AttrValue {
-        match name {
-            &atom!("rel") => AttrValue::from_serialized_tokenlist(value),
-            _ => self.super_type().unwrap().parse_plain_attribute(name, value),
-        }
-    }
-}
-
-impl HTMLAnchorElementMethods for HTMLAnchorElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-a-text
     fn Text(&self) -> DOMString {
         self.upcast::<Node>().GetTextContent().unwrap()
@@ -165,6 +150,21 @@ impl Activatable for HTMLAnchorElement {
 
     //TODO:https://html.spec.whatwg.org/multipage/#the-a-element
     fn implicit_submission(&self, _ctrlKey: bool, _shiftKey: bool, _altKey: bool, _metaKey: bool) {
+    }
+}
+
+
+
+impl VirtualMethods for HTMLAnchorElement {
+    fn super_type(&self) -> Option<&VirtualMethods> {
+        Some(self.upcast::<HTMLElement>() as &VirtualMethods)
+    }
+
+    fn parse_plain_attribute(&self, name: &Atom, value: DOMString) -> AttrValue {
+        match name {
+            &atom!("rel") => AttrValue::from_serialized_tokenlist(value),
+            _ => self.super_type().unwrap().parse_plain_attribute(name, value),
+        }
     }
 }
 

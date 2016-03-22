@@ -42,9 +42,7 @@ impl HTMLTemplateElement {
         let element = HTMLTemplateElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl HTMLTemplateElementMethods for HTMLTemplateElement {
+    
     /// https://html.spec.whatwg.org/multipage/#dom-template-content
     fn Content(&self) -> Root<DocumentFragment> {
         self.contents.or_init(|| {

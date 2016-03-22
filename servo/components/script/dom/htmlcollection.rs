@@ -227,6 +227,63 @@ impl HTMLCollection {
             filter: &self.filter,
         }
     }
+
+    // https://dom.spec.whatwg.org/#dom-htmlcollection-length
+    pub fn Length(&self) -> u32 {
+        self.validate_cache();
+
+        if let Some(cached_length) = self.cached_length.get().to_option() {
+            // Cache hit
+            cached_length
+        } else {
+            // Cache miss, calculate the length
+            let length = self.elements_iter().count() as u32;
+            self.cached_length.set(OptionU32::some(length));
+            length
+        }
+    }
+
+    // https://dom.spec.whatwg.org/#dom-htmlcollection-item
+    pub fn Item(&self, index: u32) -> Option<Root<Element>> {
+        self.validate_cache();
+
+        if let Some(element) = self.cached_cursor_element.get() {
+            // Cache hit, the cursor element is set
+            if let Some(cached_index) = self.cached_cursor_index.get().to_option() {
+                if cached_index == index {
+                    // The cursor is the element we're looking for
+                    Some(element)
+                } else if cached_index < index {
+                    // The cursor is before the element we're looking for
+                    // Iterate forwards, starting at the cursor.
+                    let offset = index - (cached_index + 1);
+                    let node: Root<Node> = Root::upcast(element);
+                    self.set_cached_cursor(index, self.elements_iter_after(node.r()).nth(offset as usize))
+                } else {
+                    // The cursor is after the element we're looking for
+                    // Iterate backwards, starting at the cursor.
+                    let offset = cached_index - (index + 1);
+                    let node: Root<Node> = Root::upcast(element);
+                    self.set_cached_cursor(index, self.elements_iter_before(node.r()).nth(offset as usize))
+                }
+            } else {
+                // Cache miss
+                // Iterate forwards through all the nodes
+                self.set_cached_cursor(index, self.elements_iter().nth(index as usize))
+            }
+        } else {
+            // Cache miss
+            // Iterate forwards through all the nodes
+            self.set_cached_cursor(index, self.elements_iter().nth(index as usize))
+        }
+    }
+
+    // https://dom.spec.whatwg.org/#dom-htmlcollection-item
+    pub fn IndexedGetter(&self, index: u32, found: &mut bool) -> Option<Root<Element>> {
+        let maybe_elem = self.Item(index);
+        *found = maybe_elem.is_some();
+        maybe_elem
+    }
 }
 
 impl Typed for HTMLCollection {
@@ -281,61 +338,3 @@ impl<'a> Iterator for HTMLCollectionElementsRevIter<'a> {
     }
 }
 
-impl HTMLCollectionMethods for HTMLCollection {
-    // https://dom.spec.whatwg.org/#dom-htmlcollection-length
-    fn Length(&self) -> u32 {
-        self.validate_cache();
-
-        if let Some(cached_length) = self.cached_length.get().to_option() {
-            // Cache hit
-            cached_length
-        } else {
-            // Cache miss, calculate the length
-            let length = self.elements_iter().count() as u32;
-            self.cached_length.set(OptionU32::some(length));
-            length
-        }
-    }
-
-    // https://dom.spec.whatwg.org/#dom-htmlcollection-item
-    fn Item(&self, index: u32) -> Option<Root<Element>> {
-        self.validate_cache();
-
-        if let Some(element) = self.cached_cursor_element.get() {
-            // Cache hit, the cursor element is set
-            if let Some(cached_index) = self.cached_cursor_index.get().to_option() {
-                if cached_index == index {
-                    // The cursor is the element we're looking for
-                    Some(element)
-                } else if cached_index < index {
-                    // The cursor is before the element we're looking for
-                    // Iterate forwards, starting at the cursor.
-                    let offset = index - (cached_index + 1);
-                    let node: Root<Node> = Root::upcast(element);
-                    self.set_cached_cursor(index, self.elements_iter_after(node.r()).nth(offset as usize))
-                } else {
-                    // The cursor is after the element we're looking for
-                    // Iterate backwards, starting at the cursor.
-                    let offset = cached_index - (index + 1);
-                    let node: Root<Node> = Root::upcast(element);
-                    self.set_cached_cursor(index, self.elements_iter_before(node.r()).nth(offset as usize))
-                }
-            } else {
-                // Cache miss
-                // Iterate forwards through all the nodes
-                self.set_cached_cursor(index, self.elements_iter().nth(index as usize))
-            }
-        } else {
-            // Cache miss
-            // Iterate forwards through all the nodes
-            self.set_cached_cursor(index, self.elements_iter().nth(index as usize))
-        }
-    }
-
-    // https://dom.spec.whatwg.org/#dom-htmlcollection-item
-    fn IndexedGetter(&self, index: u32, found: &mut bool) -> Option<Root<Element>> {
-        let maybe_elem = self.Item(index);
-        *found = maybe_elem.is_some();
-        maybe_elem
-    }
-}

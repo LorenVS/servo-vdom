@@ -80,9 +80,7 @@ impl HTMLMetaElement {
             }
         }
     }
-}
-
-impl HTMLMetaElementMethods for HTMLMetaElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-meta-name
     make_getter!(Name, "name");
 

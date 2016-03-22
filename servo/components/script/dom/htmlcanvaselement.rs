@@ -85,10 +85,7 @@ impl HTMLCanvasElement {
     pub fn is_valid(&self) -> bool {
         self.Height() != 0 && self.Width() != 0
     }
-
-}
-
-impl HTMLCanvasElementMethods for HTMLCanvasElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-canvas-width
     make_uint_getter!(Width, "width", DEFAULT_WIDTH);
 

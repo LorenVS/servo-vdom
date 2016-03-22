@@ -39,6 +39,13 @@ impl HTMLAreaElement {
         let element = HTMLAreaElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
+    
+    // https://html.spec.whatwg.org/multipage/#dom-area-rellist
+    fn RelList(&self) -> Root<DOMTokenList> {
+        self.rel_list.or_init(|| {
+            DOMTokenList::new(self.upcast(), &atom!("rel"))
+        })
+    }
 }
 
 impl VirtualMethods for HTMLAreaElement {
@@ -51,14 +58,5 @@ impl VirtualMethods for HTMLAreaElement {
             &atom!("rel") => AttrValue::from_serialized_tokenlist(value),
             _ => self.super_type().unwrap().parse_plain_attribute(name, value),
         }
-    }
-}
-
-impl HTMLAreaElementMethods for HTMLAreaElement {
-    // https://html.spec.whatwg.org/multipage/#dom-area-rellist
-    fn RelList(&self) -> Root<DOMTokenList> {
-        self.rel_list.or_init(|| {
-            DOMTokenList::new(self.upcast(), &atom!("rel"))
-        })
     }
 }

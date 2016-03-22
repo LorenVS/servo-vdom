@@ -65,9 +65,7 @@ impl FocusEvent {
                                     init.relatedTarget.r());
         Ok(event)
     }
-}
-
-impl FocusEventMethods for FocusEvent {
+    
     // https://w3c.github.io/uievents/#widl-FocusEvent-relatedTarget
     fn GetRelatedTarget(&self) -> Option<Root<EventTarget>> {
         self.related_target.get()

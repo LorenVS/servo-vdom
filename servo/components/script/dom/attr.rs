@@ -79,23 +79,21 @@ impl Attr {
     pub fn prefix(&self) -> &Option<Atom> {
         &self.identifier.prefix
     }
-}
 
-impl AttrMethods for Attr {
     // https://dom.spec.whatwg.org/#dom-attr-localname
-    fn LocalName(&self) -> DOMString {
+    pub fn LocalName(&self) -> DOMString {
         // FIXME(ajeffrey): convert directly from Atom to DOMString
         DOMString::from(&**self.local_name())
     }
 
     // https://dom.spec.whatwg.org/#dom-attr-value
-    fn Value(&self) -> DOMString {
+    pub fn Value(&self) -> DOMString {
         // FIXME(ajeffrey): convert directly from AttrValue to DOMString
         DOMString::from(&**self.value())
     }
 
     // https://dom.spec.whatwg.org/#dom-attr-value
-    fn SetValue(&self, value: DOMString) {
+    pub fn SetValue(&self, value: DOMString) {
         match self.owner() {
             None => *self.value.borrow_mut() = AttrValue::String(value),
             Some(owner) => {
@@ -128,7 +126,7 @@ impl AttrMethods for Attr {
     }
 
     // https://dom.spec.whatwg.org/#dom-attr-name
-    fn Name(&self) -> DOMString {
+    pub fn Name(&self) -> DOMString {
         // FIXME(ajeffrey): convert directly from Atom to DOMString
         DOMString::from(&*self.identifier.name)
     }
@@ -149,7 +147,7 @@ impl AttrMethods for Attr {
     }
 
     // https://dom.spec.whatwg.org/#dom-attr-ownerelement
-    fn GetOwnerElement(&self) -> Option<Root<Element>> {
+    pub fn GetOwnerElement(&self) -> Option<Root<Element>> {
         self.owner()
     }
 

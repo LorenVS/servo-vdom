@@ -114,9 +114,7 @@ impl HTMLTextAreaElement {
         let element = HTMLTextAreaElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
 
-impl HTMLTextAreaElementMethods for HTMLTextAreaElement {
     // TODO A few of these attributes have default values and additional
     // constraints
 
@@ -174,7 +172,7 @@ impl HTMLTextAreaElementMethods for HTMLTextAreaElement {
     make_setter!(SetWrap, "wrap");
 
     // https://html.spec.whatwg.org/multipage/#dom-textarea-type
-    fn Type(&self) -> DOMString {
+    pub fn Type(&self) -> DOMString {
         DOMString::from("textarea")
     }
 
@@ -195,7 +193,7 @@ impl HTMLTextAreaElementMethods for HTMLTextAreaElement {
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-textarea-value
-    fn Value(&self) -> DOMString {
+    pub fn Value(&self) -> DOMString {
         self.textinput.borrow().get_content()
     }
 

@@ -200,108 +200,6 @@ impl HTMLInputElement {
         self.selection_direction.set(*direction);
     }
 
-}
-
-pub trait LayoutHTMLInputElementHelpers {
-    #[allow(unsafe_code)]
-    unsafe fn get_value_for_layout(self) -> String;
-    #[allow(unsafe_code)]
-    unsafe fn get_size_for_layout(self) -> u32;
-    #[allow(unsafe_code)]
-    unsafe fn get_insertion_point_index_for_layout(self) -> Option<isize>;
-    #[allow(unsafe_code)]
-    unsafe fn get_checked_state_for_layout(self) -> bool;
-    #[allow(unsafe_code)]
-    unsafe fn get_indeterminate_state_for_layout(self) -> bool;
-}
-
-#[allow(unsafe_code)]
-unsafe fn get_raw_textinput_value(input: LayoutJS<HTMLInputElement>) -> DOMString {
-    (*input.unsafe_get()).textinput.borrow_for_layout().get_content()
-}
-
-impl LayoutHTMLInputElementHelpers for LayoutJS<HTMLInputElement> {
-    #[allow(unsafe_code)]
-    unsafe fn get_value_for_layout(self) -> String {
-        #[allow(unsafe_code)]
-        unsafe fn get_raw_attr_value(input: LayoutJS<HTMLInputElement>, default: &str) -> String {
-            let elem = input.upcast::<Element>();
-            let value = (*elem.unsafe_get())
-                .get_attr_val_for_layout(&ns!(), &atom!("value"))
-                .unwrap_or(default);
-            String::from(value)
-        }
-
-        match (*self.unsafe_get()).input_type.get() {
-            InputType::InputCheckbox | InputType::InputRadio => String::new(),
-            InputType::InputFile | InputType::InputImage => String::new(),
-            InputType::InputButton => get_raw_attr_value(self, ""),
-            InputType::InputSubmit => get_raw_attr_value(self, DEFAULT_SUBMIT_VALUE),
-            InputType::InputReset => get_raw_attr_value(self, DEFAULT_RESET_VALUE),
-            InputType::InputPassword => {
-                let text = get_raw_textinput_value(self);
-                if !text.is_empty() {
-                    // The implementation of get_insertion_point_index_for_layout expects a 1:1 mapping of chars.
-                    text.chars().map(|_| '●').collect()
-                } else {
-                    String::from((*self.unsafe_get()).placeholder.borrow_for_layout().clone())
-                }
-            },
-            _ => {
-                let text = get_raw_textinput_value(self);
-                if !text.is_empty() {
-                    // The implementation of get_insertion_point_index_for_layout expects a 1:1 mapping of chars.
-                    String::from(text)
-                } else {
-                    String::from((*self.unsafe_get()).placeholder.borrow_for_layout().clone())
-                }
-            },
-        }
-    }
-
-    
-    #[allow(unsafe_code)]
-    unsafe fn get_size_for_layout(self) -> u32 {
-        (*self.unsafe_get()).size.get()
-    }
-
-    
-    #[allow(unsafe_code)]
-    unsafe fn get_insertion_point_index_for_layout(self) -> Option<isize> {
-        if !(*self.unsafe_get()).upcast::<Element>().get_focus_state() {
-            return None;
-        }
-        match (*self.unsafe_get()).input_type.get() {
-            InputType::InputText  => {
-                let raw = self.get_value_for_layout();
-                Some(search_index((*self.unsafe_get()).textinput.borrow_for_layout().edit_point.index,
-                                  raw.char_indices()))
-            }
-            InputType::InputPassword => {
-                // Use the raw textinput to get the index as long as we use a 1:1 char mapping
-                // in get_input_value_for_layout.
-                let raw = get_raw_textinput_value(self);
-                Some(search_index((*self.unsafe_get()).textinput.borrow_for_layout().edit_point.index,
-                                  raw.char_indices()))
-            }
-            _ => None
-        }
-    }
-
-    
-    #[allow(unsafe_code)]
-    unsafe fn get_checked_state_for_layout(self) -> bool {
-        self.upcast::<Element>().get_state_for_layout().contains(IN_CHECKED_STATE)
-    }
-
-    
-    #[allow(unsafe_code)]
-    unsafe fn get_indeterminate_state_for_layout(self) -> bool {
-        self.upcast::<Element>().get_state_for_layout().contains(IN_INDETERMINATE_STATE)
-    }
-}
-
-impl HTMLInputElementMethods for HTMLInputElement {
     // https://html.spec.whatwg.org/multipage/#dom-fe-disabled
     make_bool_getter!(Disabled, "disabled");
 
@@ -320,12 +218,12 @@ impl HTMLInputElementMethods for HTMLInputElement {
     make_bool_setter!(SetDefaultChecked, "checked");
 
     // https://html.spec.whatwg.org/multipage/#dom-input-checked
-    fn Checked(&self) -> bool {
+    pub fn Checked(&self) -> bool {
         self.upcast::<Element>().get_state().contains(IN_CHECKED_STATE)
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-input-checked
-    fn SetChecked(&self, checked: bool) {
+    pub fn SetChecked(&self, checked: bool) {
         self.update_checked_state(checked, true);
     }
 
@@ -357,7 +255,7 @@ impl HTMLInputElementMethods for HTMLInputElement {
     make_atomic_setter!(SetType, "type");
 
     // https://html.spec.whatwg.org/multipage/#dom-input-value
-    fn Value(&self) -> DOMString {
+    pub fn Value(&self) -> DOMString {
         match self.get_value_mode() {
             ValueMode::Value => self.textinput.borrow().get_content(),
             ValueMode::Default => {
@@ -538,6 +436,106 @@ impl HTMLInputElementMethods for HTMLInputElement {
         self.set_selection_range(start, end, &selection_direction);
     }
 }
+
+pub trait LayoutHTMLInputElementHelpers {
+    #[allow(unsafe_code)]
+    unsafe fn get_value_for_layout(self) -> String;
+    #[allow(unsafe_code)]
+    unsafe fn get_size_for_layout(self) -> u32;
+    #[allow(unsafe_code)]
+    unsafe fn get_insertion_point_index_for_layout(self) -> Option<isize>;
+    #[allow(unsafe_code)]
+    unsafe fn get_checked_state_for_layout(self) -> bool;
+    #[allow(unsafe_code)]
+    unsafe fn get_indeterminate_state_for_layout(self) -> bool;
+}
+
+#[allow(unsafe_code)]
+unsafe fn get_raw_textinput_value(input: LayoutJS<HTMLInputElement>) -> DOMString {
+    (*input.unsafe_get()).textinput.borrow_for_layout().get_content()
+}
+
+impl LayoutHTMLInputElementHelpers for LayoutJS<HTMLInputElement> {
+    #[allow(unsafe_code)]
+    unsafe fn get_value_for_layout(self) -> String {
+        #[allow(unsafe_code)]
+        unsafe fn get_raw_attr_value(input: LayoutJS<HTMLInputElement>, default: &str) -> String {
+            let elem = input.upcast::<Element>();
+            let value = (*elem.unsafe_get())
+                .get_attr_val_for_layout(&ns!(), &atom!("value"))
+                .unwrap_or(default);
+            String::from(value)
+        }
+
+        match (*self.unsafe_get()).input_type.get() {
+            InputType::InputCheckbox | InputType::InputRadio => String::new(),
+            InputType::InputFile | InputType::InputImage => String::new(),
+            InputType::InputButton => get_raw_attr_value(self, ""),
+            InputType::InputSubmit => get_raw_attr_value(self, DEFAULT_SUBMIT_VALUE),
+            InputType::InputReset => get_raw_attr_value(self, DEFAULT_RESET_VALUE),
+            InputType::InputPassword => {
+                let text = get_raw_textinput_value(self);
+                if !text.is_empty() {
+                    // The implementation of get_insertion_point_index_for_layout expects a 1:1 mapping of chars.
+                    text.chars().map(|_| '●').collect()
+                } else {
+                    String::from((*self.unsafe_get()).placeholder.borrow_for_layout().clone())
+                }
+            },
+            _ => {
+                let text = get_raw_textinput_value(self);
+                if !text.is_empty() {
+                    // The implementation of get_insertion_point_index_for_layout expects a 1:1 mapping of chars.
+                    String::from(text)
+                } else {
+                    String::from((*self.unsafe_get()).placeholder.borrow_for_layout().clone())
+                }
+            },
+        }
+    }
+
+    
+    #[allow(unsafe_code)]
+    unsafe fn get_size_for_layout(self) -> u32 {
+        (*self.unsafe_get()).size.get()
+    }
+
+    
+    #[allow(unsafe_code)]
+    unsafe fn get_insertion_point_index_for_layout(self) -> Option<isize> {
+        if !(*self.unsafe_get()).upcast::<Element>().get_focus_state() {
+            return None;
+        }
+        match (*self.unsafe_get()).input_type.get() {
+            InputType::InputText  => {
+                let raw = self.get_value_for_layout();
+                Some(search_index((*self.unsafe_get()).textinput.borrow_for_layout().edit_point.index,
+                                  raw.char_indices()))
+            }
+            InputType::InputPassword => {
+                // Use the raw textinput to get the index as long as we use a 1:1 char mapping
+                // in get_input_value_for_layout.
+                let raw = get_raw_textinput_value(self);
+                Some(search_index((*self.unsafe_get()).textinput.borrow_for_layout().edit_point.index,
+                                  raw.char_indices()))
+            }
+            _ => None
+        }
+    }
+
+    
+    #[allow(unsafe_code)]
+    unsafe fn get_checked_state_for_layout(self) -> bool {
+        self.upcast::<Element>().get_state_for_layout().contains(IN_CHECKED_STATE)
+    }
+
+    
+    #[allow(unsafe_code)]
+    unsafe fn get_indeterminate_state_for_layout(self) -> bool {
+        self.upcast::<Element>().get_state_for_layout().contains(IN_INDETERMINATE_STATE)
+    }
+}
+
 
 
 #[allow(unsafe_code)]

@@ -43,9 +43,7 @@ impl HTMLFieldSetElement {
         let element = HTMLFieldSetElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl HTMLFieldSetElementMethods for HTMLFieldSetElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-fieldset-elements
     fn Elements(&self) -> Root<HTMLCollection> {
         

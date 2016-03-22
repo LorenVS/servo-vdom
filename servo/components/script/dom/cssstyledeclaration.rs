@@ -37,10 +37,10 @@ pub enum CSSModificationAccess {
 macro_rules! css_properties(
     ( $([$getter:ident, $setter:ident, $cssprop:expr]),* ) => (
         $(
-            fn $getter(&self) -> DOMString {
+            pub fn $getter(&self) -> DOMString {
                 self.GetPropertyValue(DOMString::from($cssprop))
             }
-            fn $setter(&self, value: DOMString) -> ErrorResult {
+            pub fn $setter(&self, value: DOMString) -> ErrorResult {
                 self.SetPropertyValue(DOMString::from($cssprop), value)
             }
         )*
@@ -102,11 +102,9 @@ impl CSSStyleDeclaration {
         let addr = node.to_trusted_node_address();
         window_from_node(&*self.owner).resolved_style_query(addr, self.pseudo.clone(), property)
     }
-}
 
-impl CSSStyleDeclarationMethods for CSSStyleDeclaration {
     // https://dev.w3.org/csswg/cssom/#dom-cssstyledeclaration-length
-    fn Length(&self) -> u32 {
+    pub fn Length(&self) -> u32 {
         let elem = self.owner.upcast::<Element>();
         let len = match *elem.style_attribute().borrow() {
             Some(ref declarations) => declarations.normal.len() + declarations.important.len(),
@@ -116,7 +114,7 @@ impl CSSStyleDeclarationMethods for CSSStyleDeclaration {
     }
 
     // https://dev.w3.org/csswg/cssom/#dom-cssstyledeclaration-item
-    fn Item(&self, index: u32) -> DOMString {
+    pub fn Item(&self, index: u32) -> DOMString {
         let index = index as usize;
         let elem = self.owner.upcast::<Element>();
         let style_attribute = elem.style_attribute().borrow();
@@ -136,7 +134,7 @@ impl CSSStyleDeclarationMethods for CSSStyleDeclaration {
     }
 
     // https://dev.w3.org/csswg/cssom/#dom-cssstyledeclaration-getpropertyvalue
-    fn GetPropertyValue(&self, mut property: DOMString) -> DOMString {
+    pub fn GetPropertyValue(&self, mut property: DOMString) -> DOMString {
         let owner = &self.owner;
 
         // Step 1
@@ -177,7 +175,7 @@ impl CSSStyleDeclarationMethods for CSSStyleDeclaration {
     }
 
     // https://dev.w3.org/csswg/cssom/#dom-cssstyledeclaration-getpropertypriority
-    fn GetPropertyPriority(&self, mut property: DOMString) -> DOMString {
+    pub fn GetPropertyPriority(&self, mut property: DOMString) -> DOMString {
         // Step 1
         property.make_ascii_lowercase();
         let property = Atom::from(property);
@@ -203,7 +201,7 @@ impl CSSStyleDeclarationMethods for CSSStyleDeclaration {
     }
 
     // https://dev.w3.org/csswg/cssom/#dom-cssstyledeclaration-setproperty
-    fn SetProperty(&self,
+    pub fn SetProperty(&self,
                    mut property: DOMString,
                    value: DOMString,
                    priority: DOMString)
@@ -259,7 +257,7 @@ impl CSSStyleDeclarationMethods for CSSStyleDeclaration {
     }
 
     // https://dev.w3.org/csswg/cssom/#dom-cssstyledeclaration-setpropertypriority
-    fn SetPropertyPriority(&self, property: DOMString, priority: DOMString) -> ErrorResult {
+    pub fn SetPropertyPriority(&self, property: DOMString, priority: DOMString) -> ErrorResult {
         // Step 1
         if self.readonly {
             return Err(Error::NoModificationAllowed);
@@ -294,12 +292,12 @@ impl CSSStyleDeclarationMethods for CSSStyleDeclaration {
     }
 
     // https://dev.w3.org/csswg/cssom/#dom-cssstyledeclaration-setpropertyvalue
-    fn SetPropertyValue(&self, property: DOMString, value: DOMString) -> ErrorResult {
+    pub fn SetPropertyValue(&self, property: DOMString, value: DOMString) -> ErrorResult {
         self.SetProperty(property, value, DOMString::new())
     }
 
     // https://dev.w3.org/csswg/cssom/#dom-cssstyledeclaration-removeproperty
-    fn RemoveProperty(&self, mut property: DOMString) -> Fallible<DOMString> {
+    pub fn RemoveProperty(&self, mut property: DOMString) -> Fallible<DOMString> {
         // Step 1
         if self.readonly {
             return Err(Error::NoModificationAllowed);
@@ -333,17 +331,17 @@ impl CSSStyleDeclarationMethods for CSSStyleDeclaration {
     }
 
     // https://dev.w3.org/csswg/cssom/#dom-cssstyledeclaration-cssfloat
-    fn CssFloat(&self) -> DOMString {
+    pub fn CssFloat(&self) -> DOMString {
         self.GetPropertyValue(DOMString::from("float"))
     }
 
     // https://dev.w3.org/csswg/cssom/#dom-cssstyledeclaration-cssfloat
-    fn SetCssFloat(&self, value: DOMString) -> ErrorResult {
+    pub fn SetCssFloat(&self, value: DOMString) -> ErrorResult {
         self.SetPropertyValue(DOMString::from("float"), value)
     }
 
     // https://dev.w3.org/csswg/cssom/#the-cssstyledeclaration-interface
-    fn IndexedGetter(&self, index: u32, found: &mut bool) -> DOMString {
+    pub fn IndexedGetter(&self, index: u32, found: &mut bool) -> DOMString {
         let rval = self.Item(index);
         *found = index < self.Length();
         rval

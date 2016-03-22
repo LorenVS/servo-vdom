@@ -38,18 +38,7 @@ impl HTMLTableSectionElement {
         let element = HTMLTableSectionElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
 
-
-struct RowsFilter;
-impl CollectionFilter for RowsFilter {
-    fn filter(&self, elem: &Element, root: &Node) -> bool {
-        elem.is::<HTMLTableRowElement>()
-            && elem.upcast::<Node>().GetParentNode().r() == Some(root)
-    }
-}
-
-impl HTMLTableSectionElementMethods for HTMLTableSectionElement {
     // https://html.spec.whatwg.org/multipage/#dom-tbody-rows
     fn Rows(&self) -> Root<HTMLCollection> {
         HTMLCollection::create(self.upcast(), box RowsFilter)
@@ -71,6 +60,13 @@ impl HTMLTableSectionElementMethods for HTMLTableSectionElement {
             index,
             || self.Rows(),
             |n| n.is::<HTMLTableRowElement>())
+    }
+}
+struct RowsFilter;
+impl CollectionFilter for RowsFilter {
+    fn filter(&self, elem: &Element, root: &Node) -> bool {
+        elem.is::<HTMLTableRowElement>()
+            && elem.upcast::<Node>().GetParentNode().r() == Some(root)
     }
 }
 

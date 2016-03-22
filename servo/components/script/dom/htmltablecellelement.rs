@@ -39,9 +39,7 @@ impl HTMLTableCellElement {
     pub fn htmlelement(&self) -> &HTMLElement {
         &self.htmlelement
     }
-}
-
-impl HTMLTableCellElementMethods for HTMLTableCellElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-tdth-colspan
     make_uint_getter!(ColSpan, "colspan", DEFAULT_COLSPAN);
 

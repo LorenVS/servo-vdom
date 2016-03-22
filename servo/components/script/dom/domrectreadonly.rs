@@ -64,31 +64,29 @@ impl DOMRectReadOnly {
     pub fn set_height(&self, value: f64) {
         self.height.set(value);
     }
-}
 
-impl DOMRectReadOnlyMethods for DOMRectReadOnly {
     // https://drafts.fxtf.org/geometry/#dom-domrectreadonly-x
-    fn X(&self) -> f64 {
+    pub fn X(&self) -> f64 {
         self.x.get()
     }
 
     // https://drafts.fxtf.org/geometry/#dom-domrectreadonly-y
-    fn Y(&self) -> f64 {
+    pub fn Y(&self) -> f64 {
         self.y.get()
     }
 
     // https://drafts.fxtf.org/geometry/#dom-domrectreadonly-width
-    fn Width(&self) -> f64 {
+    pub fn Width(&self) -> f64 {
         self.width.get()
     }
 
     // https://drafts.fxtf.org/geometry/#dom-domrectreadonly-height
-    fn Height(&self) -> f64 {
+    pub fn Height(&self) -> f64 {
         self.height.get()
     }
 
     // https://drafts.fxtf.org/geometry/#dom-domrectreadonly-top
-    fn Top(&self) -> f64 {
+    pub fn Top(&self) -> f64 {
         let height = self.height.get();
         if height >= 0f64 {
             self.y.get()
@@ -98,7 +96,7 @@ impl DOMRectReadOnlyMethods for DOMRectReadOnly {
     }
 
     // https://drafts.fxtf.org/geometry/#dom-domrectreadonly-right
-    fn Right(&self) -> f64 {
+    pub fn Right(&self) -> f64 {
         let width = self.width.get();
         if width < 0f64 {
             self.x.get()
@@ -108,7 +106,7 @@ impl DOMRectReadOnlyMethods for DOMRectReadOnly {
     }
 
     // https://drafts.fxtf.org/geometry/#dom-domrectreadonly-bottom
-    fn Bottom(&self) -> f64 {
+    pub fn Bottom(&self) -> f64 {
         let height = self.height.get();
         if height < 0f64 {
             self.y.get()
@@ -118,7 +116,7 @@ impl DOMRectReadOnlyMethods for DOMRectReadOnly {
     }
 
     // https://drafts.fxtf.org/geometry/#dom-domrectreadonly-left
-    fn Left(&self) -> f64 {
+    pub fn Left(&self) -> f64 {
         let width = self.width.get();
         if width >= 0f64 {
             self.x.get()

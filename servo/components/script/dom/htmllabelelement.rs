@@ -41,7 +41,38 @@ impl HTMLLabelElement {
         let element = HTMLLabelElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
+    
+    // https://html.spec.whatwg.org/multipage/#dom-fae-form
+    fn GetForm(&self) -> Option<Root<HTMLFormElement>> {
+        self.form_owner()
+    }
+
+    // https://html.spec.whatwg.org/multipage/#dom-label-htmlfor
+    make_getter!(HtmlFor, "for");
+
+    // https://html.spec.whatwg.org/multipage/#dom-label-htmlfor
+    make_atomic_setter!(SetHtmlFor, "for");
+
+    // https://html.spec.whatwg.org/multipage/#dom-label-control
+    fn GetControl(&self) -> Option<Root<HTMLElement>> {
+        if !self.upcast::<Node>().is_in_doc() {
+            return None;
+        }
+
+        let for_attr = match self.upcast::<Element>().get_attribute(&ns!(), &atom!("for")) {
+            Some(for_attr) => for_attr,
+            None => return self.first_labelable_descendant(),
+        };
+
+        let for_value = for_attr.value();
+        document_from_node(self).get_element_by_id(for_value.as_atom())
+                                .and_then(Root::downcast::<HTMLElement>)
+                                .into_iter()
+                                .filter(|e| e.is_labelable_element())
+                                .next()
+    }
 }
+
 
 impl Activatable for HTMLLabelElement {
     fn as_element(&self) -> &Element {
@@ -78,38 +109,6 @@ impl Activatable for HTMLLabelElement {
     }
 
 
-}
-
-impl HTMLLabelElementMethods for HTMLLabelElement {
-    // https://html.spec.whatwg.org/multipage/#dom-fae-form
-    fn GetForm(&self) -> Option<Root<HTMLFormElement>> {
-        self.form_owner()
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-label-htmlfor
-    make_getter!(HtmlFor, "for");
-
-    // https://html.spec.whatwg.org/multipage/#dom-label-htmlfor
-    make_atomic_setter!(SetHtmlFor, "for");
-
-    // https://html.spec.whatwg.org/multipage/#dom-label-control
-    fn GetControl(&self) -> Option<Root<HTMLElement>> {
-        if !self.upcast::<Node>().is_in_doc() {
-            return None;
-        }
-
-        let for_attr = match self.upcast::<Element>().get_attribute(&ns!(), &atom!("for")) {
-            Some(for_attr) => for_attr,
-            None => return self.first_labelable_descendant(),
-        };
-
-        let for_value = for_attr.value();
-        document_from_node(self).get_element_by_id(for_value.as_atom())
-                                .and_then(Root::downcast::<HTMLElement>)
-                                .into_iter()
-                                .filter(|e| e.is_labelable_element())
-                                .next()
-    }
 }
 
 impl VirtualMethods for HTMLLabelElement {

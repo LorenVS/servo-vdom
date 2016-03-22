@@ -5,7 +5,7 @@
 #[macro_export]
 macro_rules! make_getter(
     ( $attr:ident, $htmlname:tt ) => (
-        fn $attr(&self) -> DOMString {
+        pub fn $attr(&self) -> DOMString {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             let element = self.upcast::<Element>();
@@ -17,7 +17,7 @@ macro_rules! make_getter(
 #[macro_export]
 macro_rules! make_bool_getter(
     ( $attr:ident, $htmlname:tt ) => (
-        fn $attr(&self) -> bool {
+        pub fn $attr(&self) -> bool {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             let element = self.upcast::<Element>();
@@ -29,7 +29,7 @@ macro_rules! make_bool_getter(
 #[macro_export]
 macro_rules! make_limited_int_setter(
     ($attr:ident, $htmlname:tt, $default:expr) => (
-        fn $attr(&self, value: i32) -> $crate::dom::bindings::error::ErrorResult {
+        pub fn $attr(&self, value: i32) -> $crate::dom::bindings::error::ErrorResult {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
 
@@ -49,7 +49,7 @@ macro_rules! make_limited_int_setter(
 #[macro_export]
 macro_rules! make_int_getter(
     ($attr:ident, $htmlname:tt, $default:expr) => (
-        fn $attr(&self) -> i32 {
+        pub fn $attr(&self) -> i32 {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             let element = self.upcast::<Element>();
@@ -65,7 +65,7 @@ macro_rules! make_int_getter(
 #[macro_export]
 macro_rules! make_uint_getter(
     ($attr:ident, $htmlname:tt, $default:expr) => (
-        fn $attr(&self) -> u32 {
+        pub fn $attr(&self) -> u32 {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             let element = self.upcast::<Element>();
@@ -80,7 +80,7 @@ macro_rules! make_uint_getter(
 #[macro_export]
 macro_rules! make_url_getter(
     ( $attr:ident, $htmlname:tt ) => (
-        fn $attr(&self) -> DOMString {
+        pub fn $attr(&self) -> DOMString {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             let element = self.upcast::<Element>();
@@ -92,7 +92,7 @@ macro_rules! make_url_getter(
 #[macro_export]
 macro_rules! make_url_or_base_getter(
     ( $attr:ident, $htmlname:tt ) => (
-        fn $attr(&self) -> DOMString {
+        pub fn $attr(&self) -> DOMString {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             let element = self.upcast::<Element>();
@@ -110,7 +110,7 @@ macro_rules! make_url_or_base_getter(
 #[macro_export]
 macro_rules! make_enumerated_getter(
     ( $attr:ident, $htmlname:tt, $default:expr, $(($choices: pat))|+) => (
-        fn $attr(&self) -> DOMString {
+        pub fn $attr(&self) -> DOMString {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             use std::ascii::AsciiExt;
@@ -131,7 +131,7 @@ macro_rules! make_enumerated_getter(
 #[macro_export]
 macro_rules! make_setter(
     ( $attr:ident, $htmlname:tt ) => (
-        fn $attr(&self, value: DOMString) {
+        pub fn $attr(&self, value: DOMString) {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             let element = self.upcast::<Element>();
@@ -143,7 +143,7 @@ macro_rules! make_setter(
 #[macro_export]
 macro_rules! make_bool_setter(
     ( $attr:ident, $htmlname:tt ) => (
-        fn $attr(&self, value: bool) {
+        pub fn $attr(&self, value: bool) {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             let element = self.upcast::<Element>();
@@ -155,7 +155,7 @@ macro_rules! make_bool_setter(
 #[macro_export]
 macro_rules! make_url_setter(
     ( $attr:ident, $htmlname:tt ) => (
-        fn $attr(&self, value: DOMString) {
+        pub fn $attr(&self, value: DOMString) {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             use dom::node::document_from_node;
@@ -169,7 +169,7 @@ macro_rules! make_url_setter(
 #[macro_export]
 macro_rules! make_uint_setter(
     ($attr:ident, $htmlname:tt, $default:expr) => (
-        fn $attr(&self, value: u32) {
+        pub fn $attr(&self, value: u32) {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             use dom::values::UNSIGNED_LONG_MAX;
@@ -190,7 +190,7 @@ macro_rules! make_uint_setter(
 #[macro_export]
 macro_rules! make_limited_uint_setter(
     ($attr:ident, $htmlname:tt, $default:expr) => (
-        fn $attr(&self, value: u32) -> $crate::dom::bindings::error::ErrorResult {
+        pub fn $attr(&self, value: u32) -> $crate::dom::bindings::error::ErrorResult {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             use dom::values::UNSIGNED_LONG_MAX;
@@ -214,7 +214,7 @@ macro_rules! make_limited_uint_setter(
 #[macro_export]
 macro_rules! make_atomic_setter(
     ( $attr:ident, $htmlname:tt ) => (
-        fn $attr(&self, value: DOMString) {
+        pub fn $attr(&self, value: DOMString) {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             let element = self.upcast::<Element>();
@@ -226,7 +226,7 @@ macro_rules! make_atomic_setter(
 #[macro_export]
 macro_rules! make_legacy_color_setter(
     ( $attr:ident, $htmlname:tt ) => (
-        fn $attr(&self, value: DOMString) {
+        pub fn $attr(&self, value: DOMString) {
             use dom::attr::AttrValue;
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
@@ -240,7 +240,7 @@ macro_rules! make_legacy_color_setter(
 #[macro_export]
 macro_rules! make_dimension_setter(
     ( $attr:ident, $htmlname:tt ) => (
-        fn $attr(&self, value: DOMString) {
+        pub fn $attr(&self, value: DOMString) {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             let element = self.upcast::<Element>();
@@ -253,7 +253,7 @@ macro_rules! make_dimension_setter(
 #[macro_export]
 macro_rules! make_nonzero_dimension_setter(
     ( $attr:ident, $htmlname:tt ) => (
-        fn $attr(&self, value: DOMString) {
+        pub fn $attr(&self, value: DOMString) {
             use dom::bindings::inheritance::Castable;
             use dom::element::Element;
             let element = self.upcast::<Element>();
@@ -266,14 +266,14 @@ macro_rules! make_nonzero_dimension_setter(
 /// These are used to generate a event handler which has no special case.
 macro_rules! define_event_handler(
     ($handler: ident, $event_type: ident, $getter: ident, $setter: ident, $setter_fn: ident) => (
-        fn $getter(&self) -> Option<::std::rc::Rc<$handler>> {
+        pub fn $getter(&self) -> Option<::std::rc::Rc<$handler>> {
             use dom::bindings::inheritance::Castable;
             use dom::eventtarget::EventTarget;
             let eventtarget = self.upcast::<EventTarget>();
             eventtarget.get_event_handler_common(stringify!($event_type))
         }
 
-        fn $setter(&self, listener: Option<::std::rc::Rc<$handler>>) {
+        pub fn $setter(&self, listener: Option<::std::rc::Rc<$handler>>) {
             use dom::bindings::inheritance::Castable;
             use dom::eventtarget::EventTarget;
             let eventtarget = self.upcast::<EventTarget>();

@@ -57,9 +57,6 @@ impl MessageEvent {
                                    init.origin.clone(), init.lastEventId.clone());
         Ok(ev)
     }
-}
-
-impl MessageEventMethods for MessageEvent {
 
     // https://html.spec.whatwg.org/multipage/#dom-messageevent-origin
     fn Origin(&self) -> DOMString {

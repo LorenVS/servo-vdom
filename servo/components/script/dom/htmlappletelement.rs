@@ -37,9 +37,7 @@ impl HTMLAppletElement {
         let element = HTMLAppletElement::new_inherited(localName, prefix, document);
         Root::new_box(box element)
     }
-}
-
-impl HTMLAppletElementMethods for HTMLAppletElement {
+    
     // https://html.spec.whatwg.org/multipage/#the-applet-element:dom-applet-name
     make_getter!(Name, "name");
 

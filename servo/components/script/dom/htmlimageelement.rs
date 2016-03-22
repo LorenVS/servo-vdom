@@ -165,54 +165,7 @@ impl HTMLImageElement {
 
         Ok(image)
     }
-}
-
-pub trait LayoutHTMLImageElementHelpers {
-    #[allow(unsafe_code)]
-    unsafe fn image(&self) -> Option<Arc<Image>>;
-
-    #[allow(unsafe_code)]
-    unsafe fn image_url(&self) -> Option<Url>;
-
-    fn get_width(&self) -> LengthOrPercentageOrAuto;
-    fn get_height(&self) -> LengthOrPercentageOrAuto;
-}
-
-impl LayoutHTMLImageElementHelpers for LayoutJS<HTMLImageElement> {
-    #[allow(unsafe_code)]
-    unsafe fn image(&self) -> Option<Arc<Image>> {
-        (*self.unsafe_get()).image.borrow_for_layout().clone()
-    }
-
-    #[allow(unsafe_code)]
-    unsafe fn image_url(&self) -> Option<Url> {
-        (*self.unsafe_get()).url.borrow_for_layout().clone()
-    }
-
-    #[allow(unsafe_code)]
-    fn get_width(&self) -> LengthOrPercentageOrAuto {
-        unsafe {
-            (*self.upcast::<Element>().unsafe_get())
-                .get_attr_for_layout(&ns!(), &atom!("width"))
-                .map(AttrValue::as_dimension)
-                .cloned()
-                .unwrap_or(LengthOrPercentageOrAuto::Auto)
-        }
-    }
-
-    #[allow(unsafe_code)]
-    fn get_height(&self) -> LengthOrPercentageOrAuto {
-        unsafe {
-            (*self.upcast::<Element>().unsafe_get())
-                .get_attr_for_layout(&ns!(), &atom!("height"))
-                .map(AttrValue::as_dimension)
-                .cloned()
-                .unwrap_or(LengthOrPercentageOrAuto::Auto)
-        }
-    }
-}
-
-impl HTMLImageElementMethods for HTMLImageElement {
+    
     // https://html.spec.whatwg.org/multipage/#dom-img-alt
     make_getter!(Alt, "alt");
     // https://html.spec.whatwg.org/multipage/#dom-img-alt
@@ -318,6 +271,51 @@ impl HTMLImageElementMethods for HTMLImageElement {
 
     // https://html.spec.whatwg.org/multipage/#dom-img-border
     make_setter!(SetBorder, "border");
+}
+
+pub trait LayoutHTMLImageElementHelpers {
+    #[allow(unsafe_code)]
+    unsafe fn image(&self) -> Option<Arc<Image>>;
+
+    #[allow(unsafe_code)]
+    unsafe fn image_url(&self) -> Option<Url>;
+
+    fn get_width(&self) -> LengthOrPercentageOrAuto;
+    fn get_height(&self) -> LengthOrPercentageOrAuto;
+}
+
+impl LayoutHTMLImageElementHelpers for LayoutJS<HTMLImageElement> {
+    #[allow(unsafe_code)]
+    unsafe fn image(&self) -> Option<Arc<Image>> {
+        (*self.unsafe_get()).image.borrow_for_layout().clone()
+    }
+
+    #[allow(unsafe_code)]
+    unsafe fn image_url(&self) -> Option<Url> {
+        (*self.unsafe_get()).url.borrow_for_layout().clone()
+    }
+
+    #[allow(unsafe_code)]
+    fn get_width(&self) -> LengthOrPercentageOrAuto {
+        unsafe {
+            (*self.upcast::<Element>().unsafe_get())
+                .get_attr_for_layout(&ns!(), &atom!("width"))
+                .map(AttrValue::as_dimension)
+                .cloned()
+                .unwrap_or(LengthOrPercentageOrAuto::Auto)
+        }
+    }
+
+    #[allow(unsafe_code)]
+    fn get_height(&self) -> LengthOrPercentageOrAuto {
+        unsafe {
+            (*self.upcast::<Element>().unsafe_get())
+                .get_attr_for_layout(&ns!(), &atom!("height"))
+                .map(AttrValue::as_dimension)
+                .cloned()
+                .unwrap_or(LengthOrPercentageOrAuto::Auto)
+        }
+    }
 }
 
 impl VirtualMethods for HTMLImageElement {

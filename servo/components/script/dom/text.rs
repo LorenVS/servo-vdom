@@ -31,11 +31,9 @@ impl Text {
     pub fn new(text: DOMString, document: &Document) -> Root<Text> {
         Root::new_box(box Text::new_inherited(text, document))
     }
-}
 
-impl TextMethods for Text {
     // https://dom.spec.whatwg.org/#dom-text-splittextoffset
-    fn SplitText(&self, offset: u32) -> Fallible<Root<Text>> {
+    pub fn SplitText(&self, offset: u32) -> Fallible<Root<Text>> {
         let cdata = self.upcast::<CharacterData>();
         // Step 1.
         let length = cdata.Length();
