@@ -46,8 +46,7 @@ impl NodeIterator {
     }
 
     pub fn new(root_node: &Node,
-               what_to_show: u32,
-               node_filter: Option<Rc<NodeFilter>>) -> Root<NodeIterator> {
+               what_to_show: u32) -> Root<NodeIterator> {
         let filter = Filter::None;
         NodeIterator::new_with_filter(root_node, what_to_show, filter)
     }

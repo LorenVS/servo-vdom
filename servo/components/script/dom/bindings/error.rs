@@ -4,17 +4,6 @@
 
 //! Utilities to throw exceptions from Rust bindings.
 
-use dom::bindings::codegen::PrototypeList::proto_id_to_name;
-use dom::bindings::conversions::ToJSValConvertible;
-use dom::bindings::global::GlobalRef;
-use dom::domexception::{DOMErrorName, DOMException};
-use js::error::{throw_range_error, throw_type_error};
-use js::jsapi::JSAutoCompartment;
-use js::jsapi::{JSContext, JSObject, RootedValue};
-use js::jsapi::{JS_IsExceptionPending, JS_ReportPendingException, JS_SetPendingException};
-use js::jsapi::{JS_RestoreFrameChain, JS_SaveFrameChain};
-use js::jsval::UndefinedValue;
-
 /// DOM exceptions that can be thrown by a native DOM method.
 #[derive(Debug, Clone, HeapSizeOf)]
 pub enum Error {

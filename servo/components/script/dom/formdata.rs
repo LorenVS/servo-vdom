@@ -3,10 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::cell::DOMRefCell;
-
 use dom::bindings::reflector::{Reflector};
 use dom::bindings::error::{Fallible};
-use dom::bindings::global::GlobalRef;
 use dom::bindings::js::{JS, Root};
 use dom::htmlformelement::HTMLFormElement;
 use std::collections::HashMap;
@@ -36,12 +34,12 @@ impl FormData {
         }
     }
 
-    pub fn new(form: Option<&HTMLFormElement>, global: GlobalRef) -> Root<FormData> {
+    pub fn new(form: Option<&HTMLFormElement>,) -> Root<FormData> {
         Root::new_box(box FormData::new_inherited(form))
     }
 
-    pub fn Constructor(global: GlobalRef, form: Option<&HTMLFormElement>) -> Fallible<Root<FormData>> {
+    pub fn Constructor(form: Option<&HTMLFormElement>) -> Fallible<Root<FormData>> {
         // TODO: Construct form data set for form if it is supplied
-        Ok(FormData::new(form, global))
+        Ok(FormData::new(form))
     }
 }

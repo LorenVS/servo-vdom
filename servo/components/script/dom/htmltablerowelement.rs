@@ -15,7 +15,7 @@ use dom::htmlcollection::{CollectionFilter, HTMLCollection};
 use dom::htmlelement::HTMLElement;
 use dom::htmltabledatacellelement::HTMLTableDataCellElement;
 use dom::htmltableheadercellelement::HTMLTableHeaderCellElement;
-use dom::node::{Node, window_from_node};
+use dom::node::{Node};
 use dom::virtualmethods::VirtualMethods;
 use string_cache::Atom;
 use util::str::DOMString;

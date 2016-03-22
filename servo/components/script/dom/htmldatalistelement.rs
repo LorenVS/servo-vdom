@@ -11,7 +11,7 @@ use dom::element::Element;
 use dom::htmlcollection::{CollectionFilter, HTMLCollection};
 use dom::htmlelement::HTMLElement;
 use dom::htmloptionelement::HTMLOptionElement;
-use dom::node::{Node, window_from_node};
+use dom::node::{Node};
 use string_cache::Atom;
 use util::str::DOMString;
 
@@ -50,7 +50,6 @@ impl HTMLDataListElementMethods for HTMLDataListElement {
             }
         }
         let filter = box HTMLDataListOptionsFilter;
-        let window = window_from_node(self);
         HTMLCollection::create(self.upcast(), filter)
     }
 }

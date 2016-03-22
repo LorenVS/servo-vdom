@@ -3650,16 +3650,14 @@ class CGBindingRoot(CGThing):
                          for d in dictionaries])
 
         # Do codegen for all the callbacks.
-        cgthings.extend(CGList([CGCallbackFunction(c, config.getDescriptorProvider()),
-                                CGCallbackFunctionImpl(c)], "\n")
+        cgthings.extend(CGList([CGCallbackFunction(c, config.getDescriptorProvider())], "\n")
                         for c in mainCallbacks)
 
         # Do codegen for all the descriptors
         cgthings.extend([CGDescriptor(x) for x in descriptors])
 
         # Do codegen for all the callback interfaces.
-        cgthings.extend(CGList([CGCallbackInterface(x),
-                                CGCallbackFunctionImpl(x.interface)], "\n")
+        cgthings.extend(CGList([CGCallbackInterface(x)], "\n")
                         for x in callbackDescriptors)
 
         # And make sure we have the right number of newlines at the end

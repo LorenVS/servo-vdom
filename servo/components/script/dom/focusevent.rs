@@ -6,10 +6,8 @@
 use dom::bindings::codegen::Bindings::FocusEventBinding::{FocusEventMethods, FocusEventInit};
 use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::error::Fallible;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, UIEventTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root, RootedReference};
-
 use dom::event::{EventBubbles, EventCancelable};
 use dom::eventtarget::EventTarget;
 use dom::uievent::UIEvent;

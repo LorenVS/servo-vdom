@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::callback::{CallbackContainer, ExceptionHandling, CallbackFunction};
+use dom::bindings::callback::{CallbackContainer, ExceptionHandling};
 use dom::bindings::cell::DOMRefCell;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::OnErrorEventHandlerNonNull;
@@ -21,7 +21,6 @@ use std::collections::HashMap;
 use std::collections::hash_map::Entry::{Occupied, Vacant};
 use std::default::Default;
 use std::hash::BuildHasherDefault;
-use std::mem;
 use std::ops::{Deref, DerefMut};
 use std::rc::Rc;
 use std::{intrinsics};
@@ -33,15 +32,6 @@ use util::str::DOMString;
 pub enum CommonEventHandler {
     EventHandler(Rc<EventHandlerNonNull>),
     ErrorEventHandler(Rc<OnErrorEventHandlerNonNull>),
-}
-
-impl CommonEventHandler {
-    fn parent(&self) -> &CallbackFunction {
-        match *self {
-            CommonEventHandler::EventHandler(ref handler) => &handler.parent,
-            CommonEventHandler::ErrorEventHandler(ref handler) => &handler.parent,
-        }
-    }
 }
 
 #[derive(JSTraceable, Copy, Clone, PartialEq, HeapSizeOf)]
@@ -94,52 +84,15 @@ pub enum InlineEventListener {
     Null,
 }
 
-impl InlineEventListener {
-    /// Get a compiled representation of this event handler, compiling it from its
-    /// raw source if necessary.
-    /// https://html.spec.whatwg.org/multipage/#getting-the-current-value-of-the-event-handler
-    fn get_compiled_handler(&mut self, owner: &EventTarget, ty: &Atom)
-                            -> Option<CommonEventHandler> {
-        match mem::replace(self, InlineEventListener::Null) {
-            InlineEventListener::Null => None,
-            InlineEventListener::Uncompiled(handler) => {
-                let result = owner.get_compiled_event_handler(handler, ty);
-                if let Some(ref compiled) = result {
-                    *self = InlineEventListener::Compiled(compiled.clone());
-                }
-                result
-            }
-            InlineEventListener::Compiled(handler) => {
-                *self = InlineEventListener::Compiled(handler.clone());
-                Some(handler)
-            }
-        }
-    }
-}
-
 #[derive(JSTraceable, Clone, PartialEq)]
 enum EventListenerType {
-    Additive(Rc<EventListener>),
-    Inline(InlineEventListener),
+    Additive(Rc<EventListener>)
 }
 
 impl HeapSizeOf for EventListenerType {
     fn heap_size_of_children(&self) -> usize {
         // FIXME: Rc<T> isn't HeapSizeOf and we can't ignore it due to #6870 and #6871
         0
-    }
-}
-
-impl EventListenerType {
-    fn get_compiled_listener(&mut self, owner: &EventTarget, ty: &Atom)
-                             -> Option<CompiledEventListener> {
-        match self {
-            &mut EventListenerType::Inline(ref mut inline) =>
-                inline.get_compiled_handler(owner, ty)
-                      .map(CompiledEventListener::Handler),
-            &mut EventListenerType::Additive(ref listener) =>
-                Some(CompiledEventListener::Listener(listener.clone())),
-        }
     }
 }
 
@@ -184,33 +137,6 @@ impl DerefMut for EventListeners {
     }
 }
 
-impl EventListeners {
-    // https://html.spec.whatwg.org/multipage/#getting-the-current-value-of-the-event-handler
-    fn get_inline_listener(&mut self, owner: &EventTarget, ty: &Atom) -> Option<CommonEventHandler> {
-        for entry in &mut self.0 {
-            if let EventListenerType::Inline(ref mut inline) = entry.listener {
-                // Step 1.1-1.8 and Step 2
-                return inline.get_compiled_handler(owner, ty);
-            }
-        }
-
-        // Step 2
-        None
-    }
-
-    // https://html.spec.whatwg.org/multipage/#getting-the-current-value-of-the-event-handler
-    fn get_listeners(&mut self, phase: Option<ListenerPhase>, owner: &EventTarget, ty: &Atom)
-                     -> Vec<CompiledEventListener> {
-        self.0.iter_mut().filter_map(|entry| {
-            if phase.is_none() || Some(entry.phase) == phase {
-                // Step 1.1-1.8, 2
-                entry.listener.get_compiled_listener(owner, ty)
-            } else {
-                None
-            }
-        }).collect()
-    }
-}
 
 #[dom_struct]
 pub struct EventTarget {
@@ -230,12 +156,10 @@ impl EventTarget {
     }
 
     pub fn get_listeners_for(&self,
-                             type_: &Atom,
-                             specific_phase: Option<ListenerPhase>)
+                             _type_: &Atom,
+                             _specific_phase: Option<ListenerPhase>)
                              -> Vec<CompiledEventListener> {
-        self.handlers.borrow_mut().get_mut(type_).map_or(vec![], |listeners| {
-            listeners.get_listeners(specific_phase, self, type_)
-        })
+        Vec::new()
     }
 
     pub fn dispatch_event_with_target(&self,
@@ -252,56 +176,17 @@ impl EventTarget {
 
     /// https://html.spec.whatwg.org/multipage/#event-handler-attributes:event-handlers-11
     pub fn set_inline_event_listener(&self,
-                                     ty: Atom,
-                                     listener: Option<InlineEventListener>) {
-        let mut handlers = self.handlers.borrow_mut();
-        let entries = match handlers.entry(ty) {
-            Occupied(entry) => entry.into_mut(),
-            Vacant(entry) => entry.insert(EventListeners(vec!())),
-        };
-
-        let idx = entries.iter().position(|ref entry| {
-            match entry.listener {
-                EventListenerType::Inline(_) => true,
-                _ => false,
-            }
-        });
-
-        match idx {
-            Some(idx) => {
-                entries[idx].listener =
-                    EventListenerType::Inline(listener.unwrap_or(InlineEventListener::Null));
-            }
-            None => {
-                if let Some(listener) = listener {
-                    entries.push(EventListenerEntry {
-                        phase: ListenerPhase::Bubbling,
-                        listener: EventListenerType::Inline(listener),
-                    });
-                }
-            }
-        }
-    }
-
-    fn get_inline_event_listener(&self, ty: &Atom) -> Option<CommonEventHandler> {
-        let mut handlers = self.handlers.borrow_mut();
-        handlers.get_mut(ty).and_then(|entry| entry.get_inline_listener(self, ty))
+                                     _ty: Atom,
+                                     _listener: Option<InlineEventListener>) {
     }
 
     /// Store the raw uncompiled event handler for on-demand compilation later.
     /// https://html.spec.whatwg.org/multipage/#event-handler-attributes:event-handler-content-attributes-3
     pub fn set_event_handler_uncompiled(&self,
-                                        url: Url,
-                                        line: usize,
-                                        ty: &str,
-                                        source: DOMString) {
-        let handler = InternalRawUncompiledHandler {
-            source: source,
-            line: line,
-            url: url,
-        };
-        self.set_inline_event_listener(Atom::from(ty),
-                                       Some(InlineEventListener::Uncompiled(handler)));
+                                        _url: Url,
+                                        _line: usize,
+                                        _ty: &str,
+                                        _source: DOMString) {
     }
 
     // https://html.spec.whatwg.org/multipage/#getting-the-current-value-of-the-event-handler
@@ -313,33 +198,20 @@ impl EventTarget {
         None
     }
 
-    pub fn set_event_handler_common<T: CallbackContainer>(
-        &self, ty: &str, listener: Option<Rc<T>>)
-    {
-        let event_listener = listener.map(|listener|
-                                          InlineEventListener::Compiled(
-                                              CommonEventHandler::EventHandler(
-                                                  EventHandlerNonNull::new(listener.callback()))));
-        self.set_inline_event_listener(Atom::from(ty), event_listener);
+    pub fn set_event_handler_common<T>(
+        &self, _ty: &str, _listener: Option<Rc<T>>) {
     }
 
-    pub fn set_error_event_handler<T: CallbackContainer>(
-        &self, ty: &str, listener: Option<Rc<T>>)
-    {
-        let event_listener = listener.map(|listener|
-                                          InlineEventListener::Compiled(
-                                              CommonEventHandler::ErrorEventHandler(
-                                                  OnErrorEventHandlerNonNull::new(listener.callback()))));
-        self.set_inline_event_listener(Atom::from(ty), event_listener);
+    pub fn set_error_event_handler<T>(
+        &self, _ty: &str, _listener: Option<Rc<T>>) {
     }
 
-    pub fn get_event_handler_common<T: CallbackContainer>(&self, ty: &str) -> Option<Rc<T>> {
-        let listener = self.get_inline_event_listener(&Atom::from(ty));
-        listener.map(|listener| CallbackContainer::new(listener.parent().callback()))
+    pub fn get_event_handler_common<T>(&self, _ty: &str) -> Option<Rc<T>> {
+        None
     }
 
     pub fn has_handlers(&self) -> bool {
-        !self.handlers.borrow().is_empty()
+        false
     }
 
     // https://html.spec.whatwg.org/multipage/#fire-a-simple-event

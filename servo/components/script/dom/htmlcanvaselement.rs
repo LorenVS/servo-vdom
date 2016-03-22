@@ -13,7 +13,6 @@ use dom::bindings::reflector::Reflectable;
 use dom::document::Document;
 use dom::element::{AttributeMutation, Element, RawLayoutElementHelpers};
 use dom::htmlelement::HTMLElement;
-use dom::node::{Node};
 use dom::virtualmethods::VirtualMethods;
 use euclid::size::Size2D;
 use ipc_channel::ipc::{IpcSender};

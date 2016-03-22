@@ -4,11 +4,9 @@
 
 
 use dom::bindings::codegen::Bindings::DOMRectListBinding::DOMRectListMethods;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::js::{JS, Root};
 use dom::bindings::reflector::{Reflector};
 use dom::domrect::DOMRect;
-use dom::window::Window;
 
 #[dom_struct]
 pub struct DOMRectList {

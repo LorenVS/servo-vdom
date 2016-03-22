@@ -12,7 +12,6 @@ use dom::element::Element;
 use dom::htmlcollection::{CollectionFilter, HTMLCollection};
 use dom::node::Node;
 use dom::radionodelist::RadioNodeList;
-use dom::window::Window;
 use std::iter;
 use util::str::DOMString;
 
@@ -28,7 +27,7 @@ impl HTMLFormControlsCollection {
         }
     }
 
-    pub fn new(window: &Window, root: &Node, filter: Box<CollectionFilter + 'static>)
+    pub fn new(root: &Node, filter: Box<CollectionFilter + 'static>)
         -> Root<HTMLFormControlsCollection>
     {
         Root::new_box(box HTMLFormControlsCollection::new_inherited(root, filter))

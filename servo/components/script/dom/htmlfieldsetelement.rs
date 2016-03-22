@@ -6,14 +6,14 @@ use dom::attr::Attr;
 
 use dom::bindings::codegen::Bindings::HTMLFieldSetElementBinding::HTMLFieldSetElementMethods;
 use dom::bindings::inheritance::{Castable, ElementTypeId, HTMLElementTypeId, NodeTypeId};
-use dom::bindings::js::{Root, RootedReference};
+use dom::bindings::js::{Root};
 use dom::document::Document;
 use dom::element::{AttributeMutation, Element};
 use dom::htmlcollection::{CollectionFilter, HTMLCollection};
 use dom::htmlelement::HTMLElement;
 use dom::htmlformelement::{FormControl, HTMLFormElement};
 use dom::htmllegendelement::HTMLLegendElement;
-use dom::node::{Node, window_from_node};
+use dom::node::{Node};
 use dom::virtualmethods::VirtualMethods;
 use string_cache::Atom;
 use style::element_state::*;
@@ -57,7 +57,6 @@ impl HTMLFieldSetElementMethods for HTMLFieldSetElement {
             }
         }
         let filter = box ElementsFilter;
-        let window = window_from_node(self);
         HTMLCollection::create(self.upcast(), filter)
     }
 

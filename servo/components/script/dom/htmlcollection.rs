@@ -4,7 +4,6 @@
 
 
 use dom::bindings::codegen::Bindings::HTMLCollectionBinding::HTMLCollectionMethods;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable,TopTypeId,HTMLCollectionTypeId};
 use dom::bindings::js::{JS, Root, MutNullableHeap};
 use dom::bindings::reflector::{Reflector};
@@ -13,7 +12,6 @@ use dom::bindings::typed::Typed;
 use dom::bindings::xmlname::namespace_from_domstring;
 use dom::element::Element;
 use dom::node::{Node, FollowingNodeIterator, PrecedingNodeIterator};
-use dom::window::Window;
 use std::ascii::AsciiExt;
 use std::cell::Cell;
 use string_cache::{Atom, Namespace, QualName};

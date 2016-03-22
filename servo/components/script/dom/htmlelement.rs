@@ -423,7 +423,6 @@ impl HTMLElement {
         debug_assert!(self.is_labelable_element());
 
         let element = self.upcast::<Element>();
-        let window = window_from_node(element);
 
         // Traverse ancestors for implicitly associated <label> elements
         // https://html.spec.whatwg.org/multipage/#the-label-element:attr-label-for-4

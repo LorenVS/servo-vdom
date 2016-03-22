@@ -7,29 +7,27 @@
 use dom::bindings::codegen::PrototypeList;
 use dom::bindings::codegen::PrototypeList::{MAX_PROTO_CHAIN_LENGTH, PROTO_OR_IFACE_LENGTH};
 use dom::bindings::conversions::{DOM_OBJECT_SLOT, is_dom_class};
-use dom::bindings::conversions::{private_from_proto_check};
 use dom::bindings::inheritance::TopTypeId;
 use dom::bindings::trace::trace_object;
 use js;
 use js::error::throw_type_error;
-use js::glue::{CallJitGetterOp, CallJitMethodOp, CallJitSetterOp, IsWrapper};
+use js::glue::{IsWrapper};
 use js::glue::{GetCrossCompartmentWrapper, WrapperNew};
-use js::glue::{RUST_FUNCTION_VALUE_TO_JITINFO, RUST_JSID_IS_INT};
+use js::glue::{RUST_JSID_IS_INT};
 use js::glue::{RUST_JSID_TO_INT, UnwrapObject};
-use js::jsapi::{CallArgs, CompartmentOptions, DOMCallbacks, GetGlobalForObjectCrossCompartment};
+use js::jsapi::{CompartmentOptions, DOMCallbacks};
 use js::jsapi::{HandleId, HandleObject, HandleValue, Heap, JSAutoCompartment, JSClass, JSContext};
-use js::jsapi::{JSJitInfo, JSObject, JSTraceOp, JSTracer, JSVersion, JSWrapObjectCallbacks};
+use js::jsapi::{JSObject, JSTraceOp, JSTracer, JSVersion, JSWrapObjectCallbacks};
 use js::jsapi::{JS_DeletePropertyById1, JS_FireOnNewGlobalObject};
 use js::jsapi::{JS_ForwardGetPropertyTo, JS_GetClass};
 use js::jsapi::{JS_GetProperty, JS_GetPrototype, JS_GetReservedSlot, JS_HasProperty};
-use js::jsapi::{JS_HasPropertyById, JS_IsExceptionPending, JS_NewGlobalObject};
+use js::jsapi::{JS_HasPropertyById, JS_NewGlobalObject};
 use js::jsapi::{JS_ObjectToOuterObject, JS_SetProperty};
 use js::jsapi::{JS_SetReservedSlot, MutableHandleValue, ObjectOpResult};
 use js::jsapi::{OnNewGlobalHookOption, RootedObject};
 use js::jsval::{JSVal};
-use js::jsval::{PrivateValue, UndefinedValue};
+use js::jsval::{PrivateValue};
 use js::rust::{GCMethods, ToString};
-use js::{JS_CALLEE};
 use libc::{self, c_uint};
 use std::default::Default;
 use std::ffi::CString;
@@ -368,22 +366,6 @@ pub unsafe fn delete_property_by_id(cx: *mut JSContext,
                                     -> bool {
     JS_DeletePropertyById1(cx, object, id, bp)
 }
-
-
-unsafe extern "C" fn call_setter(info: *const JSJitInfo,
-                                 cx: *mut JSContext,
-                                 handle: HandleObject,
-                                 this: *mut libc::c_void,
-                                 argc: u32,
-                                 vp: *mut JSVal)
-                                 -> bool {
-    if !CallJitSetterOp(info, cx, handle, this, argc, vp) {
-        return false;
-    }
-    *vp = UndefinedValue();
-    true
-}
-
 
 unsafe extern "C" fn instance_class_has_proto_at_depth(clasp: *const js::jsapi::Class,
                                                        proto_id: u32,

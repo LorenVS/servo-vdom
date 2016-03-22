@@ -11,7 +11,6 @@ use dom::bindings::js::{LayoutJS, Root, RootedReference};
 use dom::bindings::reflector::{Reflector};
 use dom::element::{AttributeMutation, Element};
 use dom::virtualmethods::vtable_for;
-use dom::window::Window;
 use std::borrow::ToOwned;
 use std::cell::Ref;
 use std::mem;

@@ -13,7 +13,6 @@ use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::OnErrorEventHandlerNonNull;
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
-use dom::bindings::codegen::Bindings::NodeFilterBinding::NodeFilter;
 use dom::bindings::codegen::Bindings::TouchBinding::TouchMethods;
 use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::codegen::UnionTypes::NodeOrString;
@@ -58,7 +57,6 @@ use dom::keyboardevent::KeyboardEvent;
 use dom::messageevent::MessageEvent;
 use dom::mouseevent::MouseEvent;
 use dom::node::{self, CloneChildrenFlag, Node, NodeDamage, window_from_node};
-use dom::nodeiterator::NodeIterator;
 use dom::nodelist::NodeList;
 use dom::processinginstruction::ProcessingInstruction;
 use dom::range::Range;
@@ -93,7 +91,6 @@ use std::collections::{BTreeMap, HashMap};
 use std::default::Default;
 use std::mem;
 use std::ptr;
-use std::rc::Rc;
 use std::sync::Arc;
 use string_cache::{Atom, QualName};
 use style::context::ReflowGoal;
@@ -1822,15 +1819,6 @@ impl DocumentMethods for Document {
     // https://dom.spec.whatwg.org/#dom-document-createrange
     fn CreateRange(&self) -> Root<Range> {
         Range::new_with_doc(self)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-document-createnodeiteratorroot-whattoshow-filter
-    fn CreateNodeIterator(&self,
-                          root: &Node,
-                          whatToShow: u32,
-                          filter: Option<Rc<NodeFilter>>)
-                          -> Root<NodeIterator> {
-        NodeIterator::new(root, whatToShow, filter)
     }
 
     // https://w3c.github.io/touch-events/#idl-def-Document

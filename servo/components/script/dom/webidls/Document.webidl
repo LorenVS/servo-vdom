@@ -61,11 +61,6 @@ interface Document : Node {
 
   [NewObject]
   Range createRange();
-
-  // NodeFilter.SHOW_ALL = 0xFFFFFFFF
-  [NewObject]
-  NodeIterator createNodeIterator(Node root, optional unsigned long whatToShow = 0xFFFFFFFF,
-                                  optional NodeFilter? filter = null);
 };
 
 Document implements NonElementParentNode;

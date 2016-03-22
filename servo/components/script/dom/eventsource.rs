@@ -43,7 +43,7 @@ impl EventSource {
         }
     }
 
-    fn new(global: GlobalRef, url: Url, with_credentials: bool) -> Root<EventSource> {
+    fn new(url: Url, with_credentials: bool) -> Root<EventSource> {
         Root::new_box(box EventSource::new_inherited(url, with_credentials))
     }
 
@@ -57,7 +57,7 @@ impl EventSource {
             Err(_) => return Err(Error::Syntax)
         };
         // Step 3
-        let event_source = EventSource::new(global, url, event_source_init.withCredentials);
+        let event_source = EventSource::new(url, event_source_init.withCredentials);
         // Step 4
         // Step 5
         // Step 6

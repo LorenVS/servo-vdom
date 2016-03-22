@@ -210,8 +210,7 @@ impl HTMLFormElementMethods for HTMLFormElement {
             }
         }
         let filter = box ElementsFilter { form: Root::from_ref(self) };
-        let window = window_from_node(self);
-        let elements = HTMLFormControlsCollection::new(window.r(), self.upcast(), filter);
+        let elements = HTMLFormControlsCollection::new(self.upcast(), filter);
         self.elements.set(Some(&elements));
         elements
     }
