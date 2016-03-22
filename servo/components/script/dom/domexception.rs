@@ -5,7 +5,6 @@
 
 use dom::bindings::codegen::Bindings::DOMExceptionBinding::DOMExceptionConstants;
 use dom::bindings::codegen::Bindings::DOMExceptionBinding::DOMExceptionMethods;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflector};
 use util::str::DOMString;

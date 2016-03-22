@@ -4,7 +4,6 @@
 
 
 use dom::bindings::codegen::Bindings::ImageDataBinding::ImageDataMethods;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflector};
 use euclid::size::Size2D;
@@ -20,7 +19,7 @@ pub struct ImageData {
 
 impl ImageData {
     #[allow(unsafe_code)]
-    pub fn new(global: GlobalRef, width: u32, height: u32, data: Option<Vec<u8>>) -> Root<ImageData> {
+    pub fn new(width: u32, height: u32, data: Option<Vec<u8>>) -> Root<ImageData> {
         let imagedata = box ImageData {
             reflector_: Reflector::new(),
             width: width,
@@ -32,7 +31,7 @@ impl ImageData {
     }
 
     #[allow(unsafe_code)]
-    pub fn get_data_array(&self, _global: &GlobalRef) -> Vec<u8> {
+    pub fn get_data_array(&self) -> Vec<u8> {
         self.data.clone()
     }
 

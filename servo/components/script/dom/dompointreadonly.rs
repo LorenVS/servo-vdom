@@ -35,17 +35,16 @@ impl DOMPointReadOnly {
         }
     }
 
-    pub fn new(global: GlobalRef, x: f64, y: f64, z: f64, w: f64) -> Root<DOMPointReadOnly> {
+    pub fn new(x: f64, y: f64, z: f64, w: f64) -> Root<DOMPointReadOnly> {
         Root::new_box(box DOMPointReadOnly::new_inherited(DOMPointReadOnlyTypeId::DOMPointReadOnly, x, y, z, w))
     }
 
-    pub fn Constructor(global: GlobalRef,
-                       x: f64,
+    pub fn Constructor(x: f64,
                        y: f64,
                        z: f64,
                        w: f64)
                        -> Fallible<Root<DOMPointReadOnly>> {
-        Ok(DOMPointReadOnly::new(global, x, y, z, w))
+        Ok(DOMPointReadOnly::new(x, y, z, w))
     }
 }
 

@@ -3,9 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
-
 use dom::bindings::codegen::Bindings::NodeListBinding::NodeListMethods;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{NodeListTypeId, TopTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root, RootedReference};
 use dom::bindings::reflector::{Reflector};

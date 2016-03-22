@@ -9,7 +9,7 @@ use dom::bindings::reflector::{Reflectable, Reflector};
 use dom::document::Document;
 use dom::element::Element;
 use dom::window::Window;
-use js::jsapi::{JSErrNum, JSObject, JSPropertyDescriptor, JS_DefinePropertyById6};
+use js::jsapi::{JSObject};
 
 #[dom_struct]
 pub struct BrowsingContext {

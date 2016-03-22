@@ -5,7 +5,7 @@
 use dom::bindings::codegen::Bindings::CharacterDataBinding::CharacterDataMethods;
 use dom::bindings::codegen::Bindings::DocumentBinding::DocumentMethods;
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
-use dom::bindings::codegen::Bindings::TextBinding::{self, TextMethods};
+use dom::bindings::codegen::Bindings::TextBinding::{TextMethods};
 use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::error::{Error, Fallible};
 use dom::bindings::global::GlobalRef;

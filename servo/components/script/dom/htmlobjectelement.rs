@@ -4,7 +4,6 @@
 
 use dom::attr::Attr;
 use dom::bindings::cell::DOMRefCell;
-
 use dom::bindings::codegen::Bindings::HTMLObjectElementBinding::HTMLObjectElementMethods;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::Root;
@@ -12,7 +11,6 @@ use dom::document::Document;
 use dom::element::{AttributeMutation, Element};
 use dom::htmlelement::HTMLElement;
 use dom::htmlformelement::{FormControl, HTMLFormElement};
-use dom::node::{Node};
 use dom::virtualmethods::VirtualMethods;
 use net_traits::image::base::Image;
 use std::sync::Arc;

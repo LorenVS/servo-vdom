@@ -84,8 +84,7 @@ impl CSSStyleDeclaration {
         }
     }
 
-    pub fn new(global: &Window,
-               owner: &Element,
+    pub fn new(owner: &Element,
                pseudo: Option<PseudoElement>,
                modification_access: CSSModificationAccess)
                -> Root<CSSStyleDeclaration> {

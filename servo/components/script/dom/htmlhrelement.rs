@@ -4,7 +4,7 @@
 
 use cssparser::RGBA;
 use dom::attr::AttrValue;
-use dom::bindings::codegen::Bindings::HTMLHRElementBinding::{self, HTMLHRElementMethods};
+use dom::bindings::codegen::Bindings::HTMLHRElementBinding::{HTMLHRElementMethods};
 use dom::bindings::inheritance::{Castable,HTMLElementTypeId};
 use dom::bindings::js::{LayoutJS, Root};
 use dom::document::Document;

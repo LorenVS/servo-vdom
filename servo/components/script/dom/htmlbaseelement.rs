@@ -9,7 +9,7 @@ use dom::bindings::js::Root;
 use dom::document::Document;
 use dom::element::{AttributeMutation, Element};
 use dom::htmlelement::HTMLElement;
-use dom::node::{Node, UnbindContext, document_from_node};
+use dom::node::{UnbindContext, document_from_node};
 use dom::virtualmethods::VirtualMethods;
 use string_cache::Atom;
 use url::Url;

@@ -10,7 +10,7 @@ use dom::bindings::js::{Root, RootedReference};
 use dom::document::Document;
 use dom::element::Element;
 use dom::htmlelement::HTMLElement;
-use dom::node::{Node, document_from_node};
+use dom::node::{document_from_node};
 use dom::virtualmethods::VirtualMethods;
 use std::ascii::AsciiExt;
 use std::sync::Arc;

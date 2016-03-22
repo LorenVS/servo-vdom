@@ -9,7 +9,6 @@ use dom::bindings::codegen::Bindings::NodeIteratorBinding::NodeIteratorMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::js::{JS, MutHeap, Root};
 use dom::bindings::reflector::{Reflector};
-use dom::document::Document;
 use dom::node::Node;
 use std::cell::Cell;
 use std::rc::Rc;

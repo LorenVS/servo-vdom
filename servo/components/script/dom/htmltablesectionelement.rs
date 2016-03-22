@@ -4,7 +4,7 @@
 
 use cssparser::RGBA;
 use dom::attr::AttrValue;
-use dom::bindings::codegen::Bindings::HTMLTableSectionElementBinding::{self, HTMLTableSectionElementMethods};
+use dom::bindings::codegen::Bindings::HTMLTableSectionElementBinding::{HTMLTableSectionElementMethods};
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::error::{ErrorResult, Fallible};
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};

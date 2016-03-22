@@ -1203,7 +1203,7 @@ impl ElementMethods for Element {
 
     // https://dom.spec.whatwg.org/#dom-element-attributes
     fn Attributes(&self) -> Root<NamedNodeMap> {
-        self.attr_list.or_init(|| NamedNodeMap::new(&window_from_node(self), self))
+        self.attr_list.or_init(|| NamedNodeMap::new(self))
     }
 
     // https://dom.spec.whatwg.org/#dom-element-getattributenames

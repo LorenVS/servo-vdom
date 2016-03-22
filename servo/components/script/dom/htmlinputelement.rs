@@ -474,7 +474,6 @@ impl HTMLInputElementMethods for HTMLInputElement {
     // https://html.spec.whatwg.org/multipage/#dom-lfe-labels
     fn Labels(&self) -> Root<NodeList> {
         if self.type_() == atom!("hidden") {
-            let window = window_from_node(self);
             NodeList::empty()
         } else {
             self.upcast::<HTMLElement>().labels()

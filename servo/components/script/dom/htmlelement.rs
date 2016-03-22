@@ -114,8 +114,7 @@ impl HTMLElementMethods for HTMLElement {
     // https://html.spec.whatwg.org/multipage/#the-style-attribute
     fn Style(&self) -> Root<CSSStyleDeclaration> {
         self.style_decl.or_init(|| {
-            let global = window_from_node(self);
-            CSSStyleDeclaration::new(global.r(), self.upcast::<Element>(), None, CSSModificationAccess::ReadWrite)
+            CSSStyleDeclaration::new(self.upcast::<Element>(), None, CSSModificationAccess::ReadWrite)
         })
     }
 

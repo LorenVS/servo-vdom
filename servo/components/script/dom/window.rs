@@ -536,7 +536,7 @@ impl WindowMethods for Window {
         };
 
         // Step 5.
-        CSSStyleDeclaration::new(self, element, pseudo, CSSModificationAccess::Readonly)
+        CSSStyleDeclaration::new(element, pseudo, CSSModificationAccess::Readonly)
     }
 
     // https://drafts.csswg.org/cssom-view/#dom-window-innerheight

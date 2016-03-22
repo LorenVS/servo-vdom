@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::cell::DOMRefCell;
-
 use dom::bindings::codegen::Bindings::KeyboardEventBinding::{KeyboardEventConstants, KeyboardEventMethods, KeyboardEventInit};
 use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::error::Fallible;
@@ -57,12 +56,11 @@ impl KeyboardEvent {
         }
     }
 
-    pub fn new_uninitialized(window: &Window) -> Root<KeyboardEvent> {
+    pub fn new_uninitialized() -> Root<KeyboardEvent> {
         Root::new_box(box KeyboardEvent::new_inherited())
     }
 
-    pub fn new(window: &Window,
-               type_: DOMString,
+    pub fn new(type_: DOMString,
                canBubble: bool,
                cancelable: bool,
                view: Option<&Window>,
@@ -79,7 +77,7 @@ impl KeyboardEvent {
                metaKey: bool,
                char_code: Option<u32>,
                key_code: u32) -> Root<KeyboardEvent> {
-        let ev = KeyboardEvent::new_uninitialized(window);
+        let ev = KeyboardEvent::new_uninitialized();
         ev.InitKeyboardEvent(type_, canBubble, cancelable, view, key_string, location,
                              DOMString::new(), repeat, DOMString::new());
         ev.key.set(key);
@@ -94,10 +92,9 @@ impl KeyboardEvent {
         ev
     }
 
-    pub fn Constructor(global: GlobalRef,
-                       type_: DOMString,
+    pub fn Constructor(type_: DOMString,
                        init: &KeyboardEventInit) -> Fallible<Root<KeyboardEvent>> {
-        let event = KeyboardEvent::new(global.as_window(), type_,
+        let event = KeyboardEvent::new(type_,
                                        init.parent.parent.parent.bubbles,
                                        init.parent.parent.parent.cancelable,
                                        init.parent.parent.view.r(),

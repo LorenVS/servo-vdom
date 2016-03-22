@@ -941,8 +941,7 @@ impl Document {
 
         let props = KeyboardEvent::key_properties(key, modifiers);
 
-        let keyevent = KeyboardEvent::new(&self.window,
-                                          ev_type,
+        let keyevent = KeyboardEvent::new(ev_type,
                                           true,
                                           true,
                                           Some(&self.window),
@@ -966,8 +965,7 @@ impl Document {
         // https://dvcs.w3.org/hg/dom3events/raw-file/tip/html/DOM3-Events.html#keys-cancelable-keys
         if state != KeyState::Released && props.is_printable() && !prevented {
             // https://dvcs.w3.org/hg/dom3events/raw-file/tip/html/DOM3-Events.html#keypress-event-order
-            let event = KeyboardEvent::new(&self.window,
-                                           DOMString::from("keypress"),
+            let event = KeyboardEvent::new(DOMString::from("keypress"),
                                            true,
                                            true,
                                            Some(&self.window),
@@ -1800,7 +1798,7 @@ impl DocumentMethods for Document {
             "htmlevents" | "events" | "event" =>
                 Ok(Event::new_uninitialized()),
             "keyboardevent" | "keyevents" =>
-                Ok(Root::upcast(KeyboardEvent::new_uninitialized(&self.window))),
+                Ok(Root::upcast(KeyboardEvent::new_uninitialized())),
             "messageevent" =>
                 Ok(Root::upcast(MessageEvent::new_uninitialized())),
             "touchevent" =>
