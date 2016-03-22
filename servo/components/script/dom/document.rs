@@ -66,7 +66,6 @@ use dom::text::Text;
 use dom::touch::Touch;
 use dom::touchevent::TouchEvent;
 use dom::touchlist::TouchList;
-use dom::treewalker::TreeWalker;
 use dom::uievent::UIEvent;
 use dom::window::{ReflowReason, Window};
 use euclid::point::Point2D;
@@ -663,8 +662,7 @@ impl Document {
         let client_x = client_point.x as i32;
         let client_y = client_point.y as i32;
         let clickCount = 1;
-        let event = MouseEvent::new(&self.window,
-                                    DOMString::from(mouse_event_type_string),
+        let event = MouseEvent::new(DOMString::from(mouse_event_type_string),
                                     EventBubbles::Bubbles,
                                     EventCancelable::Cancelable,
                                     Some(&self.window),
@@ -704,8 +702,7 @@ impl Document {
         let client_x = client_point.x.to_i32().unwrap_or(0);
         let client_y = client_point.y.to_i32().unwrap_or(0);
 
-        let mouse_event = MouseEvent::new(&self.window,
-                                          DOMString::from(event_name),
+        let mouse_event = MouseEvent::new(DOMString::from(event_name),
                                           EventBubbles::Bubbles,
                                           EventCancelable::Cancelable,
                                           Some(&self.window),
@@ -844,8 +841,7 @@ impl Document {
         let page_x = Finite::wrap(point.x as f64 + window.PageXOffset() as f64);
         let page_y = Finite::wrap(point.y as f64 + window.PageYOffset() as f64);
 
-        let touch = Touch::new(window,
-                               identifier,
+        let touch = Touch::new(identifier,
                                target.r(),
                                client_x,
                                client_y, // TODO: Get real screen coordinates?
@@ -893,15 +889,14 @@ impl Document {
                                   .filter(|t| t.Target() == target)
                                   .cloned());
 
-        let event = TouchEvent::new(window,
-                                    DOMString::from(event_name),
+        let event = TouchEvent::new(DOMString::from(event_name),
                                     EventBubbles::Bubbles,
                                     EventCancelable::Cancelable,
                                     Some(window),
                                     0i32,
-                                    &TouchList::new(window, touches.r()),
-                                    &TouchList::new(window, changed_touches.r()),
-                                    &TouchList::new(window, target_touches.r()),
+                                    &TouchList::new(touches.r()),
+                                    &TouchList::new(changed_touches.r()),
+                                    &TouchList::new(target_touches.r()),
                                     // FIXME: modifier keys
                                     false,
                                     false,
@@ -1420,7 +1415,7 @@ impl Document {
         let iter = maybe_node.iter()
                              .flat_map(|node| node.traverse_preorder())
                              .filter(|node| callback(node.r()));
-        NodeList::new_simple_list(&self.window, iter)
+        NodeList::new_simple_list(iter)
     }
 
     fn get_html_element(&self) -> Option<Root<HTMLHtmlElement>> {
@@ -1797,9 +1792,9 @@ impl DocumentMethods for Document {
         interface.make_ascii_lowercase();
         match &*interface {
             "uievents" | "uievent" =>
-                Ok(Root::upcast(UIEvent::new_uninitialized(&self.window))),
+                Ok(Root::upcast(UIEvent::new_uninitialized())),
             "mouseevents" | "mouseevent" =>
-                Ok(Root::upcast(MouseEvent::new_uninitialized(&self.window))),
+                Ok(Root::upcast(MouseEvent::new_uninitialized())),
             "customevent" =>
                 Ok(Root::upcast(CustomEvent::new_uninitialized())),
             "htmlevents" | "events" | "event" =>
@@ -1810,10 +1805,10 @@ impl DocumentMethods for Document {
                 Ok(Root::upcast(MessageEvent::new_uninitialized())),
             "touchevent" =>
                 Ok(Root::upcast(
-                    TouchEvent::new_uninitialized(&self.window,
-                        &TouchList::new(&self.window, &[]),
-                        &TouchList::new(&self.window, &[]),
-                        &TouchList::new(&self.window, &[]),
+                    TouchEvent::new_uninitialized(
+                        &TouchList::new(&[]),
+                        &TouchList::new(&[]),
+                        &TouchList::new(&[]),
                     )
                 )),
             _ =>
@@ -1840,7 +1835,7 @@ impl DocumentMethods for Document {
                           whatToShow: u32,
                           filter: Option<Rc<NodeFilter>>)
                           -> Root<NodeIterator> {
-        NodeIterator::new(self, root, whatToShow, filter)
+        NodeIterator::new(root, whatToShow, filter)
     }
 
     // https://w3c.github.io/touch-events/#idl-def-Document
@@ -1855,8 +1850,7 @@ impl DocumentMethods for Document {
                    -> Root<Touch> {
         let clientX = Finite::wrap(*pageX - window.PageXOffset() as f64);
         let clientY = Finite::wrap(*pageY - window.PageYOffset() as f64);
-        Touch::new(window,
-                   identifier,
+        Touch::new(identifier,
                    target,
                    screenX,
                    screenY,
@@ -1868,16 +1862,7 @@ impl DocumentMethods for Document {
 
     // https://w3c.github.io/touch-events/#idl-def-document-createtouchlist(touch...)
     fn CreateTouchList(&self, touches: &[&Touch]) -> Root<TouchList> {
-        TouchList::new(&self.window, &touches)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-document-createtreewalker
-    fn CreateTreeWalker(&self,
-                        root: &Node,
-                        whatToShow: u32,
-                        filter: Option<Rc<NodeFilter>>)
-                        -> Root<TreeWalker> {
-        TreeWalker::new(self, root, whatToShow, filter)
+        TouchList::new(&touches)
     }
 
     // https://html.spec.whatwg.org/multipage/#document.title

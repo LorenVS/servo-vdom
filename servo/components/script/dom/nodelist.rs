@@ -11,7 +11,6 @@ use dom::bindings::js::{JS, MutNullableHeap, Root, RootedReference};
 use dom::bindings::reflector::{Reflector};
 use dom::bindings::typed::Typed;
 use dom::node::{ChildrenMutation, Node};
-use dom::window::Window;
 use std::cell::Cell;
 
 #[derive(JSTraceable, HeapSizeOf)]
@@ -41,21 +40,21 @@ impl NodeList {
     }
 
     #[allow(unrooted_must_root)]
-    pub fn new(window: &Window, list_type: NodeListType) -> Root<NodeList> {
+    pub fn new(list_type: NodeListType) -> Root<NodeList> {
         Root::new_box(box NodeList::new_inherited(NodeListTypeId::NodeList, list_type))
     }
 
-    pub fn new_simple_list<T>(window: &Window, iter: T) -> Root<NodeList>
+    pub fn new_simple_list<T>(iter: T) -> Root<NodeList>
                               where T: Iterator<Item=Root<Node>> {
-        NodeList::new(window, NodeListType::Simple(iter.map(|r| JS::from_rooted(&r)).collect()))
+        NodeList::new(NodeListType::Simple(iter.map(|r| JS::from_rooted(&r)).collect()))
     }
 
-    pub fn new_child_list(window: &Window, node: &Node) -> Root<NodeList> {
-        NodeList::new(window, NodeListType::Children(ChildrenList::new(node)))
+    pub fn new_child_list(node: &Node) -> Root<NodeList> {
+        NodeList::new(NodeListType::Children(ChildrenList::new(node)))
     }
 
-    pub fn empty(window: &Window) -> Root<NodeList> {
-        NodeList::new(window, NodeListType::Simple(vec![]))
+    pub fn empty() -> Root<NodeList> {
+        NodeList::new(NodeListType::Simple(vec![]))
     }
 }
 

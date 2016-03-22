@@ -66,9 +66,6 @@ interface Document : Node {
   [NewObject]
   NodeIterator createNodeIterator(Node root, optional unsigned long whatToShow = 0xFFFFFFFF,
                                   optional NodeFilter? filter = null);
-  [NewObject]
-  TreeWalker createTreeWalker(Node root, optional unsigned long whatToShow = 0xFFFFFFFF,
-                              optional NodeFilter? filter = null);
 };
 
 Document implements NonElementParentNode;

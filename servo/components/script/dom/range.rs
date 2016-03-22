@@ -7,7 +7,7 @@ use dom::bindings::codegen::Bindings::NodeBinding::NodeConstants;
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::codegen::Bindings::NodeListBinding::NodeListMethods;
 use dom::bindings::codegen::Bindings::RangeBinding::RangeMethods;
-use dom::bindings::codegen::Bindings::RangeBinding::{self, RangeConstants};
+use dom::bindings::codegen::Bindings::RangeBinding::{RangeConstants};
 use dom::bindings::codegen::Bindings::TextBinding::TextMethods;
 use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::error::{Error, ErrorResult, Fallible};
@@ -48,11 +48,10 @@ impl Range {
 
     pub fn new_with_doc(document: &Document) -> Root<Range> {
         let root = document.upcast();
-        Range::new(document, root, 0, root, 0)
+        Range::new(root, 0, root, 0)
     }
 
-    pub fn new(document: &Document,
-               start_container: &Node, start_offset: u32,
+    pub fn new(start_container: &Node, start_offset: u32,
                end_container: &Node, end_offset: u32)
                -> Root<Range> {
         let range = Root::new_box(box Range::new_inherited(start_container, start_offset,
@@ -363,8 +362,7 @@ impl RangeMethods for Range {
     // https://dom.spec.whatwg.org/#dom-range-clonerange
     fn CloneRange(&self) -> Root<Range> {
         let start_node = self.StartContainer();
-        let owner_doc = start_node.owner_doc();
-        Range::new(&owner_doc, &start_node, self.StartOffset(),
+        Range::new(&start_node, self.StartOffset(),
                    &self.EndContainer(), self.EndOffset())
     }
 
@@ -466,8 +464,7 @@ impl RangeMethods for Range {
                 // Step 14.2.
                 try!(fragment.upcast::<Node>().AppendChild(&clone));
                 // Step 14.3.
-                let subrange = Range::new(clone.owner_doc().r(),
-                                          start_node.r(),
+                let subrange = Range::new(start_node.r(),
                                           start_offset,
                                           child.r(),
                                           child.len());
@@ -501,8 +498,7 @@ impl RangeMethods for Range {
                 // Step 17.2.
                 try!(fragment.upcast::<Node>().AppendChild(&clone));
                 // Step 17.3.
-                let subrange = Range::new(clone.owner_doc().r(),
-                                          child.r(),
+                let subrange = Range::new(child.r(),
                                           0,
                                           end_node.r(),
                                           end_offset);
@@ -590,8 +586,7 @@ impl RangeMethods for Range {
                 // Step 16.2.
                 try!(fragment.upcast::<Node>().AppendChild(&clone));
                 // Step 16.3.
-                let subrange = Range::new(clone.owner_doc().r(),
-                                          start_node.r(),
+                let subrange = Range::new(start_node.r(),
                                           start_offset,
                                           child.r(),
                                           child.len());
@@ -625,8 +620,7 @@ impl RangeMethods for Range {
                 // Step 19.2.
                 try!(fragment.upcast::<Node>().AppendChild(&clone));
                 // Step 19.3.
-                let subrange = Range::new(clone.owner_doc().r(),
-                                          child.r(),
+                let subrange = Range::new(child.r(),
                                           0,
                                           end_node.r(),
                                           end_offset);

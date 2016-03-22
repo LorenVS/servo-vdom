@@ -3742,7 +3742,6 @@ class CGBindingRoot(CGThing):
             'dom::bindings::str::USVString',
             'dom::bindings::trace::RootedVec',
             'dom::bindings::weakref::{DOM_WEAK_SLOT, WeakBox, WeakReferenceable}',
-            'mem::heap_size_of_raw_self_and_children',
             'libc',
             'util::str::DOMString',
             'std::borrow::ToOwned',

@@ -12,7 +12,7 @@ use dom::bindings::reflector::Reflectable;
 use dom::document::Document;
 use dom::domtokenlist::DOMTokenList;
 use dom::htmlelement::HTMLElement;
-use dom::node::Node;
+
 use dom::virtualmethods::VirtualMethods;
 use std::default::Default;
 use string_cache::Atom;

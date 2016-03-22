@@ -4,7 +4,6 @@
 
 use app_units::Au;
 use devtools_traits::{ScriptToDevtoolsControlMsg, TimelineMarker, TimelineMarkerType, WorkerId};
-use dom::bindings::callback::ExceptionHandling;
 use dom::bindings::cell::DOMRefCell;
 use dom::bindings::codegen::Bindings::DocumentBinding::{DocumentMethods, DocumentReadyState};
 use dom::bindings::codegen::Bindings::EventHandlerBinding::{EventHandlerNonNull, OnErrorEventHandlerNonNull};
@@ -485,7 +484,7 @@ impl WindowMethods for Window {
 
     // https://developer.mozilla.org/en-US/docs/Web/API/Window/screen
     fn Screen(&self) -> Root<Screen> {
-        self.screen.or_init(|| Screen::new(self))
+        self.screen.or_init(|| Screen::new())
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-windowbase64-btoa

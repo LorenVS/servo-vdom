@@ -475,7 +475,7 @@ impl HTMLInputElementMethods for HTMLInputElement {
     fn Labels(&self) -> Root<NodeList> {
         if self.type_() == atom!("hidden") {
             let window = window_from_node(self);
-            NodeList::empty(&window)
+            NodeList::empty()
         } else {
             self.upcast::<HTMLElement>().labels()
         }

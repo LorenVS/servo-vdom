@@ -7,7 +7,7 @@ use dom::bindings::js::Root;
 use dom::bindings::inheritance::HTMLTableCellElementTypeId;
 use dom::document::Document;
 use dom::htmltablecellelement::HTMLTableCellElement;
-use dom::node::Node;
+
 use string_cache::Atom;
 use util::str::DOMString;
 

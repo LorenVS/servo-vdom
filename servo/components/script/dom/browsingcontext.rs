@@ -5,21 +5,11 @@
 use dom::bindings::cell::DOMRefCell;
 use dom::bindings::conversions::{ToJSValConvertible};
 use dom::bindings::js::{JS, Root, RootedReference};
-use dom::bindings::proxyhandler::{fill_property_descriptor, get_property_descriptor};
 use dom::bindings::reflector::{Reflectable, Reflector};
-use dom::bindings::utils::get_array_index_from_id;
 use dom::document::Document;
 use dom::element::Element;
 use dom::window::Window;
-use js::glue::{CreateWrapperProxyHandler, ProxyTraps};
-use js::glue::{GetProxyPrivate};
-use js::jsapi::{Handle, HandleId, HandleObject, JSContext};
 use js::jsapi::{JSErrNum, JSObject, JSPropertyDescriptor, JS_DefinePropertyById6};
-use js::jsapi::{JS_ForwardGetPropertyTo, JS_ForwardSetPropertyTo};
-use js::jsapi::{JS_GetOwnPropertyDescriptorById, JS_HasPropertyById, MutableHandle};
-use js::jsapi::{MutableHandleValue, ObjectOpResult, RootedObject, RootedValue};
-use js::jsval::{ObjectValue, UndefinedValue};
-use js::{JSPROP_READONLY};
 
 #[dom_struct]
 pub struct BrowsingContext {

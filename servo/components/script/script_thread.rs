@@ -49,7 +49,6 @@ use ipc_channel::ipc::{self, IpcSender};
 use ipc_channel::router::ROUTER;
 use layout_interface::{ReflowQueryType};
 use layout_interface::{self, LayoutChan, ScriptLayoutChan};
-use mem::heap_size_of_self_and_children;
 use msg::constellation_msg::{ConstellationChan, LoadData};
 use msg::constellation_msg::{PipelineId, PipelineNamespace};
 use msg::constellation_msg::{SubpageId, WindowSizeData};
@@ -57,7 +56,7 @@ use net_traits::image_cache_thread::{ImageCacheChan, ImageCacheResult, ImageCach
 use net_traits::storage_thread::StorageThread;
 use net_traits::{ResourceThread};
 use page::{Frame, IterablePage, Page};
-use profile_traits::mem::{self, OpaqueSender, Report, ReportKind, ReportsChan};
+use profile_traits::mem::{self, OpaqueSender, ReportsChan};
 use profile_traits::time::{self, ProfilerCategory, profile};
 use script_traits::CompositorEvent::{KeyEvent, MouseButtonEvent, MouseMoveEvent, ResizeEvent};
 use script_traits::CompositorEvent::{TouchEvent};
@@ -67,7 +66,6 @@ use script_traits::{LayoutMsg, OpaqueScriptLayoutChannel, ScriptMsg as Constella
 use script_traits::{ScriptThreadFactory, ScriptToCompositorMsg, TimerEvent, TimerEventRequest, TimerSource};
 use script_traits::{TouchEventType, TouchId};
 use std::any::Any;
-use std::borrow::ToOwned;
 use std::cell::{RefCell};
 use std::collections::HashSet;
 use std::option::Option;
@@ -884,8 +882,7 @@ impl ScriptThread {
             }
             MainThreadScriptMsg::Common(CommonScriptMsg::RefcountCleanup(addr)) =>
                 LiveDOMReferences::cleanup(addr),
-            MainThreadScriptMsg::Common(CommonScriptMsg::CollectReports(reports_chan)) =>
-                self.collect_reports(reports_chan),
+            MainThreadScriptMsg::Common(CommonScriptMsg::CollectReports(_)) => {},
             MainThreadScriptMsg::DOMManipulation(msg) =>
                 msg.handle_msg(self),
         }
@@ -992,32 +989,6 @@ impl ScriptThread {
 
         let ConstellationChan(ref chan) = self.constellation_chan;
         chan.send(ConstellationMsg::LoadComplete(pipeline)).unwrap();
-    }
-
-    fn collect_reports(&self, reports_chan: ReportsChan) {
-        let mut urls = vec![];
-        let mut dom_tree_size = 0;
-        let mut reports = vec![];
-
-        if let Some(root_page) = self.page.borrow().as_ref() {
-            for it_page in root_page.iter() {
-                let current_url = it_page.document().url().serialize();
-                urls.push(current_url.clone());
-
-                for child in it_page.document().upcast::<Node>().traverse_preorder() {
-                    dom_tree_size += heap_size_of_self_and_children(&*child);
-                }
-                let window = it_page.window();
-                dom_tree_size += heap_size_of_self_and_children(&*window);
-
-                reports.push(Report {
-                    path: path![format!("url({})", current_url), "dom-tree"],
-                    kind: ReportKind::ExplicitJemallocHeapSize,
-                    size: dom_tree_size,
-                })
-            }
-        }
-        reports_chan.send(reports);
     }
 
     /// Handles freeze message
@@ -1460,8 +1431,7 @@ impl ScriptThread {
 
         // http://dev.w3.org/csswg/cssom-view/#resizing-viewports
         // https://dvcs.w3.org/hg/dom3events/raw-file/tip/html/DOM3-Events.html#event-type-resize
-        let uievent = UIEvent::new(window.r(),
-                                   DOMString::from("resize"), EventBubbles::DoesNotBubble,
+        let uievent = UIEvent::new(DOMString::from("resize"), EventBubbles::DoesNotBubble,
                                    EventCancelable::NotCancelable, Some(window.r()),
                                    0i32);
         uievent.upcast::<Event>().fire(window.upcast());

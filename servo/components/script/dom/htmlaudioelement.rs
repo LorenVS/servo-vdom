@@ -7,7 +7,7 @@ use dom::bindings::js::Root;
 use dom::bindings::inheritance::HTMLMediaElementTypeId;
 use dom::document::Document;
 use dom::htmlmediaelement::HTMLMediaElement;
-use dom::node::Node;
+
 use string_cache::Atom;
 use util::str::DOMString;
 

@@ -746,9 +746,8 @@ impl Node {
     // https://dom.spec.whatwg.org/#dom-parentnode-queryselectorall
     #[allow(unsafe_code)]
     pub fn query_selector_all(&self, selectors: DOMString) -> Fallible<Root<NodeList>> {
-        let window = window_from_node(self);
         let iter = try!(self.query_selector_iter(selectors));
-        Ok(NodeList::new_simple_list(window.r(), iter))
+        Ok(NodeList::new_simple_list(iter))
     }
 
     pub fn ancestors(&self) -> AncestorIterator {
@@ -1860,9 +1859,7 @@ impl NodeMethods for Node {
     // https://dom.spec.whatwg.org/#dom-node-childnodes
     fn ChildNodes(&self) -> Root<NodeList> {
         self.child_list.or_init(|| {
-            let doc = self.owner_doc();
-            let window = doc.window();
-            NodeList::new_child_list(window, self)
+            NodeList::new_child_list(self)
         })
     }
 

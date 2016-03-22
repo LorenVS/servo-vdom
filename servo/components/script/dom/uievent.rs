@@ -3,14 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
-
 use dom::bindings::codegen::Bindings::UIEventBinding::{UIEventMethods, UIEventInit};
 use dom::bindings::error::Fallible;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, EventTypeId, UIEventTypeId};
 use dom::bindings::js::Root;
 use dom::bindings::js::{JS, MutNullableHeap, RootedReference};
-
 use dom::event::{Event, EventBubbles, EventCancelable};
 use dom::window::Window;
 use std::cell::Cell;
@@ -35,24 +32,22 @@ impl UIEvent {
         }
     }
 
-    pub fn new_uninitialized(window: &Window) -> Root<UIEvent> {
+    pub fn new_uninitialized() -> Root<UIEvent> {
         Root::new_box(box UIEvent::new_inherited(UIEventTypeId::UIEvent))
     }
 
-    pub fn new(window: &Window,
-               type_: DOMString,
+    pub fn new(type_: DOMString,
                can_bubble: EventBubbles,
                cancelable: EventCancelable,
                view: Option<&Window>,
                detail: i32) -> Root<UIEvent> {
-        let ev = UIEvent::new_uninitialized(window);
+        let ev = UIEvent::new_uninitialized();
         ev.InitUIEvent(type_, can_bubble == EventBubbles::Bubbles,
                        cancelable == EventCancelable::Cancelable, view, detail);
         ev
     }
 
-    pub fn Constructor(global: GlobalRef,
-                       type_: DOMString,
+    pub fn Constructor(type_: DOMString,
                        init: &UIEventInit) -> Fallible<Root<UIEvent>> {
         let bubbles = if init.parent.bubbles { EventBubbles::Bubbles } else { EventBubbles::DoesNotBubble };
         let cancelable = if init.parent.cancelable {
@@ -60,7 +55,7 @@ impl UIEvent {
         } else {
             EventCancelable::NotCancelable
         };
-        let event = UIEvent::new(global.as_window(), type_,
+        let event = UIEvent::new(type_,
                                  bubbles, cancelable,
                                  init.view.r(), init.detail);
         Ok(event)

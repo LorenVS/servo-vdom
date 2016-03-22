@@ -4,11 +4,9 @@
 
 
 use dom::bindings::codegen::Bindings::TouchListBinding::TouchListMethods;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::js::{JS, Root};
 use dom::bindings::reflector::{Reflector};
 use dom::touch::Touch;
-use dom::window::Window;
 
 #[dom_struct]
 pub struct TouchList {
@@ -24,7 +22,7 @@ impl TouchList {
         }
     }
 
-    pub fn new(window: &Window, touches: &[&Touch]) -> Root<TouchList> {
+    pub fn new(touches: &[&Touch]) -> Root<TouchList> {
         Root::new_box(box TouchList::new_inherited(touches))
     }
 }

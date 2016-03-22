@@ -4,12 +4,10 @@
 
 
 use dom::bindings::codegen::Bindings::TouchBinding::TouchMethods;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::js::{JS, MutHeap, Root};
 use dom::bindings::num::Finite;
 use dom::bindings::reflector::{Reflector};
 use dom::eventtarget::EventTarget;
-use dom::window::Window;
 
 #[dom_struct]
 pub struct Touch {
@@ -42,7 +40,7 @@ impl Touch {
         }
     }
 
-    pub fn new(window: &Window, identifier: i32, target: &EventTarget,
+    pub fn new(identifier: i32, target: &EventTarget,
               screen_x: Finite<f64>, screen_y: Finite<f64>,
               client_x: Finite<f64>, client_y: Finite<f64>,
               page_x: Finite<f64>, page_y: Finite<f64>) -> Root<Touch> {

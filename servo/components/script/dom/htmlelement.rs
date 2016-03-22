@@ -8,7 +8,6 @@ use dom::attr::AttrValue;
 use dom::bindings::codegen::Bindings::ElementBinding::ElementMethods;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::OnErrorEventHandlerNonNull;
-
 use dom::bindings::codegen::Bindings::HTMLElementBinding::HTMLElementMethods;
 use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::error::{Error, ErrorResult};
@@ -443,7 +442,7 @@ impl HTMLElement {
 
         let id = element.Id();
         let id = match &id as &str {
-            "" => return NodeList::new_simple_list(window.r(), ancestors),
+            "" => return NodeList::new_simple_list(ancestors),
             id => id,
         };
 
@@ -456,7 +455,7 @@ impl HTMLElement {
                                 .filter(|elem| elem.get_string_attribute(&atom!("for")) == id)
                                 .map(Root::upcast::<Node>);
 
-        NodeList::new_simple_list(window.r(), children.chain(ancestors))
+        NodeList::new_simple_list(children.chain(ancestors))
     }
 }
 

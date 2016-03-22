@@ -4,7 +4,6 @@
 
 use dom::bindings::codegen::Bindings::CSSStyleDeclarationBinding::{CSSStyleDeclarationMethods};
 use dom::bindings::error::{Error, ErrorResult, Fallible};
-use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::Castable;
 use dom::bindings::js::{JS, Root};
 use dom::bindings::reflector::{Reflector};

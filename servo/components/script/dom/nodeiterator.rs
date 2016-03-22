@@ -2,14 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::callback::ExceptionHandling::Rethrow;
 use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::codegen::Bindings::NodeFilterBinding::NodeFilter;
 use dom::bindings::codegen::Bindings::NodeFilterBinding::NodeFilterConstants;
-
 use dom::bindings::codegen::Bindings::NodeIteratorBinding::NodeIteratorMethods;
 use dom::bindings::error::Fallible;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::js::{JS, MutHeap, Root};
 use dom::bindings::reflector::{Reflector};
 use dom::document::Document;
@@ -43,19 +40,17 @@ impl NodeIterator {
         }
     }
 
-    pub fn new_with_filter(document: &Document,
-                           root_node: &Node,
+    pub fn new_with_filter(root_node: &Node,
                            what_to_show: u32,
                            filter: Filter) -> Root<NodeIterator> {
         Root::new_box(box NodeIterator::new_inherited(root_node, what_to_show, filter))
     }
 
-    pub fn new(document: &Document,
-               root_node: &Node,
+    pub fn new(root_node: &Node,
                what_to_show: u32,
                node_filter: Option<Rc<NodeFilter>>) -> Root<NodeIterator> {
         let filter = Filter::None;
-        NodeIterator::new_with_filter(document, root_node, what_to_show, filter)
+        NodeIterator::new_with_filter(root_node, what_to_show, filter)
     }
 }
 

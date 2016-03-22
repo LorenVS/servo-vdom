@@ -5,7 +5,6 @@
 
 use dom::bindings::codegen::Bindings::TouchEventBinding::TouchEventMethods;
 use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, UIEventTypeId};
 use dom::bindings::js::{JS, MutHeap, Root};
 
@@ -44,15 +43,13 @@ impl TouchEvent {
         }
     }
 
-    pub fn new_uninitialized(window: &Window,
-                     touches: &TouchList,
+    pub fn new_uninitialized(touches: &TouchList,
                      changed_touches: &TouchList,
                      target_touches: &TouchList) -> Root<TouchEvent> {
         Root::new_box(box TouchEvent::new_inherited(touches, changed_touches, target_touches))
     }
 
-    pub fn new(window: &Window,
-               type_: DOMString,
+    pub fn new(type_: DOMString,
                canBubble: EventBubbles,
                cancelable: EventCancelable,
                view: Option<&Window>,
@@ -64,7 +61,7 @@ impl TouchEvent {
                altKey: bool,
                shiftKey: bool,
                metaKey: bool) -> Root<TouchEvent> {
-        let ev = TouchEvent::new_uninitialized(window, touches, changed_touches, target_touches);
+        let ev = TouchEvent::new_uninitialized(touches, changed_touches, target_touches);
         ev.upcast::<UIEvent>().InitUIEvent(type_,
                                            canBubble == EventBubbles::Bubbles,
                                            cancelable == EventCancelable::Cancelable,

@@ -11,7 +11,7 @@ use dom::bindings::js::{LayoutJS, Root};
 use dom::document::Document;
 use dom::element::{Element, RawLayoutElementHelpers};
 use dom::htmlelement::HTMLElement;
-use dom::node::Node;
+
 use dom::virtualmethods::VirtualMethods;
 use string_cache::Atom;
 use style::values::specified;

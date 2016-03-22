@@ -4,10 +4,8 @@
 
 
 use dom::bindings::codegen::Bindings::ScreenBinding::ScreenMethods;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflector};
-use dom::window::Window;
 
 #[dom_struct]
 pub struct Screen {
@@ -21,7 +19,7 @@ impl Screen {
         }
     }
 
-    pub fn new(window: &Window) -> Root<Screen> {
+    pub fn new() -> Root<Screen> {
         Root::new_box(box Screen::new_inherited())
     }
 }

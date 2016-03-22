@@ -331,7 +331,6 @@ pub mod text;
 pub mod touch;
 pub mod touchevent;
 pub mod touchlist;
-pub mod treewalker;
 pub mod uievent;
 pub mod urlhelper;
 pub mod userscripts;

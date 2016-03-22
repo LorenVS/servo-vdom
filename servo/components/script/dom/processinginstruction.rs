@@ -8,7 +8,7 @@ use dom::bindings::js::Root;
 use dom::bindings::inheritance::CharacterDataTypeId;
 use dom::characterdata::CharacterData;
 use dom::document::Document;
-use dom::node::Node;
+
 use util::str::DOMString;
 
 /// An HTML processing instruction node.
