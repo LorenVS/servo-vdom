@@ -8,8 +8,6 @@ use dom::bindings::js::Root;
 use dom::bindings::inheritance::HTMLElementTypeId;
 use dom::document::Document;
 use dom::htmlelement::HTMLElement;
-
-use dom::userscripts::load_script;
 use dom::virtualmethods::VirtualMethods;
 use string_cache::Atom;
 use util::str::DOMString;
@@ -42,6 +40,5 @@ impl VirtualMethods for HTMLHeadElement {
         Some(self.upcast::<HTMLElement>() as &VirtualMethods)
     }
     fn bind_to_tree(&self, _tree_in_doc: bool) {
-        load_script(self);
     }
 }

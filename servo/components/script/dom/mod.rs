@@ -330,7 +330,6 @@ pub mod touch;
 pub mod touchevent;
 pub mod touchlist;
 pub mod uievent;
-pub mod userscripts;
 pub mod values;
 pub mod virtualmethods;
 pub mod window;
