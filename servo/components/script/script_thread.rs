@@ -63,7 +63,7 @@ use script_traits::CompositorEvent::{TouchEvent};
 use script_traits::{CompositorEvent, ConstellationControlMsg, EventResult};
 use script_traits::{InitialScriptState, MouseButton, MouseEventType};
 use script_traits::{LayoutMsg, OpaqueScriptLayoutChannel, ScriptMsg as ConstellationMsg};
-use script_traits::{ScriptThreadFactory, ScriptToCompositorMsg, TimerEvent, TimerEventRequest, TimerSource};
+use script_traits::{ScriptThreadFactory, ScriptToCompositorMsg, TimerEventRequest};
 use script_traits::{TouchEventType, TouchId};
 use std::any::Any;
 use std::cell::{RefCell};
@@ -175,7 +175,6 @@ enum MixedMessage {
     FromScript(MainThreadScriptMsg),
     FromDevtools(DevtoolScriptControlMsg),
     FromImageCache(ImageCacheResult),
-    FromScheduler(TimerEvent),
 }
 
 /// Common messages used to control the event loops in both the script and the worker
@@ -387,8 +386,6 @@ pub struct ScriptThread {
     closed_pipelines: DOMRefCell<HashSet<PipelineId>>,
 
     scheduler_chan: IpcSender<TimerEventRequest>,
-    timer_event_chan: Sender<TimerEvent>,
-    timer_event_port: Receiver<TimerEvent>,
 
     content_process_shutdown_chan: IpcSender<()>,
 }
@@ -519,8 +516,6 @@ impl ScriptThread {
         let image_cache_port =
             ROUTER.route_ipc_receiver_to_new_mpsc_receiver(ipc_image_cache_port);
 
-        let (timer_event_chan, timer_event_port) = channel();
-
         // Ask the router to proxy IPC messages from the control port to us.
         let control_port = ROUTER.route_ipc_receiver_to_new_mpsc_receiver(state.control_port);
 
@@ -559,8 +554,6 @@ impl ScriptThread {
             closed_pipelines: DOMRefCell::new(HashSet::new()),
 
             scheduler_chan: state.scheduler_chan,
-            timer_event_chan: timer_event_chan,
-            timer_event_port: timer_event_port,
 
             content_process_shutdown_chan: state.content_process_shutdown_chan,
         }
@@ -591,7 +584,7 @@ impl ScriptThread {
 
     /// Handle incoming control messages.
     fn handle_msgs(&self) -> bool {
-        use self::MixedMessage::{FromScript, FromConstellation, FromScheduler, FromDevtools, FromImageCache};
+        use self::MixedMessage::{FromScript, FromConstellation, FromDevtools, FromImageCache};
 
         // Handle pending resize events.
         // Gather them first to avoid a double mut borrow on self.
@@ -624,13 +617,11 @@ impl ScriptThread {
             let sel = Select::new();
             let mut script_port = sel.handle(&self.port);
             let mut control_port = sel.handle(&self.control_port);
-            let mut timer_event_port = sel.handle(&self.timer_event_port);
             let mut devtools_port = sel.handle(&self.devtools_port);
             let mut image_cache_port = sel.handle(&self.image_cache_port);
             unsafe {
                 script_port.add();
                 control_port.add();
-                timer_event_port.add();
                 if self.devtools_chan.is_some() {
                     devtools_port.add();
                 }
@@ -641,8 +632,6 @@ impl ScriptThread {
                 FromScript(self.port.recv().unwrap())
             } else if ret == control_port.id() {
                 FromConstellation(self.control_port.recv().unwrap())
-            } else if ret == timer_event_port.id() {
-                FromScheduler(self.timer_event_port.recv().unwrap())
             } else if ret == devtools_port.id() {
                 FromDevtools(self.devtools_port.recv().unwrap())
             } else if ret == image_cache_port.id() {
@@ -705,15 +694,12 @@ impl ScriptThread {
             // on and execute the sequential non-resize events we've seen.
             match self.control_port.try_recv() {
                 Err(_) => match self.port.try_recv() {
-                    Err(_) => match self.timer_event_port.try_recv() {
-                        Err(_) => match self.devtools_port.try_recv() {
-                            Err(_) => match self.image_cache_port.try_recv() {
-                                Err(_) => break,
-                                Ok(ev) => event = FromImageCache(ev),
-                            },
-                            Ok(ev) => event = FromDevtools(ev),
+                    Err(_) => match self.devtools_port.try_recv() {
+                        Err(_) => match self.image_cache_port.try_recv() {
+                            Err(_) => break,
+                            Ok(ev) => event = FromImageCache(ev),
                         },
-                        Ok(ev) => event = FromScheduler(ev),
+                        Ok(ev) => event = FromDevtools(ev),
                     },
                     Ok(ev) => event = FromScript(ev),
                 },
@@ -734,7 +720,6 @@ impl ScriptThread {
                     },
                     FromConstellation(inner_msg) => self.handle_msg_from_constellation(inner_msg),
                     FromScript(inner_msg) => self.handle_msg_from_script(inner_msg),
-                    FromScheduler(inner_msg) => self.handle_timer_event(inner_msg),
                     FromDevtools(inner_msg) => self.handle_msg_from_devtools(inner_msg),
                     FromImageCache(inner_msg) => self.handle_msg_from_image_cache(inner_msg),
                 }
@@ -791,8 +776,7 @@ impl ScriptThread {
                         *category,
                     _ => ScriptThreadEventCategory::ScriptEvent
                 }
-            },
-            MixedMessage::FromScheduler(_) => ScriptThreadEventCategory::TimerEvent,
+            }
         }
     }
 
@@ -886,22 +870,6 @@ impl ScriptThread {
             MainThreadScriptMsg::DOMManipulation(msg) =>
                 msg.handle_msg(self),
         }
-    }
-
-    fn handle_timer_event(&self, timer_event: TimerEvent) {
-        let TimerEvent(source, id) = timer_event;
-
-        let pipeline_id = match source {
-            TimerSource::FromWindow(pipeline_id) => pipeline_id,
-            TimerSource::FromWorker => panic!("Worker timeouts must not be sent to script thread"),
-        };
-
-        let page = self.root_page();
-        let page = page.find(pipeline_id).expect("ScriptThread: received fire timer msg for a
-            pipeline ID not associated with this script thread. This is a bug.");
-        let window = page.window();
-
-        window.handle_fire_timer(id);
     }
 
     fn handle_msg_from_devtools(&self, msg: DevtoolScriptControlMsg) {
@@ -1133,10 +1101,6 @@ impl ScriptThread {
         let HistoryTraversalTaskSource(ref history_sender) = self.history_traversal_task_source;
         let FileReadingTaskSource(ref file_sender) = self.file_reading_task_source;
 
-        let (ipc_timer_event_chan, ipc_timer_event_port) = ipc::channel().unwrap();
-        ROUTER.route_ipc_receiver_to_mpsc_sender(ipc_timer_event_port,
-                                                 self.timer_event_chan.clone());
-
         // Create the window and document objects.
         let window = Window::new(page.clone(),
                                  MainThreadScriptChan(sender.clone()),
@@ -1155,7 +1119,6 @@ impl ScriptThread {
                                  self.constellation_chan.clone(),
                                  self.control_chan.clone(),
                                  self.scheduler_chan.clone(),
-                                 ipc_timer_event_chan,
                                  incomplete.layout_chan,
                                  incomplete.pipeline_id,
                                  None,

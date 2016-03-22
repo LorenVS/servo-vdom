@@ -38,8 +38,8 @@ use rustc_serialize::base64::{FromBase64, STANDARD, ToBase64};
 use script_thread::{MainThreadScriptChan, MainThreadScriptMsg, RunnableWrapper};
 use script_thread::{SendableMainThreadScriptChan, ScriptChan, ScriptPort};
 use script_traits::{ConstellationControlMsg, UntrustedNodeAddress};
-use script_traits::{DocumentState, MsDuration, ScriptToCompositorMsg, TimerEvent, TimerEventId};
-use script_traits::{ScriptMsg as ConstellationMsg, TimerEventRequest, TimerSource};
+use script_traits::{DocumentState, ScriptToCompositorMsg};
+use script_traits::{ScriptMsg as ConstellationMsg, TimerEventRequest};
 use std::ascii::AsciiExt;
 use std::borrow::ToOwned;
 use std::cell::Cell;
@@ -62,7 +62,6 @@ use task_source::history_traversal::HistoryTraversalTaskSource;
 use task_source::networking::NetworkingTaskSource;
 use task_source::user_interaction::UserInteractionTaskSource;
 use time;
-use timers::{OneshotTimerCallback, OneshotTimerHandle, OneshotTimers};
 use url::Url;
 use util::geometry::{self, MAX_RECT};
 use util::str::{DOMString, HTML_SPACE_CHARACTERS};
@@ -128,7 +127,6 @@ pub struct Window {
     screen: MutNullableHeap<JS<Screen>>,
     #[ignore_heap_size_of = "channels are hard"]
     scheduler_chan: IpcSender<TimerEventRequest>,
-    timers: OneshotTimers,
 
     next_worker_id: Cell<WorkerId>,
 
@@ -932,11 +930,6 @@ impl Window {
             MainThreadScriptMsg::Navigate(self.id, LoadData::new(url))).unwrap();
     }
 
-    pub fn handle_fire_timer(&self, timer_id: TimerEventId) {
-        self.timers.fire_timer(timer_id, self);
-        self.reflow(ReflowGoal::ForDisplay, ReflowQueryType::NoQuery, ReflowReason::Timer);
-    }
-
     pub fn set_fragment_name(&self, fragment: Option<String>) {
         *self.fragment_name.borrow_mut() = fragment;
     }
@@ -979,16 +972,6 @@ impl Window {
 
     pub fn scheduler_chan(&self) -> IpcSender<TimerEventRequest> {
         self.scheduler_chan.clone()
-    }
-
-    pub fn schedule_callback(&self, callback: OneshotTimerCallback, duration: MsDuration) -> OneshotTimerHandle {
-        self.timers.schedule_callback(callback,
-                                      duration,
-                                      TimerSource::FromWindow(self.id.clone()))
-    }
-
-    pub fn unschedule_callback(&self, handle: OneshotTimerHandle) {
-        self.timers.unschedule_callback(handle);
     }
 
     pub fn get_next_subpage_id(&self) -> SubpageId {
@@ -1053,15 +1036,12 @@ impl Window {
     }
 
     pub fn thaw(&self) {
-        self.timers.resume();
-
         // Push the document title to the compositor since we are
         // activating this document due to a navigation.
         self.Document().title_changed();
     }
 
     pub fn freeze(&self) {
-        self.timers.suspend();
     }
 
     pub fn need_emit_timeline_marker(&self, timeline_type: TimelineMarkerType) -> bool {
@@ -1125,7 +1105,6 @@ impl Window {
                constellation_chan: ConstellationChan<ConstellationMsg>,
                control_chan: IpcSender<ConstellationControlMsg>,
                scheduler_chan: IpcSender<TimerEventRequest>,
-               timer_event_chan: IpcSender<TimerEvent>,
                layout_chan: LayoutChan,
                id: PipelineId,
                parent_info: Option<(PipelineId, SubpageId)>,
@@ -1160,7 +1139,6 @@ impl Window {
             navigation_start_precise: time::precise_time_ns() as f64,
             screen: Default::default(),
             scheduler_chan: scheduler_chan.clone(),
-            timers: OneshotTimers::new(timer_event_chan, scheduler_chan),
             next_worker_id: Cell::new(WorkerId(0)),
             id: id,
             parent_info: parent_info,

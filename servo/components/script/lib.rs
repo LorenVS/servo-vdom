@@ -91,7 +91,6 @@ pub mod reporter;
 pub mod script_thread;
 mod task_source;
 pub mod textinput;
-mod timers;
 
 #[cfg(target_os = "linux")]
 #[allow(unsafe_code)]

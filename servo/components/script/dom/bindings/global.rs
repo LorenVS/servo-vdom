@@ -17,10 +17,9 @@ use msg::constellation_msg::{ConstellationChan, PipelineId};
 use net_traits::ResourceThread;
 use profile_traits::mem;
 use script_thread::{CommonScriptMsg, MainThreadScriptChan, ScriptChan, ScriptPort, ScriptThread};
-use script_traits::{MsDuration, ScriptMsg as ConstellationMsg, TimerEventRequest};
+use script_traits::{ScriptMsg as ConstellationMsg, TimerEventRequest};
 use task_source::TaskSource;
 use task_source::dom_manipulation::DOMManipulationTask;
-use timers::{OneshotTimerCallback, OneshotTimerHandle};
 use url::Url;
 
 /// A freely-copyable reference to a rooted global object.
@@ -187,24 +186,6 @@ impl<'a> GlobalRef<'a> {
     pub fn set_devtools_wants_updates(&self, send_updates: bool) {
         match *self {
             GlobalRef::Window(window) => window.set_devtools_wants_updates(send_updates)
-        }
-    }
-
-    /// Schedule the given `callback` to be invoked after at least `duration` milliseconds have
-    /// passed.
-    pub fn schedule_callback(&self,
-                             callback: OneshotTimerCallback,
-                             duration: MsDuration)
-                             -> OneshotTimerHandle {
-        match *self {
-            GlobalRef::Window(window) => window.schedule_callback(callback, duration)
-        }
-    }
-
-    /// Unschedule a previously-scheduled callback.
-    pub fn unschedule_callback(&self, handle: OneshotTimerHandle) {
-        match *self {
-            GlobalRef::Window(window) => window.unschedule_callback(handle)
         }
     }
 
