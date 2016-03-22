@@ -4,7 +4,6 @@
 
 //! The `Reflector` struct.
 
-use js::jsapi::{HandleObject, JSObject};
 use std::cell::UnsafeCell;
 use std::ptr;
 
@@ -15,46 +14,20 @@ use std::ptr;
 
 // If you're renaming or moving this field, update the path in plugins::reflector as well
 pub struct Reflector {
-    #[ignore_heap_size_of = "defined and measured in rust-mozjs"]
-    object: UnsafeCell<*mut JSObject>,
 }
 
 
 impl PartialEq for Reflector {
     fn eq(&self, other: &Reflector) -> bool {
-        unsafe { *self.object.get() == *other.object.get() }
+        true
     }
 }
 
 impl Reflector {
-    /// Get the reflector.
-    #[inline]
-    pub fn get_jsobject(&self) -> HandleObject {
-        unsafe { HandleObject::from_marked_location(self.object.get()) }
-    }
-
-    /// Initialize the reflector. (May be called only once.)
-    pub fn set_jsobject(&mut self, object: *mut JSObject) {
-        unsafe {
-            let obj = self.object.get();
-            assert!((*obj).is_null());
-            assert!(!object.is_null());
-            *obj = object;
-        }
-    }
-
-    /// Return a pointer to the memory location at which the JS reflector
-    /// object is stored. Used to root the reflector, as
-    /// required by the JSAPI rooting APIs.
-    pub fn rootable(&self) -> *mut *mut JSObject {
-        self.object.get()
-    }
 
     /// Create an uninitialized `Reflector`.
     pub fn new() -> Reflector {
-        Reflector {
-            object: UnsafeCell::new(ptr::null_mut()),
-        }
+        Reflector {}
     }
 }
 
@@ -62,6 +35,4 @@ impl Reflector {
 pub trait Reflectable {
     /// Returns the receiver's reflector.
     fn reflector(&self) -> &Reflector;
-    /// Initializes the Reflector
-    fn init_reflector(&mut self, obj: *mut JSObject);
 }

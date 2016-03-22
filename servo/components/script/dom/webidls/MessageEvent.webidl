@@ -6,7 +6,6 @@
 // https://html.spec.whatwg.org/multipage/#messageevent
 [Constructor(DOMString type, optional MessageEventInit eventInitDict)/*, Exposed=Window,Worker*/]
 interface MessageEvent : Event {
-  readonly attribute any data;
   readonly attribute DOMString origin;
   readonly attribute DOMString lastEventId;
   //readonly attribute (WindowProxy or MessagePort)? source;
@@ -14,7 +13,6 @@ interface MessageEvent : Event {
 };
 
 dictionary MessageEventInit : EventInit {
-  any data = null;
   DOMString origin = "";
   DOMString lastEventId = "";
   //DOMString channel;

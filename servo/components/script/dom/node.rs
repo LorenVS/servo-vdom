@@ -28,7 +28,6 @@ use dom::bindings::js::Root;
 use dom::bindings::js::RootedReference;
 use dom::bindings::js::{JS, LayoutJS, MutNullableHeap};
 use dom::bindings::reflector::{Reflectable};
-use dom::bindings::trace::JSTraceable;
 use dom::bindings::trace::RootedVec;
 use dom::bindings::xmlname::namespace_from_domstring;
 use dom::characterdata::CharacterData;

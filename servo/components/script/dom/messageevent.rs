@@ -3,16 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
-
 use dom::bindings::codegen::Bindings::MessageEventBinding::{MessageEventMethods, MessageEventInit};
 use dom::bindings::error::Fallible;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, EventTypeId};
 use dom::bindings::js::Root;
 use dom::event::Event;
 use dom::eventtarget::EventTarget;
-use js::jsapi::{HandleValue, Heap, JSContext};
-use js::jsval::JSVal;
 use std::default::Default;
 use string_cache::Atom;
 use util::str::DOMString;
@@ -20,7 +16,6 @@ use util::str::DOMString;
 
 pub struct MessageEvent {
     event: Event,
-    data: Heap<JSVal>,
     origin: DOMString,
     lastEventId: DOMString,
 }
@@ -35,7 +30,6 @@ impl MessageEvent {
                            lastEventId: DOMString) -> Root<MessageEvent> {
         let ev = box MessageEvent {
             event: Event::new_inherited(EventTypeId::MessageEvent),
-            data: Heap::default(),
             origin: origin,
             lastEventId: lastEventId,
         };
@@ -54,8 +48,7 @@ impl MessageEvent {
         ev
     }
 
-    pub fn Constructor(_global: GlobalRef,
-                       type_: DOMString,
+    pub fn Constructor(type_: DOMString,
                        init: &MessageEventInit)
                        -> Fallible<Root<MessageEvent>> {
         // Dictionaries need to be rooted
@@ -66,22 +59,7 @@ impl MessageEvent {
     }
 }
 
-impl MessageEvent {
-    pub fn dispatch_jsval(target: &EventTarget,
-                          _scope: GlobalRef,
-                          _message: HandleValue) {
-        let messageevent = MessageEvent::new(
-            atom!("message"), false, false,
-            DOMString::new(), DOMString::new());
-        messageevent.upcast::<Event>().fire(target);
-    }
-}
-
 impl MessageEventMethods for MessageEvent {
-    // https://html.spec.whatwg.org/multipage/#dom-messageevent-data
-    fn Data(&self, _cx: *mut JSContext) -> JSVal {
-        self.data.get()
-    }
 
     // https://html.spec.whatwg.org/multipage/#dom-messageevent-origin
     fn Origin(&self) -> DOMString {

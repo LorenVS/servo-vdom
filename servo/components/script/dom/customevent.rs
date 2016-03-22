@@ -18,16 +18,13 @@ use util::str::DOMString;
 // https://dom.spec.whatwg.org/#interface-customevent
 
 pub struct CustomEvent {
-    event: Event,
-    #[ignore_heap_size_of = "Defined in rust-mozjs"]
-    detail: MutHeapJSVal,
+    event: Event
 }
 
 impl CustomEvent {
     fn new_inherited() -> CustomEvent {
         CustomEvent {
-            event: Event::new_inherited(EventTypeId::CustomEvent),
-            detail: MutHeapJSVal::new(),
+            event: Event::new_inherited(EventTypeId::CustomEvent)
         }
     }
 
@@ -36,53 +33,41 @@ impl CustomEvent {
     }
     pub fn new(type_: Atom,
                bubbles: bool,
-               cancelable: bool,
-               detail: HandleValue)
+               cancelable: bool)
                -> Root<CustomEvent> {
         let ev = CustomEvent::new_uninitialized();
-        ev.init_custom_event(type_, bubbles, cancelable, detail);
+        ev.init_custom_event(type_, bubbles, cancelable);
         ev
     }
     #[allow(unsafe_code)]
-    pub fn Constructor(_global: GlobalRef,
-                       type_: DOMString,
+    pub fn Constructor(type_: DOMString,
                        init: &CustomEventInit)
                        -> Fallible<Root<CustomEvent>> {
         Ok(CustomEvent::new(Atom::from(type_),
                             init.parent.bubbles,
-                            init.parent.cancelable,
-                            unsafe { HandleValue::from_marked_location(&init.detail) }))
+                            init.parent.cancelable))
     }
 
     fn init_custom_event(&self,
                          type_: Atom,
                          can_bubble: bool,
-                         cancelable: bool,
-                         detail: HandleValue) {
+                         cancelable: bool) {
         let event = self.upcast::<Event>();
         if event.dispatching() {
             return;
         }
 
-        self.detail.set(detail.get());
         event.init_event(type_, can_bubble, cancelable);
     }
 }
 
 impl CustomEventMethods for CustomEvent {
-    // https://dom.spec.whatwg.org/#dom-customevent-detail
-    fn Detail(&self, _cx: *mut JSContext) -> JSVal {
-        self.detail.get()
-    }
-
     // https://dom.spec.whatwg.org/#dom-customevent-initcustomevent
     fn InitCustomEvent(&self,
-                       _cx: *mut JSContext,
                        type_: DOMString,
                        can_bubble: bool,
-                       cancelable: bool,
-                       detail: HandleValue) {
-        self.init_custom_event(Atom::from(type_), can_bubble, cancelable, detail)
+                       cancelable: bool) {
+        self.init_custom_event(Atom::from(type_), can_bubble, cancelable)
     }
 
     // https://dom.spec.whatwg.org/#dom-event-istrusted

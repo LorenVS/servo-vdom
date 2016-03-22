@@ -10,7 +10,6 @@ interface ErrorEvent : Event {
   readonly attribute DOMString filename;
   readonly attribute unsigned long lineno;
   readonly attribute unsigned long colno;
-  readonly attribute any error;
 };
 
 dictionary ErrorEventInit : EventInit {
@@ -18,5 +17,4 @@ dictionary ErrorEventInit : EventInit {
   DOMString filename;
   unsigned long lineno;
   unsigned long colno;
-  any error;
 };

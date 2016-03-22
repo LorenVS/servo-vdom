@@ -23,9 +23,7 @@ pub struct ErrorEvent {
     message: DOMRefCell<DOMString>,
     filename: DOMRefCell<DOMString>,
     lineno: Cell<u32>,
-    colno: Cell<u32>,
-    #[ignore_heap_size_of = "Defined in rust-mozjs"]
-    error: MutHeapJSVal,
+    colno: Cell<u32>
 }
 
 impl ErrorEvent {
@@ -35,8 +33,7 @@ impl ErrorEvent {
             message: DOMRefCell::new(DOMString::new()),
             filename: DOMRefCell::new(DOMString::new()),
             lineno: Cell::new(0),
-            colno: Cell::new(0),
-            error: MutHeapJSVal::new()
+            colno: Cell::new(0)
         }
     }
 
@@ -64,8 +61,7 @@ impl ErrorEvent {
         ev
     }
 
-    pub fn Constructor(_global: GlobalRef,
-                       type_: DOMString,
+    pub fn Constructor(type_: DOMString,
                        init: &ErrorEventInit) -> Fallible<Root<ErrorEvent>>{
         let msg = match init.message.as_ref() {
             Some(message) => message.clone(),
@@ -119,11 +115,6 @@ impl ErrorEventMethods for ErrorEvent {
     // https://html.spec.whatwg.org/multipage/#dom-errorevent-filename
     fn Filename(&self) -> DOMString {
         self.filename.borrow().clone()
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-errorevent-error
-    fn Error(&self, _cx: *mut JSContext) -> JSVal {
-        self.error.get()
     }
 
     // https://dom.spec.whatwg.org/#dom-event-istrusted
