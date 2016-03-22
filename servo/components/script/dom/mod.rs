@@ -221,7 +221,6 @@ pub mod browsingcontext;
 pub mod characterdata;
 pub mod closeevent;
 pub mod comment;
-pub mod css;
 pub mod cssstyledeclaration;
 pub mod customevent;
 pub mod document;
