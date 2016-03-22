@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::conversions::{ToJSValConvertible};
 use dom::bindings::js::{JS, Root, RootedReference};
 use dom::bindings::reflector::{Reflectable, Reflector};
 use dom::document::Document;

@@ -141,13 +141,11 @@ pub mod global;
 pub mod inheritance;
 pub mod js;
 pub mod num;
-pub mod proxyhandler;
 pub mod refcounted;
 pub mod reflector;
 pub mod str;
 pub mod trace;
 pub mod typed;
-pub mod utils;
 pub mod weakref;
 pub mod xmlname;
 
