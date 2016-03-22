@@ -61,8 +61,6 @@ def main():
 
     to_generate = [
         ('PrototypeList', 'PrototypeList.rs'),
-        ('RegisterBindings', 'RegisterBindings.rs'),
-        ('InterfaceObjectMap', 'InterfaceObjectMap.rs'),
         ('InterfaceTypes', 'InterfaceTypes.rs'),
         ('InheritTypes', 'InheritTypes.rs'),
         ('Bindings', os.path.join('Bindings', 'mod.rs')),

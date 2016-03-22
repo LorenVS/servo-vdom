@@ -4,11 +4,10 @@
 
 //! Various utilities to glue JavaScript and the DOM implementation together.
 
-use dom::bindings::codegen::InterfaceObjectMap;
 use dom::bindings::codegen::PrototypeList;
 use dom::bindings::codegen::PrototypeList::{MAX_PROTO_CHAIN_LENGTH, PROTO_OR_IFACE_LENGTH};
 use dom::bindings::conversions::{DOM_OBJECT_SLOT, is_dom_class};
-use dom::bindings::conversions::{private_from_proto_check, root_from_handleobject};
+use dom::bindings::conversions::{private_from_proto_check};
 use dom::bindings::error::throw_invalid_this;
 use dom::bindings::inheritance::TopTypeId;
 use dom::bindings::trace::trace_object;
@@ -42,32 +41,6 @@ use std::os::raw::c_void;
 use std::ptr;
 use std::slice;
 use util::non_geckolib::jsstring_to_str;
-
-/// Proxy handler for a WindowProxy.
-pub struct WindowProxyHandler(pub *const libc::c_void);
-
-impl HeapSizeOf for WindowProxyHandler {
-    fn heap_size_of_children(&self) -> usize {
-        // FIXME(#6907) this is a pointer to memory allocated by `new` in NewProxyHandler in rust-mozjs.
-        0
-    }
-}
-
-#[derive(JSTraceable, HeapSizeOf)]
-/// Static data associated with a global object.
-pub struct GlobalStaticData {
-    /// The WindowProxy proxy handler for this global.
-    pub windowproxy_handler: WindowProxyHandler,
-}
-
-impl GlobalStaticData {
-    /// Creates a new GlobalStaticData.
-    pub fn new() -> GlobalStaticData {
-        GlobalStaticData {
-            windowproxy_handler: browsingcontext::new_window_proxy_handler(),
-        }
-    }
-}
 
 /// The index of the slot where the object holder of that interface's
 /// unforgeable members are defined.
@@ -368,56 +341,6 @@ pub unsafe fn trace_global(tracer: *mut JSTracer, obj: *mut JSObject) {
     }
 }
 
-/// Enumerate lazy properties of a global object.
-pub unsafe extern "C" fn enumerate_global(cx: *mut JSContext, obj: HandleObject) -> bool {
-    assert!(JS_IsGlobalObject(obj.get()));
-    if !JS_EnumerateStandardClasses(cx, obj) {
-        return false;
-    }
-    for init_fun in InterfaceObjectMap::MAP.values() {
-        init_fun(cx, obj);
-    }
-    true
-}
-
-/// Resolve a lazy global property, for interface objects and named constructors.
-pub unsafe extern "C" fn resolve_global(
-        cx: *mut JSContext,
-        obj: HandleObject,
-        id: HandleId,
-        rval: *mut bool)
-        -> bool {
-    assert!(JS_IsGlobalObject(obj.get()));
-    if !JS_ResolveStandardClass(cx, obj, id, rval) {
-        return false;
-    }
-    if *rval {
-        return true;
-    }
-    if !RUST_JSID_IS_STRING(id) {
-        *rval = false;
-        return true;
-    }
-
-    let string = RUST_JSID_TO_STRING(id);
-    if !JS_StringHasLatin1Chars(string) {
-        *rval = false;
-        return true;
-    }
-    let mut length = 0;
-    let ptr = JS_GetLatin1StringCharsAndLength(cx, ptr::null(), string, &mut length);
-    assert!(!ptr.is_null());
-    let bytes = slice::from_raw_parts(ptr, length as usize);
-
-    if let Some(init_fun) = InterfaceObjectMap::MAP.get(bytes) {
-        init_fun(cx, obj);
-        *rval = true;
-    } else {
-        *rval = false;
-    }
-    true
-}
-
 unsafe extern "C" fn wrap(cx: *mut JSContext,
                           _existing: HandleObject,
                           obj: HandleObject)
@@ -441,14 +364,6 @@ pub static WRAP_CALLBACKS: JSWrapObjectCallbacks = JSWrapObjectCallbacks {
     wrap: Some(wrap),
     preWrap: Some(pre_wrap),
 };
-
-/// Callback to outerize windows.
-pub unsafe extern "C" fn outerize_global(_cx: *mut JSContext, obj: HandleObject) -> *mut JSObject {
-    debug!("outerizing");
-    let win = root_from_handleobject::<window::Window>(obj).unwrap();
-    let context = win.browsing_context();
-    context.window_proxy()
-}
 
 /// Deletes the property `id` from `object`.
 pub unsafe fn delete_property_by_id(cx: *mut JSContext,

@@ -39,7 +39,6 @@ use dom::bindings::inheritance::{DOMPointReadOnlyTypeId, DOMRectReadOnlyTypeId, 
 use dom::bindings::js::{JS, Root};
 use dom::bindings::refcounted::Trusted;
 use dom::bindings::reflector::{Reflectable, Reflector};
-use dom::bindings::utils::WindowProxyHandler;
 use encoding::types::EncodingRef;
 use euclid::length::Length as EuclidLength;
 use euclid::matrix2d::Matrix2D;
@@ -306,7 +305,6 @@ no_jsmanaged_fields!(QuirksMode);
 no_jsmanaged_fields!(Runtime);
 no_jsmanaged_fields!(Headers, Method);
 no_jsmanaged_fields!(LayoutChan);
-no_jsmanaged_fields!(WindowProxyHandler);
 no_jsmanaged_fields!(UntrustedNodeAddress);
 no_jsmanaged_fields!(LengthOrPercentageOrAuto);
 no_jsmanaged_fields!(RGBA);

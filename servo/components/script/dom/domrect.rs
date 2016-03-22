@@ -24,7 +24,7 @@ impl DOMRect {
         }
     }
 
-    pub fn new(global: GlobalRef, x: f64, y: f64, width: f64, height: f64) -> Root<DOMRect> {
+    pub fn new(x: f64, y: f64, width: f64, height: f64) -> Root<DOMRect> {
         Root::new_box(box DOMRect::new_inherited(x, y, width, height))
     }
 
@@ -34,7 +34,7 @@ impl DOMRect {
                        width: f64,
                        height: f64)
                        -> Fallible<Root<DOMRect>> {
-        Ok(DOMRect::new(global, x, y, width, height))
+        Ok(DOMRect::new(x, y, width, height))
     }
 }
 

@@ -159,9 +159,6 @@ pub mod codegen {
     pub mod Bindings {
         include!(concat!(env!("OUT_DIR"), "/Bindings/mod.rs"));
     }
-    pub mod InterfaceObjectMap {
-        include!(concat!(env!("OUT_DIR"), "/InterfaceObjectMap.rs"));
-    }
     pub mod InterfaceTypes {
         include!(concat!(env!("OUT_DIR"), "/InterfaceTypes.rs"));
     }
@@ -171,9 +168,6 @@ pub mod codegen {
     }
     pub mod PrototypeList {
         include!(concat!(env!("OUT_DIR"), "/PrototypeList.rs"));
-    }
-    pub mod RegisterBindings {
-        include!(concat!(env!("OUT_DIR"), "/RegisterBindings.rs"));
     }
     #[allow(non_camel_case_types, unused_imports, unused_variables)]
     pub mod UnionTypes {

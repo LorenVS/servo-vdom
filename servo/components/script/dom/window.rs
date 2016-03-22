@@ -17,7 +17,6 @@ use dom::bindings::inheritance::{Castable,EventTargetTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root};
 use dom::bindings::num::Finite;
 use dom::bindings::reflector::Reflectable;
-use dom::bindings::utils::{GlobalStaticData, WindowProxyHandler};
 use dom::browsingcontext::BrowsingContext;
 use dom::cssstyledeclaration::{CSSModificationAccess, CSSStyleDeclaration};
 use dom::document::Document;
@@ -165,9 +164,6 @@ pub struct Window {
 
     /// Subpage id associated with this page, if any.
     parent_info: Option<(PipelineId, SubpageId)>,
-
-    /// Global static data related to the DOM.
-    dom_static: GlobalStaticData,
 
     /// A handle for communicating messages to the layout thread.
     #[ignore_heap_size_of = "channels are hard"]
@@ -1062,10 +1058,6 @@ impl Window {
         self.timers.unschedule_callback(handle);
     }
 
-    pub fn windowproxy_handler(&self) -> WindowProxyHandler {
-        WindowProxyHandler(self.dom_static.windowproxy_handler.0)
-    }
-
     pub fn get_next_subpage_id(&self) -> SubpageId {
         let subpage_id = self.next_subpage_id.get();
         let SubpageId(id_num) = subpage_id;
@@ -1239,7 +1231,6 @@ impl Window {
             next_worker_id: Cell::new(WorkerId(0)),
             id: id,
             parent_info: parent_info,
-            dom_static: GlobalStaticData::new(),
             resource_thread: resource_thread,
             storage_thread: storage_thread,
             constellation_chan: constellation_chan,

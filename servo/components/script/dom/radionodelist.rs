@@ -30,17 +30,17 @@ impl RadioNodeList {
     }
 
     #[allow(unrooted_must_root)]
-    pub fn new(window: &Window, list_type: NodeListType) -> Root<RadioNodeList> {
+    pub fn new(list_type: NodeListType) -> Root<RadioNodeList> {
         Root::new_box(box RadioNodeList::new_inherited(list_type))
     }
 
-    pub fn new_simple_list<T>(window: &Window, iter: T) -> Root<RadioNodeList>
+    pub fn new_simple_list<T>(iter: T) -> Root<RadioNodeList>
                               where T: Iterator<Item=Root<Node>> {
-        RadioNodeList::new(window, NodeListType::Simple(iter.map(|r| JS::from_rooted(&r)).collect()))
+        RadioNodeList::new(NodeListType::Simple(iter.map(|r| JS::from_rooted(&r)).collect()))
     }
 
-    pub fn empty(window: &Window) -> Root<RadioNodeList> {
-        RadioNodeList::new(window, NodeListType::Simple(vec![]))
+    pub fn empty(_window: &Window) -> Root<RadioNodeList> {
+        RadioNodeList::new(NodeListType::Simple(vec![]))
     }
 
     // FIXME: This shouldn't need to be implemented here since NodeList (the parent of

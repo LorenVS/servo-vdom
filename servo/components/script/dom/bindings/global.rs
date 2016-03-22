@@ -9,7 +9,6 @@
 
 use devtools_traits::{ScriptToDevtoolsControlMsg, WorkerId};
 use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
-use dom::bindings::conversions::root_from_object;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflectable, Reflector};
 use dom::window::{self};
@@ -230,23 +229,3 @@ impl GlobalRoot {
     }
 }
 
-/// Returns the global object of the realm that the given DOM object's reflector was created in.
-pub fn global_root_from_reflector<T: Reflectable>(reflector: &T) -> GlobalRoot {
-    global_root_from_object(*reflector.reflector().get_jsobject())
-}
-
-/// Returns the global object of the realm that the given JS object was created in.
-#[allow(unrooted_must_root)]
-pub fn global_root_from_object(obj: *mut JSObject) -> GlobalRoot {
-    unsafe {
-        let global = GetGlobalForObjectCrossCompartment(obj);
-        let clasp = JS_GetClass(global);
-        assert!(((*clasp).flags & (JSCLASS_IS_DOMJSCLASS | JSCLASS_IS_GLOBAL)) != 0);
-        match root_from_object(global) {
-            Ok(window) => return GlobalRoot::Window(window),
-            Err(_) => (),
-        }
-
-        panic!("found DOM global that doesn't unwrap to Window or WorkerGlobalScope")
-    }
-}
