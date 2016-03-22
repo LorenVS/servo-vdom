@@ -26,7 +26,6 @@
 use core::nonzero::NonZero;
 use dom::bindings::conversions::DerivedFrom;
 use dom::bindings::inheritance::Castable;
-use dom::bindings::reflector::{Reflector};
 use dom::node::Node;
 use heapsize::HeapSizeOf;
 use layout_interface::TrustedNodeAddress;
@@ -388,35 +387,6 @@ pub trait OptionalRootedReference<T> {
 impl<T> OptionalRootedReference<T> for Option<Option<Root<T>>> {
     fn r(&self) -> Option<Option<&T>> {
         self.as_ref().map(|inner| inner.r())
-    }
-}
-
-/// A rooting mechanism for reflectors on the stack.
-/// LIFO is not required.
-///
-/// See also [*Exact Stack Rooting - Storing a GCPointer on the CStack*]
-/// (https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Internals/GC/Exact_Stack_Rooting).
-pub struct RootCollection {
-    roots: UnsafeCell<Vec<*const Reflector>>,
-}
-
-/// A pointer to a RootCollection, for use in global variables.
-pub struct RootCollectionPtr(pub *const RootCollection);
-
-impl Copy for RootCollectionPtr {}
-impl Clone for RootCollectionPtr {
-    fn clone(&self) -> RootCollectionPtr {
-        *self
-    }
-}
-
-impl RootCollection {
-    /// Create an empty collection of roots
-    pub fn new() -> RootCollection {
-        debug_assert!(thread_state::get().is_script());
-        RootCollection {
-            roots: UnsafeCell::new(vec![]),
-        }
     }
 }
 

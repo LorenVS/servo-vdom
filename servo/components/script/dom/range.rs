@@ -15,7 +15,6 @@ use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::Castable;
 use dom::bindings::inheritance::{CharacterDataTypeId, NodeTypeId};
 use dom::bindings::js::{JS, MutHeap, Root, RootedReference};
-use dom::bindings::reflector::{Reflector};
 use dom::bindings::trace::{RootedVec};
 use dom::bindings::weakref::{WeakRef, WeakRefVec};
 use dom::characterdata::CharacterData;
@@ -30,7 +29,6 @@ use util::str::DOMString;
 
 
 pub struct Range {
-    reflector_: Reflector,
     start: BoundaryPoint,
     end: BoundaryPoint,
 }
@@ -39,7 +37,6 @@ impl Range {
     fn new_inherited(start_container: &Node, start_offset: u32,
                      end_container: &Node, end_offset: u32) -> Range {
         Range {
-            reflector_: Reflector::new(),
             start: BoundaryPoint::new(start_container, start_offset),
             end: BoundaryPoint::new(end_container, end_offset),
         }
@@ -180,7 +177,7 @@ impl Range {
         // Step 6.
         Ok(Ordering::Equal)
     }
-    
+
     // https://dom.spec.whatwg.org/#dom-range-startcontainer
     fn StartContainer(&self) -> Root<Node> {
         self.start.node.get()

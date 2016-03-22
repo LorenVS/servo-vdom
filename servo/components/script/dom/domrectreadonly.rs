@@ -7,12 +7,10 @@ use dom::bindings::inheritance::{DOMRectReadOnlyTypeId,TopTypeId};
 use dom::bindings::typed::Typed;
 use dom::bindings::error::Fallible;
 use dom::bindings::js::Root;
-use dom::bindings::reflector::{Reflector};
 use std::cell::Cell;
 
 
 pub struct DOMRectReadOnly {
-    reflector_: Reflector,
     #[ignore_heap_size_of = "type_ids are new"]
     type_id: DOMRectReadOnlyTypeId,
     x: Cell<f64>,
@@ -29,7 +27,6 @@ impl DOMRectReadOnly {
             y: Cell::new(y),
             width: Cell::new(width),
             height: Cell::new(height),
-            reflector_: Reflector::new(),
         }
     }
 

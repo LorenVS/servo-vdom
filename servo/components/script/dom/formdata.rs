@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::reflector::{Reflector};
 use dom::bindings::error::{Fallible};
 use dom::bindings::js::{JS, Root};
 use dom::htmlformelement::HTMLFormElement;
@@ -20,7 +19,6 @@ pub enum FormDatum {
 
 
 pub struct FormData {
-    reflector_: Reflector,
     data: DOMRefCell<HashMap<Atom, Vec<FormDatum>>>,
     form: Option<JS<HTMLFormElement>>
 }
@@ -28,7 +26,6 @@ pub struct FormData {
 impl FormData {
     fn new_inherited(form: Option<&HTMLFormElement>) -> FormData {
         FormData {
-            reflector_: Reflector::new(),
             data: DOMRefCell::new(HashMap::new()),
             form: form.map(|f| JS::from_ref(f)),
         }

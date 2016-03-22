@@ -9,7 +9,6 @@ use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{TopTypeId, EventTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root};
-use dom::bindings::reflector::{Reflector};
 use dom::bindings::typed::Typed;
 use dom::eventtarget::EventTarget;
 use std::cell::Cell;
@@ -42,7 +41,6 @@ pub enum EventCancelable {
 
 
 pub struct Event {
-    reflector_: Reflector,
     #[ignore_heap_size_of = "type_ids are new"]
     type_id: EventTypeId,
     current_target: MutNullableHeap<JS<EventTarget>>,
@@ -63,7 +61,6 @@ pub struct Event {
 impl Event {
     pub fn new_inherited(type_id: EventTypeId) -> Event {
         Event {
-            reflector_: Reflector::new(),
             type_id: type_id,
             current_target: Default::default(),
             target: Default::default(),

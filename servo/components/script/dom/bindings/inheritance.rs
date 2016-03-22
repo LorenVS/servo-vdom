@@ -7,7 +7,7 @@
 pub use dom::bindings::codegen::InheritTypes::*;
 
 use dom::bindings::conversions::{DerivedFrom, IDLInterface};
-use dom::bindings::reflector::Reflectable;
+
 use dom::bindings::typed::Typed;
 use std::mem;
 

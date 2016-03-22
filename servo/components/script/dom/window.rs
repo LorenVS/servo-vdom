@@ -13,7 +13,6 @@ use dom::bindings::error::{Error, Fallible};
 use dom::bindings::inheritance::{Castable,EventTargetTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root};
 use dom::bindings::num::Finite;
-use dom::bindings::reflector::Reflectable;
 use dom::browsingcontext::BrowsingContext;
 use dom::cssstyledeclaration::{CSSModificationAccess, CSSStyleDeclaration};
 use dom::document::Document;

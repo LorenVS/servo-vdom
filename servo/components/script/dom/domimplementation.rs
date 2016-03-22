@@ -9,7 +9,6 @@ use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::inheritance::Castable;
 use dom::bindings::js::{JS, Root};
-use dom::bindings::reflector::{Reflector};
 use dom::bindings::xmlname::validate_qualified_name;
 use dom::document::DocumentSource;
 use dom::document::{Document, IsHTMLDocument};
@@ -25,14 +24,12 @@ use util::str::DOMString;
 // https://dom.spec.whatwg.org/#domimplementation
 
 pub struct DOMImplementation {
-    reflector_: Reflector,
     document: JS<Document>,
 }
 
 impl DOMImplementation {
     fn new_inherited(document: &Document) -> DOMImplementation {
         DOMImplementation {
-            reflector_: Reflector::new(),
             document: JS::from_ref(document),
         }
     }
@@ -40,7 +37,7 @@ impl DOMImplementation {
     pub fn new(document: &Document) -> Root<DOMImplementation> {
         Root::new_box(box DOMImplementation::new_inherited(document))
     }
-    
+
     // https://dom.spec.whatwg.org/#dom-domimplementation-createdocumenttype
     fn CreateDocumentType(&self,
                           qualified_name: DOMString,

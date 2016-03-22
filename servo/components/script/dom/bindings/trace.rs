@@ -38,7 +38,6 @@ use devtools_traits::WorkerId;
 use dom::bindings::inheritance::{DOMPointReadOnlyTypeId, DOMRectReadOnlyTypeId, EventTypeId,EventTargetTypeId, HTMLCollectionTypeId, NodeListTypeId};
 use dom::bindings::js::{JS, Root};
 use dom::bindings::refcounted::Trusted;
-use dom::bindings::reflector::{Reflectable, Reflector};
 use encoding::types::EncodingRef;
 use euclid::length::Length as EuclidLength;
 use euclid::matrix2d::Matrix2D;

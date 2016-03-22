@@ -3663,7 +3663,6 @@ class CGBindingRoot(CGThing):
             'dom::bindings::global::{GlobalRef}',
             'dom::bindings::js::{JS, Root, RootedReference}',
             'dom::bindings::js::{OptionalRootedReference}',
-            'dom::bindings::reflector::{Reflectable}',
             'dom::bindings::conversions::IDLInterface',
             'dom::bindings::codegen::{PrototypeList, UnionTypes}',
             'dom::bindings::codegen::Bindings::*',
@@ -4338,7 +4337,7 @@ class GlobalGenRoots():
                    CGGeneric("use dom::bindings::conversions::{DerivedFrom};\n"),
                    CGGeneric("use dom::bindings::inheritance::Castable;\n"),
                    CGGeneric("use dom::bindings::js::{JS, LayoutJS, Root};\n"),
-                   CGGeneric("use dom::bindings::reflector::Reflectable;\n"),
+                   CGGeneric("\n"),
                    CGGeneric("use dom::bindings::typed::Typed;\n"),
                    CGGeneric("use std::mem;\n\n")]
         allprotos = []

@@ -5,19 +5,16 @@
 
 use dom::bindings::codegen::Bindings::TouchListBinding::TouchListMethods;
 use dom::bindings::js::{JS, Root};
-use dom::bindings::reflector::{Reflector};
 use dom::touch::Touch;
 
 
 pub struct TouchList {
-    reflector_: Reflector,
     touches: Vec<JS<Touch>>,
 }
 
 impl TouchList {
     fn new_inherited(touches: &[&Touch]) -> TouchList {
         TouchList {
-            reflector_: Reflector::new(),
             touches: touches.iter().map(|touch| JS::from_ref(*touch)).collect(),
         }
     }
@@ -25,7 +22,7 @@ impl TouchList {
     pub fn new(touches: &[&Touch]) -> Root<TouchList> {
         Root::new_box(box TouchList::new_inherited(touches))
     }
-    
+
     /// https://w3c.github.io/touch-events/#widl-TouchList-length
     fn Length(&self) -> u32 {
         self.touches.len() as u32

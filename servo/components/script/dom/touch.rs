@@ -6,12 +6,10 @@
 use dom::bindings::codegen::Bindings::TouchBinding::TouchMethods;
 use dom::bindings::js::{JS, MutHeap, Root};
 use dom::bindings::num::Finite;
-use dom::bindings::reflector::{Reflector};
 use dom::eventtarget::EventTarget;
 
 
 pub struct Touch {
-    reflector_: Reflector,
     identifier: i32,
     target: MutHeap<JS<EventTarget>>,
     screen_x: f64,
@@ -28,7 +26,6 @@ impl Touch {
                      client_x: Finite<f64>, client_y: Finite<f64>,
                      page_x: Finite<f64>, page_y: Finite<f64>) -> Touch {
         Touch {
-            reflector_: Reflector::new(),
             identifier: identifier,
             target: MutHeap::new(target),
             screen_x: *screen_x,

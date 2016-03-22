@@ -6,14 +6,12 @@ use dom::attr::Attr;
 use dom::bindings::codegen::Bindings::DOMTokenListBinding::DOMTokenListMethods;
 use dom::bindings::error::{Error, ErrorResult, Fallible};
 use dom::bindings::js::{JS, Root};
-use dom::bindings::reflector::{Reflector};
 use dom::element::Element;
 use string_cache::Atom;
 use util::str::{DOMString, HTML_SPACE_CHARACTERS};
 
 
 pub struct DOMTokenList {
-    reflector_: Reflector,
     element: JS<Element>,
     local_name: Atom,
 }
@@ -21,7 +19,6 @@ pub struct DOMTokenList {
 impl DOMTokenList {
     pub fn new_inherited(element: &Element, local_name: Atom) -> DOMTokenList {
         DOMTokenList {
-            reflector_: Reflector::new(),
             element: JS::from_ref(element),
             local_name: local_name,
         }
@@ -42,7 +39,7 @@ impl DOMTokenList {
             slice => Ok(Atom::from(slice)),
         }
     }
-    
+
     // https://dom.spec.whatwg.org/#dom-domtokenlist-length
     fn Length(&self) -> u32 {
         self.attribute().map_or(0, |attr| {

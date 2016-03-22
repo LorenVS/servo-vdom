@@ -8,14 +8,12 @@ use dom::bindings::codegen::Bindings::NodeFilterBinding::NodeFilterConstants;
 use dom::bindings::codegen::Bindings::NodeIteratorBinding::NodeIteratorMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::js::{JS, MutHeap, Root};
-use dom::bindings::reflector::{Reflector};
 use dom::node::Node;
 use std::cell::Cell;
 use std::rc::Rc;
 
 
 pub struct NodeIterator {
-    reflector_: Reflector,
     root_node: JS<Node>,
     #[ignore_heap_size_of = "Defined in rust-mozjs"]
     reference_node: MutHeap<JS<Node>>,
@@ -30,7 +28,6 @@ impl NodeIterator {
                      what_to_show: u32,
                      filter: Filter) -> NodeIterator {
         NodeIterator {
-            reflector_: Reflector::new(),
             root_node: JS::from_ref(root_node),
             reference_node: MutHeap::new(root_node),
             pointer_before_reference_node: Cell::new(true),
@@ -50,7 +47,7 @@ impl NodeIterator {
         let filter = Filter::None;
         NodeIterator::new_with_filter(root_node, what_to_show, filter)
     }
-    
+
     // https://dom.spec.whatwg.org/#dom-nodeiterator-root
     fn Root(&self) -> Root<Node> {
         Root::from_ref(&*self.root_node)

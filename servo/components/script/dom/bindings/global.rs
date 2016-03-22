@@ -10,7 +10,6 @@
 use devtools_traits::{ScriptToDevtoolsControlMsg, WorkerId};
 use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::js::Root;
-use dom::bindings::reflector::{Reflectable, Reflector};
 use dom::window::{self};
 use ipc_channel::ipc::IpcSender;
 use msg::constellation_msg::{ConstellationChan, PipelineId};

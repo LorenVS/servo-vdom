@@ -6,7 +6,6 @@
 use dom::bindings::codegen::Bindings::HTMLCollectionBinding::HTMLCollectionMethods;
 use dom::bindings::inheritance::{Castable,TopTypeId,HTMLCollectionTypeId};
 use dom::bindings::js::{JS, Root, MutNullableHeap};
-use dom::bindings::reflector::{Reflector};
 use dom::bindings::typed::Typed;
 use dom::bindings::xmlname::namespace_from_domstring;
 use dom::element::Element;
@@ -49,7 +48,6 @@ impl OptionU32 {
 
 
 pub struct HTMLCollection {
-    reflector_: Reflector,
     #[ignore_heap_size_of = "type_ids are new"]
     type_id: HTMLCollectionTypeId,
     root: JS<Node>,
@@ -68,7 +66,6 @@ impl HTMLCollection {
     
     pub fn new_inherited(type_id: HTMLCollectionTypeId, root: &Node, filter: Box<CollectionFilter + 'static>) -> HTMLCollection {
         HTMLCollection {
-            reflector_: Reflector::new(),
             type_id: type_id,
             root: JS::from_ref(root),
             filter: filter,

@@ -8,7 +8,6 @@ use dom::bindings::codegen::Bindings::AttrBinding::AttrMethods;
 use dom::bindings::inheritance::Castable;
 use dom::bindings::js::{JS, MutNullableHeap};
 use dom::bindings::js::{LayoutJS, Root, RootedReference};
-use dom::bindings::reflector::{Reflector};
 use dom::element::{AttributeMutation, Element};
 use dom::virtualmethods::vtable_for;
 use std::borrow::ToOwned;
@@ -21,7 +20,6 @@ use util::str::DOMString;
 // https://dom.spec.whatwg.org/#interface-attr
 
 pub struct Attr {
-    reflector_: Reflector,
     identifier: AttrIdentifier,
     value: DOMRefCell<AttrValue>,
 
@@ -38,7 +36,6 @@ impl Attr {
                      owner: Option<&Element>)
                      -> Attr {
         Attr {
-            reflector_: Reflector::new(),
             identifier: AttrIdentifier {
                 local_name: local_name,
                 name: name,

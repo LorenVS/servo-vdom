@@ -5,13 +5,11 @@
 
 use dom::bindings::codegen::Bindings::ImageDataBinding::ImageDataMethods;
 use dom::bindings::js::Root;
-use dom::bindings::reflector::{Reflector};
 use euclid::size::Size2D;
 use std::vec::Vec;
 
 
 pub struct ImageData {
-    reflector_: Reflector,
     width: u32,
     height: u32,
     data: Vec<u8>
@@ -21,7 +19,6 @@ impl ImageData {
     #[allow(unsafe_code)]
     pub fn new(width: u32, height: u32, data: Option<Vec<u8>>) -> Root<ImageData> {
         let imagedata = box ImageData {
-            reflector_: Reflector::new(),
             width: width,
             height: height,
             data: data.unwrap_or(Vec::new())
@@ -38,7 +35,7 @@ impl ImageData {
     pub fn get_size(&self) -> Size2D<i32> {
         Size2D::new(self.Width() as i32, self.Height() as i32)
     }
-    
+
     // https://html.spec.whatwg.org/multipage/#dom-imagedata-width
     fn Width(&self) -> u32 {
         self.width

@@ -6,7 +6,6 @@
 use dom::bindings::codegen::Bindings::DOMExceptionBinding::DOMExceptionConstants;
 use dom::bindings::codegen::Bindings::DOMExceptionBinding::DOMExceptionMethods;
 use dom::bindings::js::Root;
-use dom::bindings::reflector::{Reflector};
 use util::str::DOMString;
 
 #[repr(u16)]
@@ -39,14 +38,12 @@ pub enum DOMErrorName {
 
 
 pub struct DOMException {
-    reflector_: Reflector,
     code: DOMErrorName,
 }
 
 impl DOMException {
     fn new_inherited(code: DOMErrorName) -> DOMException {
         DOMException {
-            reflector_: Reflector::new(),
             code: code,
         }
     }
@@ -54,7 +51,7 @@ impl DOMException {
     pub fn new(code: DOMErrorName) -> Root<DOMException> {
         Root::new_box(box DOMException::new_inherited(code))
     }
-    
+
     // https://heycam.github.io/webidl/#dfn-DOMException
     fn Code(&self) -> u16 {
         match self.code {

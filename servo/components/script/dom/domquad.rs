@@ -9,14 +9,12 @@ use dom::bindings::codegen::Bindings::DOMRectBinding::DOMRectMethods;
 use dom::bindings::codegen::Bindings::DOMRectReadOnlyBinding::{DOMRectInit, DOMRectReadOnlyMethods};
 use dom::bindings::error::Fallible;
 use dom::bindings::js::{Root, JS};
-use dom::bindings::reflector::{Reflector};
 use dom::dompoint::DOMPoint;
 use dom::domrect::DOMRect;
 
 // https://drafts.fxtf.org/geometry/#DOMQuad
 
 pub struct DOMQuad {
-    reflector_: Reflector,
     p1: JS<DOMPoint>,
     p2: JS<DOMPoint>,
     p3: JS<DOMPoint>,
@@ -31,7 +29,6 @@ impl DOMQuad {
                      -> DOMQuad {
 
         DOMQuad {
-            reflector_: Reflector::new(),
             p1: JS::from_ref(p1),
             p2: JS::from_ref(p2),
             p3: JS::from_ref(p3),
@@ -72,7 +69,7 @@ impl DOMQuad {
                      &DOMPoint::new_from_init(&other.p3),
                      &DOMPoint::new_from_init(&other.p4))
     }
-    
+
     // https://drafts.fxtf.org/geometry/#dom-domquad-p1
     fn P1(&self) -> Root<DOMPoint> {
         Root::from_ref(&self.p1)

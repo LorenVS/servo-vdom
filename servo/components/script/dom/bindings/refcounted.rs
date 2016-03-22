@@ -24,7 +24,6 @@
 
 use core::nonzero::NonZero;
 use dom::bindings::js::Root;
-use dom::bindings::reflector::{Reflectable, Reflector};
 use libc;
 use script_thread::{CommonScriptMsg, ScriptChan};
 use std::cell::RefCell;

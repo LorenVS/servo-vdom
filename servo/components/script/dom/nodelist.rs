@@ -6,7 +6,6 @@ use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::codegen::Bindings::NodeListBinding::NodeListMethods;
 use dom::bindings::inheritance::{NodeListTypeId, TopTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root, RootedReference};
-use dom::bindings::reflector::{Reflector};
 use dom::bindings::typed::Typed;
 use dom::node::{ChildrenMutation, Node};
 use std::cell::Cell;
@@ -21,7 +20,6 @@ pub enum NodeListType {
 // https://dom.spec.whatwg.org/#interface-nodelist
 
 pub struct NodeList {
-    reflector_: Reflector,
     #[ignore_heap_size_of = "type_ids are new"]
     type_id: NodeListTypeId,
     list_type: NodeListType,
@@ -31,7 +29,6 @@ impl NodeList {
 
     pub fn new_inherited(type_id: NodeListTypeId, list_type: NodeListType) -> NodeList {
         NodeList {
-            reflector_: Reflector::new(),
             type_id: type_id,
             list_type: list_type,
         }

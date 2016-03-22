@@ -10,7 +10,6 @@ use dom::bindings::codegen::Bindings::EventTargetBinding::EventTargetMethods;
 use dom::bindings::error::{Error, Fallible};
 use dom::bindings::inheritance::{EventTargetTypeId, TopTypeId};
 use dom::bindings::js::Root;
-use dom::bindings::reflector::{Reflector};
 use dom::bindings::typed::Typed;
 use dom::event::{Event, EventBubbles, EventCancelable};
 use dom::virtualmethods::VirtualMethods;
@@ -130,7 +129,6 @@ impl DerefMut for EventListeners {
 
 
 pub struct EventTarget {
-    reflector_: Reflector,
     #[ignore_heap_size_of = "type_ids are new"]
     type_id: EventTargetTypeId,
     handlers: DOMRefCell<HashMap<Atom, EventListeners, BuildHasherDefault<FnvHasher>>>,
@@ -140,7 +138,6 @@ impl EventTarget {
     pub fn new_inherited(type_id: EventTargetTypeId) -> EventTarget {
         EventTarget {
             type_id: type_id,
-            reflector_: Reflector::new(),
             handlers: DOMRefCell::new(Default::default()),
         }
     }
@@ -221,7 +218,7 @@ impl EventTarget {
 
         event
     }
-    
+
     // https://dom.spec.whatwg.org/#dom-eventtarget-addeventlistener
     fn AddEventListener(&self,
                         ty: DOMString,

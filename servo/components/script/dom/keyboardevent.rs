@@ -8,7 +8,7 @@ use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::inheritance::{Castable, UIEventTypeId};
 use dom::bindings::js::{Root, RootedReference};
-use dom::bindings::reflector::{Reflectable};
+
 use dom::event::Event;
 use dom::uievent::UIEvent;
 use dom::window::Window;

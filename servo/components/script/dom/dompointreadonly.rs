@@ -5,7 +5,6 @@
 use dom::bindings::codegen::Bindings::DOMPointReadOnlyBinding::{DOMPointReadOnlyMethods};
 use dom::bindings::error::Fallible;
 use dom::bindings::js::Root;
-use dom::bindings::reflector::{Reflector};
 use dom::bindings::typed::Typed;
 use dom::bindings::inheritance::{TopTypeId,DOMPointReadOnlyTypeId};
 use std::cell::Cell;
@@ -13,7 +12,6 @@ use std::cell::Cell;
 // http://dev.w3.org/fxtf/geometry/Overview.html#dompointreadonly
 
 pub struct DOMPointReadOnly {
-    reflector_: Reflector,
     #[ignore_heap_size_of = "type_ids are new"]
     type_id: DOMPointReadOnlyTypeId,
     x: Cell<f64>,
@@ -30,7 +28,6 @@ impl DOMPointReadOnly {
             y: Cell::new(y),
             z: Cell::new(z),
             w: Cell::new(w),
-            reflector_: Reflector::new(),
         }
     }
 

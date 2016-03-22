@@ -5,13 +5,10 @@
 use cssparser::serialize_identifier;
 use dom::bindings::error::{Error, Fallible};
 use dom::bindings::global::GlobalRef;
-use dom::bindings::reflector::Reflector;
 use util::str::DOMString;
 
 
-pub struct CSS {
-    reflector_: Reflector,
-}
+pub struct CSS {}
 
 impl CSS {
     // http://dev.w3.org/csswg/cssom/#serialize-an-identifier

@@ -9,7 +9,7 @@ use dom::bindings::codegen::Bindings::HTMLBodyElementBinding::{HTMLBodyElementMe
 use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::{LayoutJS, Root};
-use dom::bindings::reflector::Reflectable;
+
 use dom::document::Document;
 use dom::element::{AttributeMutation, Element, RawLayoutElementHelpers};
 use dom::eventtarget::EventTarget;

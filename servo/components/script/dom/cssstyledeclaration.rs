@@ -6,7 +6,6 @@ use dom::bindings::codegen::Bindings::CSSStyleDeclarationBinding::{CSSStyleDecla
 use dom::bindings::error::{Error, ErrorResult, Fallible};
 use dom::bindings::inheritance::Castable;
 use dom::bindings::js::{JS, Root};
-use dom::bindings::reflector::{Reflector};
 use dom::element::{Element, StylePriority};
 use dom::node::{Node, NodeDamage, document_from_node, window_from_node};
 use std::ascii::AsciiExt;
@@ -22,7 +21,6 @@ use util::str::{DOMString, str_join};
 // http://dev.w3.org/csswg/cssom/#the-cssstyledeclaration-interface
 
 pub struct CSSStyleDeclaration {
-    reflector_: Reflector,
     owner: JS<Element>,
     readonly: bool,
     pseudo: Option<PseudoElement>,
@@ -76,7 +74,6 @@ impl CSSStyleDeclaration {
                          modification_access: CSSModificationAccess)
                          -> CSSStyleDeclaration {
         CSSStyleDeclaration {
-            reflector_: Reflector::new(),
             owner: JS::from_ref(owner),
             readonly: modification_access == CSSModificationAccess::Readonly,
             pseudo: pseudo,

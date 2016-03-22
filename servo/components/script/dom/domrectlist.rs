@@ -5,12 +5,10 @@
 
 use dom::bindings::codegen::Bindings::DOMRectListBinding::DOMRectListMethods;
 use dom::bindings::js::{JS, Root};
-use dom::bindings::reflector::{Reflector};
 use dom::domrect::DOMRect;
 
 
 pub struct DOMRectList {
-    reflector_: Reflector,
     rects: Vec<JS<DOMRect>>,
 }
 
@@ -19,7 +17,6 @@ impl DOMRectList {
         where T: Iterator<Item = Root<DOMRect>>
     {
         DOMRectList {
-            reflector_: Reflector::new(),
             rects: rects.map(|r| JS::from_rooted(&r)).collect(),
         }
     }
@@ -29,7 +26,7 @@ impl DOMRectList {
     {
         Root::new_box(box DOMRectList::new_inherited(rects))
     }
-    
+
     // https://drafts.fxtf.org/geometry/#dom-domrectlist-length
     fn Length(&self) -> u32 {
         self.rects.len() as u32

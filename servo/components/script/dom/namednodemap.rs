@@ -7,7 +7,6 @@ use dom::bindings::codegen::Bindings::ElementBinding::ElementMethods;
 use dom::bindings::codegen::Bindings::NamedNodeMapBinding::NamedNodeMapMethods;
 use dom::bindings::error::{Error, Fallible};
 use dom::bindings::js::{JS, Root};
-use dom::bindings::reflector::{Reflector};
 use dom::bindings::xmlname::namespace_from_domstring;
 use dom::element::Element;
 use string_cache::Atom;
@@ -15,14 +14,12 @@ use util::str::DOMString;
 
 
 pub struct NamedNodeMap {
-    reflector_: Reflector,
     owner: JS<Element>,
 }
 
 impl NamedNodeMap {
     fn new_inherited(elem: &Element) -> NamedNodeMap {
         NamedNodeMap {
-            reflector_: Reflector::new(),
             owner: JS::from_ref(elem),
         }
     }
@@ -30,7 +27,7 @@ impl NamedNodeMap {
     pub fn new(elem: &Element) -> Root<NamedNodeMap> {
         Root::new_box(box NamedNodeMap::new_inherited(elem))
     }
-    
+
     // https://dom.spec.whatwg.org/#dom-namednodemap-length
     fn Length(&self) -> u32 {
         self.owner.attrs().len() as u32

@@ -13,7 +13,7 @@
 
 use core::nonzero::NonZero;
 use dom::bindings::js::Root;
-use dom::bindings::reflector::Reflectable;
+
 use heapsize::HeapSizeOf;
 use libc::c_void;
 use std::cell::{Cell, UnsafeCell};

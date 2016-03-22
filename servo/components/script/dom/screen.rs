@@ -5,24 +5,20 @@
 
 use dom::bindings::codegen::Bindings::ScreenBinding::ScreenMethods;
 use dom::bindings::js::Root;
-use dom::bindings::reflector::{Reflector};
 
 
-pub struct Screen {
-    reflector_: Reflector,
-}
+pub struct Screen {}
 
 impl Screen {
     fn new_inherited() -> Screen {
         Screen {
-            reflector_: Reflector::new(),
         }
     }
 
     pub fn new() -> Root<Screen> {
         Root::new_box(box Screen::new_inherited())
     }
-    
+
     // https://drafts.csswg.org/cssom-view/#dom-screen-colordepth
     fn ColorDepth(&self) -> u32 {
         24

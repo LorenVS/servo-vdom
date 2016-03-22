@@ -6,7 +6,7 @@ use dom::bindings::codegen::Bindings::HTMLCollectionBinding::HTMLCollectionMetho
 use dom::bindings::codegen::Bindings::HTMLFormControlsCollectionBinding::HTMLFormControlsCollectionMethods;
 use dom::bindings::inheritance::{HTMLCollectionTypeId};
 use dom::bindings::js::Root;
-use dom::bindings::reflector::{Reflectable};
+
 use dom::element::Element;
 use dom::htmlcollection::{CollectionFilter, HTMLCollection};
 use dom::node::Node;

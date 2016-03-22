@@ -4,14 +4,12 @@
 
 use dom::bindings::cell::DOMRefCell;
 use dom::bindings::js::{JS, Root, RootedReference};
-use dom::bindings::reflector::{Reflectable, Reflector};
 use dom::document::Document;
 use dom::element::Element;
 use dom::window::Window;
 
 
 pub struct BrowsingContext {
-    reflector: Reflector,
     history: DOMRefCell<Vec<SessionHistoryEntry>>,
     active_index: usize,
     frame_element: Option<JS<Element>>,
@@ -20,7 +18,6 @@ pub struct BrowsingContext {
 impl BrowsingContext {
     pub fn new_inherited(frame_element: Option<&Element>) -> BrowsingContext {
         BrowsingContext {
-            reflector: Reflector::new(),
             history: DOMRefCell::new(vec![]),
             active_index: 0,
             frame_element: frame_element.map(JS::from_ref),
@@ -54,9 +51,6 @@ impl BrowsingContext {
         self.frame_element.r()
     }
 }
-
-// This isn't a DOM struct, just a convenience struct
-// without a reflector, so we don't mark this as 
 
 #[privatize]
 
