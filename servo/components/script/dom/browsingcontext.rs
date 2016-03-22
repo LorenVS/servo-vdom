@@ -8,7 +8,6 @@ use dom::bindings::reflector::{Reflectable, Reflector};
 use dom::document::Document;
 use dom::element::Element;
 use dom::window::Window;
-use js::jsapi::{JSObject};
 
 #[dom_struct]
 pub struct BrowsingContext {
@@ -53,12 +52,6 @@ impl BrowsingContext {
 
     pub fn frame_element(&self) -> Option<&Element> {
         self.frame_element.r()
-    }
-
-    pub fn window_proxy(&self) -> *mut JSObject {
-        let window_proxy = self.reflector.get_jsobject();
-        assert!(!window_proxy.get().is_null());
-        window_proxy.get()
     }
 }
 

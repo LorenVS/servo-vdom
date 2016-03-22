@@ -252,27 +252,6 @@ impl OneshotTimers {
         self.expected_event_id.set(next_id);
         next_id
     }
-
-    pub fn set_timeout_or_interval(&self,
-                               global: GlobalRef,
-                               callback: TimerCallback,
-                               arguments: Vec<HandleValue>,
-                               timeout: i32,
-                               is_interval: IsInterval,
-                               source: TimerSource)
-                               -> i32 {
-
-        self.js_timers.set_timeout_or_interval(global,
-                                               callback,
-                                               arguments,
-                                               timeout,
-                                               is_interval,
-                                               source)
-    }
-
-    pub fn clear_timeout_or_interval(&self, global: GlobalRef, handle: i32) {
-        self.js_timers.clear_timeout_or_interval(global, handle)
-    }
 }
 
 #[derive(JSTraceable, PartialEq, Eq, Copy, Clone, HeapSizeOf, Hash, PartialOrd, Ord)]
