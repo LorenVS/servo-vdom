@@ -32,7 +32,7 @@ use string_cache::Atom;
 use url::Url;
 use util::str::{DOMString, LengthOrPercentageOrAuto};
 
-#[dom_struct]
+
 pub struct HTMLImageElement {
     htmlelement: HTMLElement,
     url: DOMRefCell<Option<Url>>,
@@ -143,7 +143,7 @@ impl HTMLImageElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLImageElement> {

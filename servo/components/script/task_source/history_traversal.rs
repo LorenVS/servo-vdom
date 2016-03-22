@@ -5,7 +5,7 @@
 use script_thread::{CommonScriptMsg, MainThreadScriptMsg, ScriptChan};
 use std::sync::mpsc::Sender;
 
-#[derive(JSTraceable)]
+
 pub struct HistoryTraversalTaskSource(pub Sender<MainThreadScriptMsg>);
 
 impl ScriptChan for HistoryTraversalTaskSource {

@@ -16,7 +16,7 @@
 //! related but distinct objects:
 //!
 //! * the **DOM object**: an instance of the Rust struct `dom::foo::Foo`
-//!   (marked with the `#[dom_struct]` attribute) on the Rust heap;
+//!   (marked with the `` attribute) on the Rust heap;
 //! * the **reflector**: a `JSObject` allocated by SpiderMonkey, that owns the
 //!   DOM object.
 //!
@@ -140,7 +140,7 @@
 //!
 //! The `Reflectable` trait provides a `reflector()` method that returns the
 //! DOM object's `Reflector`. It is implemented automatically for DOM structs
-//! through the `#[dom_struct]` attribute.
+//! through the `` attribute.
 //!
 //! Implementing methods for a DOM object
 //! =====================================
@@ -182,7 +182,7 @@
 //! * adding the new IDL file at `components/script/dom/webidls/Foo.webidl`;
 //! * creating `components/script/dom/foo.rs`;
 //! * listing `foo.rs` in `components/script/dom/mod.rs`;
-//! * defining the DOM struct `Foo` with a `#[dom_struct]` attribute, a
+//! * defining the DOM struct `Foo` with a `` attribute, a
 //!   superclass or `Reflector` member, and other members as appropriate;
 //! * implementing the
 //!   `dom::bindings::codegen::Bindings::FooBindings::FooMethods` trait for

@@ -13,7 +13,7 @@ use dom::document::Document;
 use util::str::DOMString;
 
 /// An HTML comment.
-#[dom_struct]
+
 pub struct Comment {
     characterdata: CharacterData,
 }

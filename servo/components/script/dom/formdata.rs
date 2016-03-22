@@ -10,15 +10,15 @@ use dom::htmlformelement::HTMLFormElement;
 use std::collections::HashMap;
 use string_cache::Atom;
 
-#[derive(JSTraceable, Clone)]
-#[must_root]
-#[derive(HeapSizeOf)]
+#[derive(Clone)]
+
+
 pub enum FormDatum {
     StringData(String),
     BlobData(String)
 }
 
-#[dom_struct]
+
 pub struct FormData {
     reflector_: Reflector,
     data: DOMRefCell<HashMap<Atom, Vec<FormDatum>>>,

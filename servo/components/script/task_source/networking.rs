@@ -5,7 +5,7 @@
 use script_thread::{CommonScriptMsg, MainThreadScriptMsg, ScriptChan};
 use std::sync::mpsc::Sender;
 
-#[derive(JSTraceable)]
+
 pub struct NetworkingTaskSource(pub Sender<MainThreadScriptMsg>);
 
 impl ScriptChan for NetworkingTaskSource {

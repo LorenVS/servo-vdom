@@ -13,7 +13,7 @@ use std::mem;
 
 /// A trait to hold the cast functions of IDL interfaces that either derive
 /// or are derived from other interfaces.
-pub trait Castable: IDLInterface + Reflectable + Sized + Typed {
+pub trait Castable: IDLInterface + Sized + Typed {
     /// Check whether a DOM object implements one of its deriving interfaces.
     fn is<T>(&self) -> bool
         where T: DerivedFrom<Self> + Typed

@@ -86,7 +86,7 @@ use util::str::{DOMString, LengthOrPercentageOrAuto};
 // and when the element enters or leaves a browsing context container.
 // https://html.spec.whatwg.org/multipage/#selector-focus
 
-#[dom_struct]
+
 pub struct Element {
     node: Node,
     local_name: Atom,
@@ -101,7 +101,7 @@ pub struct Element {
     atomic_flags: AtomicElementFlags,
 }
 
-#[derive(PartialEq, HeapSizeOf)]
+#[derive(PartialEq)]
 pub enum ElementCreator {
     ParserCreated,
     ScriptCreated,
@@ -590,7 +590,7 @@ impl LayoutElementHelpers for LayoutJS<Element> {
     }
 }
 
-#[derive(PartialEq, Eq, Copy, Clone, HeapSizeOf)]
+#[derive(PartialEq, Eq, Copy, Clone)]
 pub enum StylePriority {
     Important,
     Normal,
@@ -2045,7 +2045,7 @@ impl<'a> AttributeMutation<'a> {
 }
 
 /// Thread-safe wrapper for ElementFlags set during selector matching
-#[derive(JSTraceable, HeapSizeOf)]
+
 struct AtomicElementFlags(AtomicUsize);
 
 impl AtomicElementFlags {

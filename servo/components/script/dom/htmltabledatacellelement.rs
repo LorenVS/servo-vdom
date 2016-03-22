@@ -11,7 +11,7 @@ use dom::htmltablecellelement::HTMLTableCellElement;
 use string_cache::Atom;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct HTMLTableDataCellElement {
     htmltablecellelement: HTMLTableCellElement,
 }
@@ -26,7 +26,7 @@ impl HTMLTableDataCellElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom, prefix: Option<DOMString>, document: &Document)
                -> Root<HTMLTableDataCellElement> {
         Root::new_box(box HTMLTableDataCellElement::new_inherited(localName, prefix, document))

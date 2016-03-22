@@ -15,7 +15,7 @@ use string_cache::Atom;
 use url::Url;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct HTMLBaseElement {
     htmlelement: HTMLElement
 }
@@ -27,7 +27,7 @@ impl HTMLBaseElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLBaseElement> {

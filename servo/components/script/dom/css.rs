@@ -8,7 +8,7 @@ use dom::bindings::global::GlobalRef;
 use dom::bindings::reflector::Reflector;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct CSS {
     reflector_: Reflector,
 }

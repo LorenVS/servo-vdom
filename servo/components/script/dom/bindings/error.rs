@@ -5,7 +5,7 @@
 //! Utilities to throw exceptions from Rust bindings.
 
 /// DOM exceptions that can be thrown by a native DOM method.
-#[derive(Debug, Clone, HeapSizeOf)]
+#[derive(Debug, Clone)]
 pub enum Error {
     /// IndexSizeError DOMException
     IndexSize,

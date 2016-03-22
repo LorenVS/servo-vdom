@@ -189,12 +189,6 @@ impl<'a> GlobalRef<'a> {
         }
     }
 
-    /// Returns the receiver's reflector.
-    pub fn reflector(&self) -> &Reflector {
-        match *self {
-            GlobalRef::Window(ref window) => window.reflector()
-        }
-    }
 }
 
 impl GlobalRoot {

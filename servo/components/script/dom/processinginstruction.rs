@@ -12,7 +12,7 @@ use dom::document::Document;
 use util::str::DOMString;
 
 /// An HTML processing instruction node.
-#[dom_struct]
+
 pub struct ProcessingInstruction {
     characterdata: CharacterData,
     target: DOMString,

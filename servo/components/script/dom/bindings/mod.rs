@@ -152,7 +152,7 @@ pub mod xmlname;
 /// Generated JS-Rust bindings.
 #[allow(missing_docs, non_snake_case)]
 pub mod codegen {
-    #[allow(unrooted_must_root)]
+    
     pub mod Bindings {
         include!(concat!(env!("OUT_DIR"), "/Bindings/mod.rs"));
     }

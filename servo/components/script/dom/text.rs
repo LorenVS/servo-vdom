@@ -16,7 +16,7 @@ use dom::node::Node;
 use util::str::DOMString;
 
 /// An HTML text node.
-#[dom_struct]
+
 pub struct Text {
     characterdata: CharacterData,
 }

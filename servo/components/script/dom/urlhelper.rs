@@ -8,7 +8,7 @@ use std::fmt::Write;
 use url::urlutils::{UrlUtils, UrlUtilsWrapper};
 use url::{Origin, SchemeData, Url, UrlParser};
 
-#[derive(HeapSizeOf)]
+
 pub struct UrlHelper;
 
 impl UrlHelper {

@@ -15,7 +15,7 @@ use dom::virtualmethods::VirtualMethods;
 use string_cache::Atom;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct HTMLAppletElement {
     htmlelement: HTMLElement
 }
@@ -30,7 +30,7 @@ impl HTMLAppletElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLAppletElement> {

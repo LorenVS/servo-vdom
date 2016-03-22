@@ -18,9 +18,9 @@ use string_cache::Atom;
 use time;
 use util::str::DOMString;
 
-#[derive(JSTraceable, Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[repr(u16)]
-#[derive(HeapSizeOf)]
+
 pub enum EventPhase {
     None      = EventConstants::NONE,
     Capturing = EventConstants::CAPTURING_PHASE,
@@ -28,19 +28,19 @@ pub enum EventPhase {
     Bubbling  = EventConstants::BUBBLING_PHASE,
 }
 
-#[derive(PartialEq, HeapSizeOf)]
+#[derive(PartialEq)]
 pub enum EventBubbles {
     Bubbles,
     DoesNotBubble
 }
 
-#[derive(PartialEq, HeapSizeOf)]
+#[derive(PartialEq)]
 pub enum EventCancelable {
     Cancelable,
     NotCancelable
 }
 
-#[dom_struct]
+
 pub struct Event {
     reflector_: Reflector,
     #[ignore_heap_size_of = "type_ids are new"]

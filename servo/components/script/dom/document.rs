@@ -100,14 +100,14 @@ use url::percent_encoding::percent_decode;
 use url::{Host, Url};
 use util::str::{DOMString, split_html_space_chars, str_join};
 
-#[derive(JSTraceable, PartialEq, HeapSizeOf)]
+#[derive(PartialEq)]
 pub enum IsHTMLDocument {
     HTMLDocument,
     NonHTMLDocument,
 }
 
 // https://dom.spec.whatwg.org/#document
-#[dom_struct]
+
 pub struct Document {
     node: Node,
     window: JS<Window>,
@@ -181,7 +181,7 @@ pub struct Document {
     https_state: Cell<HttpsState>,
 }
 
-#[derive(JSTraceable, HeapSizeOf)]
+
 struct ImagesFilter;
 impl CollectionFilter for ImagesFilter {
     fn filter(&self, elem: &Element, _root: &Node) -> bool {
@@ -189,7 +189,7 @@ impl CollectionFilter for ImagesFilter {
     }
 }
 
-#[derive(JSTraceable, HeapSizeOf)]
+
 struct EmbedsFilter;
 impl CollectionFilter for EmbedsFilter {
     fn filter(&self, elem: &Element, _root: &Node) -> bool {
@@ -197,7 +197,7 @@ impl CollectionFilter for EmbedsFilter {
     }
 }
 
-#[derive(JSTraceable, HeapSizeOf)]
+
 struct LinksFilter;
 impl CollectionFilter for LinksFilter {
     fn filter(&self, elem: &Element, _root: &Node) -> bool {
@@ -206,7 +206,7 @@ impl CollectionFilter for LinksFilter {
     }
 }
 
-#[derive(JSTraceable, HeapSizeOf)]
+
 struct FormsFilter;
 impl CollectionFilter for FormsFilter {
     fn filter(&self, elem: &Element, _root: &Node) -> bool {
@@ -214,7 +214,7 @@ impl CollectionFilter for FormsFilter {
     }
 }
 
-#[derive(JSTraceable, HeapSizeOf)]
+
 struct AnchorsFilter;
 impl CollectionFilter for AnchorsFilter {
     fn filter(&self, elem: &Element, _root: &Node) -> bool {
@@ -222,7 +222,7 @@ impl CollectionFilter for AnchorsFilter {
     }
 }
 
-#[derive(JSTraceable, HeapSizeOf)]
+
 struct AppletsFilter;
 impl CollectionFilter for AppletsFilter {
     fn filter(&self, elem: &Element, _root: &Node) -> bool {
@@ -1258,7 +1258,7 @@ impl Document {
     }
 }
 
-#[derive(PartialEq, HeapSizeOf)]
+#[derive(PartialEq)]
 pub enum DocumentSource {
     FromParser,
     NotFromParser,
@@ -1278,7 +1278,7 @@ impl LayoutDocumentHelpers for LayoutJS<Document> {
     }
 
     #[inline]
-    #[allow(unrooted_must_root)]
+    
     unsafe fn drain_modified_elements(&self) -> Vec<(LayoutJS<Element>, ElementSnapshot)> {
         let mut elements = (*self.unsafe_get()).modified_elements.borrow_mut_for_layout();
         let result = elements.drain().map(|(k, v)| (k.to_layout(), v)).collect();

@@ -75,7 +75,7 @@ use uuid::Uuid;
 //
 
 /// An HTML node.
-#[dom_struct]
+
 pub struct Node {
     /// The JavaScript reflector for this node.
     eventtarget: EventTarget,
@@ -127,7 +127,7 @@ pub struct Node {
 
 bitflags! {
     #[doc = "Flags for node items."]
-    #[derive(JSTraceable, HeapSizeOf)]
+    
     flags NodeFlags: u8 {
         #[doc = "Specifies whether this node is in a document."]
         const IS_IN_DOC = 0x01,
@@ -169,13 +169,13 @@ impl Drop for Node {
 /// suppress observers flag
 /// https://dom.spec.whatwg.org/#concept-node-insert
 /// https://dom.spec.whatwg.org/#concept-node-remove
-#[derive(Copy, Clone, HeapSizeOf)]
+#[derive(Copy, Clone)]
 enum SuppressObserver {
     Suppressed,
     Unsuppressed
 }
 
-#[derive(Copy, Clone, HeapSizeOf)]
+#[derive(Copy, Clone)]
 pub struct OpaqueStyleAndLayoutData {
     #[ignore_heap_size_of = "TODO(#6910) Box value that should be counted but \
                              the type lives in layout"]
@@ -828,7 +828,7 @@ impl Node {
     pub fn insert_cell_or_row<F, G, I>(&self, index: i32, get_items: F, new_child: G) -> Fallible<Root<HTMLElement>>
         where F: Fn() -> Root<HTMLCollection>,
               G: Fn() -> Root<I>,
-              I: DerivedFrom<Node> + DerivedFrom<HTMLElement> + Reflectable,
+              I: DerivedFrom<Node> + DerivedFrom<HTMLElement>,
     {
         if index < -1 {
             return Err(Error::IndexSize);
@@ -1253,7 +1253,7 @@ impl Iterator for TreeIterator {
 }
 
 /// Specifies whether children must be recursively cloned or not.
-#[derive(Copy, Clone, PartialEq, HeapSizeOf)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum CloneChildrenFlag {
     CloneChildren,
     DoNotCloneChildren
@@ -1267,12 +1267,10 @@ impl Node {
         Node::new_(type_id, NodeFlags::new(), Some(doc))
     }
 
-    #[allow(unrooted_must_root)]
     pub fn new_document_node() -> Node {
         Node::new_(NodeTypeId::Document, NodeFlags::new() | IS_IN_DOC, None)
     }
 
-    #[allow(unrooted_must_root)]
     fn new_(type_id: NodeTypeId, flags: NodeFlags, doc: Option<&Document>) -> Node {
         Node {
             eventtarget: EventTarget::new_inherited(EventTargetTypeId::Node(type_id)),
@@ -2326,11 +2324,11 @@ pub struct TrustedNodeAddress(pub *const c_void);
 #[allow(unsafe_code)]
 unsafe impl Send for TrustedNodeAddress {}
 
-pub fn document_from_node<T: DerivedFrom<Node> + Reflectable>(derived: &T) -> Root<Document> {
+pub fn document_from_node<T: DerivedFrom<Node>>(derived: &T) -> Root<Document> {
     derived.upcast().owner_doc()
 }
 
-pub fn window_from_node<T: DerivedFrom<Node> + Reflectable>(derived: &T) -> Root<Window> {
+pub fn window_from_node<T: DerivedFrom<Node>>(derived: &T) -> Root<Window> {
     let document = document_from_node(derived);
     Root::from_ref(document.window())
 }
@@ -2358,7 +2356,7 @@ impl VirtualMethods for Node {
 }
 
 /// A summary of the changes that happened to a node.
-#[derive(Copy, Clone, PartialEq, HeapSizeOf)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum NodeDamage {
     /// The node's `style` attribute changed.
     NodeStyleDamaged,

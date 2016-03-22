@@ -23,7 +23,7 @@ use dom::text::Text;
 use util::str::DOMString;
 
 // https://dom.spec.whatwg.org/#domimplementation
-#[dom_struct]
+
 pub struct DOMImplementation {
     reflector_: Reflector,
     document: JS<Document>,

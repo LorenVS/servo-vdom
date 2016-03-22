@@ -27,13 +27,13 @@ use string_cache::Atom;
 use url::Url;
 use util::str::DOMString;
 
-#[derive(PartialEq, Clone, JSTraceable)]
+#[derive(PartialEq, Clone)]
 pub enum CommonEventHandler {
     EventHandler(Rc<EventHandlerNonNull>),
     ErrorEventHandler(Rc<OnErrorEventHandlerNonNull>),
 }
 
-#[derive(JSTraceable, Copy, Clone, PartialEq, HeapSizeOf)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum ListenerPhase {
     Capturing,
     Bubbling,
@@ -68,7 +68,7 @@ impl EventTargetTypeId {
 }
 
 /// https://html.spec.whatwg.org/multipage/#internal-raw-uncompiled-handler
-#[derive(JSTraceable, Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct InternalRawUncompiledHandler {
     source: DOMString,
     url: Url,
@@ -76,14 +76,14 @@ pub struct InternalRawUncompiledHandler {
 }
 
 /// A representation of an event handler, either compiled or uncompiled raw source, or null.
-#[derive(JSTraceable, PartialEq, Clone)]
+#[derive(PartialEq, Clone)]
 pub enum InlineEventListener {
     Uncompiled(InternalRawUncompiledHandler),
     Compiled(CommonEventHandler),
     Null,
 }
 
-#[derive(JSTraceable, Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 enum EventListenerType {
     Additive(Rc<EventListener>)
 }
@@ -102,7 +102,7 @@ pub enum CompiledEventListener {
     Handler(CommonEventHandler),
 }
 
-#[derive(JSTraceable, Clone, PartialEq, HeapSizeOf)]
+#[derive(Clone, PartialEq)]
 #[privatize]
 /// A listener in a collection of event listeners.
 struct EventListenerEntry {
@@ -110,7 +110,7 @@ struct EventListenerEntry {
     listener: EventListenerType
 }
 
-#[derive(JSTraceable, HeapSizeOf)]
+
 /// A mix of potentially uncompiled and compiled event listeners of the same type.
 struct EventListeners(Vec<EventListenerEntry>);
 
@@ -128,7 +128,7 @@ impl DerefMut for EventListeners {
 }
 
 
-#[dom_struct]
+
 pub struct EventTarget {
     reflector_: Reflector,
     #[ignore_heap_size_of = "type_ids are new"]

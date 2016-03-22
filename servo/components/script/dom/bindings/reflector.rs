@@ -9,17 +9,17 @@ use std::cell::UnsafeCell;
 use std::ptr;
 
 /// A struct to store a reference to the reflector of a DOM object.
-#[allow(unrooted_must_root)]
-#[must_root]
+
+
 #[servo_lang = "reflector"]
-#[derive(HeapSizeOf)]
+
 // If you're renaming or moving this field, update the path in plugins::reflector as well
 pub struct Reflector {
     #[ignore_heap_size_of = "defined and measured in rust-mozjs"]
     object: UnsafeCell<*mut JSObject>,
 }
 
-#[allow(unrooted_must_root)]
+
 impl PartialEq for Reflector {
     fn eq(&self, other: &Reflector) -> bool {
         unsafe { *self.object.get() == *other.object.get() }

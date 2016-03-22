@@ -20,7 +20,7 @@ use string_cache::Atom;
 use task_source::dom_manipulation::DOMManipulationTask;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct HTMLDetailsElement {
     htmlelement: HTMLElement,
     toggle_counter: Cell<u32>
@@ -37,7 +37,7 @@ impl HTMLDetailsElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLDetailsElement> {

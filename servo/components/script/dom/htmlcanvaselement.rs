@@ -23,7 +23,7 @@ const DEFAULT_WIDTH: u32 = 300;
 const DEFAULT_HEIGHT: u32 = 150;
 
 
-#[dom_struct]
+
 pub struct HTMLCanvasElement {
     htmlelement: HTMLElement
 }
@@ -37,7 +37,7 @@ impl HTMLCanvasElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLCanvasElement> {

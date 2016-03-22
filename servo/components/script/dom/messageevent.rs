@@ -17,7 +17,7 @@ use std::default::Default;
 use string_cache::Atom;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct MessageEvent {
     event: Event,
     data: Heap<JSVal>,

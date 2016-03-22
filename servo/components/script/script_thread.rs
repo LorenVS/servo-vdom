@@ -29,7 +29,7 @@ use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::Castable;
 use dom::bindings::js::{JS, MutNullableHeap, Root};
 use dom::bindings::js::{RootedReference};
-use dom::bindings::refcounted::{LiveDOMReferences, Trusted, TrustedReference};
+use dom::bindings::refcounted::{Trusted, TrustedReference};
 use dom::bindings::trace::{JSTraceable};
 use dom::browsingcontext::BrowsingContext;
 use dom::create::create_element_simple;
@@ -63,7 +63,7 @@ use script_traits::CompositorEvent::{TouchEvent};
 use script_traits::{CompositorEvent, ConstellationControlMsg, EventResult};
 use script_traits::{InitialScriptState, MouseButton, MouseEventType};
 use script_traits::{LayoutMsg, OpaqueScriptLayoutChannel, ScriptMsg as ConstellationMsg};
-use script_traits::{ScriptThreadFactory, ScriptToCompositorMsg, TimerEventRequest};
+use script_traits::{ScriptThreadFactory, ScriptToCompositorMsg,TimerEventRequest};
 use script_traits::{TouchEventType, TouchId};
 use std::any::Any;
 use std::cell::{RefCell};
@@ -94,7 +94,6 @@ thread_local!(static SCRIPT_THREAD_ROOT: RefCell<Option<*const ScriptThread>> = 
 /// data that will need to be present when the document and frame tree entry are created,
 /// but is only easily available at initiation of the load and on a push basis (so some
 /// data will be updated according to future resize events, viewport changes, etc.)
-#[derive(JSTraceable)]
 struct InProgressLoad {
     /// The pipeline which requested this load.
     pipeline_id: PipelineId,
@@ -188,7 +187,7 @@ pub enum CommonScriptMsg {
     RunnableMsg(ScriptThreadEventCategory, Box<Runnable + Send>),
 }
 
-#[derive(Clone, Copy, Debug, Eq, Hash, JSTraceable, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum ScriptThreadEventCategory {
     AttachLayout,
     ConstellationMsg,
@@ -263,7 +262,6 @@ impl ScriptPort for Receiver<MainThreadScriptMsg> {
 }
 
 /// Encapsulates internal communication of shared messages within the script thread.
-#[derive(JSTraceable)]
 pub struct SendableMainThreadScriptChan(pub Sender<CommonScriptMsg>);
 
 impl ScriptChan for SendableMainThreadScriptChan {
@@ -287,7 +285,6 @@ impl SendableMainThreadScriptChan {
 }
 
 /// Encapsulates internal communication of main thread messages within the script thread.
-#[derive(JSTraceable)]
 pub struct MainThreadScriptChan(pub Sender<MainThreadScriptMsg>);
 
 impl ScriptChan for MainThreadScriptChan {
@@ -312,9 +309,8 @@ impl MainThreadScriptChan {
 
 /// Information for an entire page. Pages are top-level browsing contexts and can contain multiple
 /// frames.
-#[derive(JSTraceable)]
 // ScriptThread instances are rooted on creation, so this is okay
-#[allow(unrooted_must_root)]
+
 pub struct ScriptThread {
     /// A handle to the information pertaining to page layout
     page: DOMRefCell<Option<Rc<Page>>>,
@@ -411,7 +407,7 @@ impl<'a> ScriptMemoryFailsafe<'a> {
 }
 
 impl<'a> Drop for ScriptMemoryFailsafe<'a> {
-    #[allow(unrooted_must_root)]
+    
     fn drop(&mut self) {
         match self.owner {
             Some(owner) => {
@@ -864,8 +860,7 @@ impl ScriptThread {
                     runnable.handler()
                 }
             }
-            MainThreadScriptMsg::Common(CommonScriptMsg::RefcountCleanup(addr)) =>
-                LiveDOMReferences::cleanup(addr),
+            MainThreadScriptMsg::Common(CommonScriptMsg::RefcountCleanup(addr)) => {},
             MainThreadScriptMsg::Common(CommonScriptMsg::CollectReports(_)) => {},
             MainThreadScriptMsg::DOMManipulation(msg) =>
                 msg.handle_msg(self),

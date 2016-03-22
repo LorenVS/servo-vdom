@@ -37,7 +37,7 @@ use string_cache::Atom;
 use style::element_state::*;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct HTMLElement {
     element: Element,
     style_decl: MutNullableHeap<JS<CSSStyleDeclaration>>
@@ -59,7 +59,7 @@ impl HTMLElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom, prefix: Option<DOMString>, document: &Document) -> Root<HTMLElement> {
         let element = HTMLElement::new_inherited(HTMLElementTypeId::HTMLElement, localName, prefix, document);
         Root::new_box(box element)

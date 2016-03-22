@@ -46,10 +46,10 @@ use task_source::dom_manipulation::DOMManipulationTask;
 use url::form_urlencoded::serialize;
 use util::str::DOMString;
 
-#[derive(JSTraceable, PartialEq, Clone, Copy, HeapSizeOf)]
+#[derive(PartialEq, Clone, Copy)]
 pub struct GenerationId(u32);
 
-#[dom_struct]
+
 pub struct HTMLFormElement {
     htmlelement: HTMLElement,
     marked_for_reset: Cell<bool>,
@@ -69,7 +69,7 @@ impl HTMLFormElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLFormElement> {
@@ -160,7 +160,7 @@ impl HTMLFormElementMethods for HTMLFormElement {
             return elements;
         }
 
-        #[derive(JSTraceable, HeapSizeOf)]
+        
         struct ElementsFilter {
             form: Root<HTMLFormElement>
         }
@@ -227,7 +227,7 @@ pub enum SubmittedFrom {
     NotFromFormSubmitMethod
 }
 
-#[derive(Copy, Clone, HeapSizeOf)]
+#[derive(Copy, Clone)]
 pub enum ResetFrom {
     FromFormResetMethod,
     NotFromFormResetMethod
@@ -542,28 +542,28 @@ impl HTMLFormElement {
 }
 
 // TODO: add file support
-#[derive(HeapSizeOf)]
+
 pub struct FormDatum {
     pub ty: DOMString,
     pub name: DOMString,
     pub value: DOMString
 }
 
-#[derive(Copy, Clone, HeapSizeOf)]
+#[derive(Copy, Clone)]
 pub enum FormEncType {
     TextPlainEncoded,
     UrlEncoded,
     FormDataEncoded
 }
 
-#[derive(Copy, Clone, HeapSizeOf)]
+#[derive(Copy, Clone)]
 pub enum FormMethod {
     FormGet,
     FormPost,
     FormDialog
 }
 
-#[derive(HeapSizeOf)]
+
 pub enum FormSubmittableElement {
     ButtonElement(Root<HTMLButtonElement>),
     InputElement(Root<HTMLInputElement>),
@@ -586,7 +586,7 @@ impl FormSubmittableElement {
     }
 }
 
-#[derive(Copy, Clone, HeapSizeOf)]
+#[derive(Copy, Clone)]
 pub enum FormSubmitter<'a> {
     FormElement(&'a HTMLFormElement),
     InputElement(&'a HTMLInputElement),
@@ -688,7 +688,7 @@ impl<'a> FormSubmitter<'a> {
     }
 }
 
-pub trait FormControl: DerivedFrom<Element> + Reflectable {
+pub trait FormControl: DerivedFrom<Element> {
     // FIXME: This is wrong (https://github.com/servo/servo/issues/3553)
     //        but we need html5ever to do it correctly
     fn form_owner(&self) -> Option<Root<HTMLFormElement>> {

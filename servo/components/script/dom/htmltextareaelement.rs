@@ -32,7 +32,7 @@ use style::element_state::*;
 use textinput::{KeyReaction, Lines, TextInput};
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct HTMLTextAreaElement {
     htmlelement: HTMLElement,
     #[ignore_heap_size_of = "#7193"]
@@ -53,13 +53,13 @@ pub trait LayoutHTMLTextAreaElementHelpers {
 }
 
 impl LayoutHTMLTextAreaElementHelpers for LayoutJS<HTMLTextAreaElement> {
-    #[allow(unrooted_must_root)]
+    
     #[allow(unsafe_code)]
     unsafe fn get_value_for_layout(self) -> String {
         String::from((*self.unsafe_get()).textinput.borrow_for_layout().get_content())
     }
 
-    #[allow(unrooted_must_root)]
+    
     #[allow(unsafe_code)]
     unsafe fn get_absolute_insertion_point_for_layout(self) -> Option<usize> {
         if (*self.unsafe_get()).upcast::<Element>().get_focus_state() {
@@ -107,7 +107,7 @@ impl HTMLTextAreaElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLTextAreaElement> {

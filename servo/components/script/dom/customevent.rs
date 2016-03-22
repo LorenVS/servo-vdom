@@ -16,7 +16,7 @@ use string_cache::Atom;
 use util::str::DOMString;
 
 // https://dom.spec.whatwg.org/#interface-customevent
-#[dom_struct]
+
 pub struct CustomEvent {
     event: Event,
     #[ignore_heap_size_of = "Defined in rust-mozjs"]

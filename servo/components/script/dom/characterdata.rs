@@ -21,7 +21,7 @@ use std::cell::Ref;
 use util::str::DOMString;
 
 // https://dom.spec.whatwg.org/#characterdata
-#[dom_struct]
+
 pub struct CharacterData {
     node: Node,
     data: DOMRefCell<DOMString>,

@@ -28,7 +28,7 @@ use util::str::DOMString;
 /// nanoseconds.
 const INITIAL_REFLOW_DELAY: u64 = 200_000_000;
 
-#[dom_struct]
+
 pub struct HTMLBodyElement {
     htmlelement: HTMLElement,
 }
@@ -41,7 +41,7 @@ impl HTMLBodyElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom, prefix: Option<DOMString>, document: &Document)
                -> Root<HTMLBodyElement> {
         let element = HTMLBodyElement::new_inherited(localName, prefix, document);

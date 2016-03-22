@@ -8,7 +8,7 @@ use dom::bindings::js::{JS, Root};
 use dom::bindings::reflector::{Reflector};
 use dom::touch::Touch;
 
-#[dom_struct]
+
 pub struct TouchList {
     reflector_: Reflector,
     touches: Vec<JS<Touch>>,

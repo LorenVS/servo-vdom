@@ -20,7 +20,7 @@ use style::stylesheets::{CSSRule, Origin};
 use style::viewport::ViewportRule;
 use util::str::{DOMString, HTML_SPACE_CHARACTERS};
 
-#[dom_struct]
+
 pub struct HTMLMetaElement {
     htmlelement: HTMLElement,
     stylesheet: DOMRefCell<Option<Arc<Stylesheet>>>,
@@ -36,7 +36,7 @@ impl HTMLMetaElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLMetaElement> {

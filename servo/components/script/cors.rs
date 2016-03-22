@@ -35,7 +35,7 @@ pub trait AsyncCORSResponseListener {
     fn response_available(&self, response: CORSResponse);
 }
 
-#[derive(Clone, HeapSizeOf)]
+#[derive(Clone)]
 pub struct CORSRequest {
     pub origin: Url,
     pub destination: Url,
@@ -52,7 +52,7 @@ pub struct CORSRequest {
 /// https://fetch.spec.whatwg.org/#concept-request-mode
 /// This only covers some of the request modes. The
 /// `same-origin` and `no CORS` modes are unnecessary for XHR.
-#[derive(PartialEq, Copy, Clone, HeapSizeOf)]
+#[derive(PartialEq, Copy, Clone)]
 pub enum RequestMode {
     CORS, // CORS
     ForcedPreflight, // CORS-with-forced-preflight

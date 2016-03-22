@@ -31,13 +31,13 @@ use std::ops::{Deref, DerefMut, Drop};
 pub const DOM_WEAK_SLOT: u32 = 1;
 
 /// A weak reference to a JS-managed DOM object.
-#[allow_unrooted_interior]
+
 pub struct WeakRef<T: WeakReferenceable> {
     ptr: NonZero<*mut WeakBox<T>>,
 }
 
 /// The inner box of weak references, public for the finalization in codegen.
-#[must_root]
+
 pub struct WeakBox<T: WeakReferenceable> {
     /// The reference count. When it reaches zero, the `value` field should
     /// have already been set to `None`. The pointee contributes one to the count.
@@ -47,31 +47,12 @@ pub struct WeakBox<T: WeakReferenceable> {
 }
 
 /// Trait implemented by weak-referenceable interfaces.
-pub trait WeakReferenceable: Reflectable + Sized {
+pub trait WeakReferenceable: Sized {
     /// Downgrade a DOM object reference to a weak one.
     fn downgrade(&self) -> WeakRef<Self> {
         unsafe {
-            let object = self.reflector().get_jsobject().get();
-            let mut ptr = JS_GetReservedSlot(object,
-                                             DOM_WEAK_SLOT)
-                              .to_private() as *mut WeakBox<Self>;
-            if ptr.is_null() {
-                debug!("Creating new WeakBox holder for {:p}.", self);
-                ptr = Box::into_raw(box WeakBox {
-                    count: Cell::new(1),
-                    value: Cell::new(Some(NonZero::new(self))),
-                });
-                JS_SetReservedSlot(object, DOM_WEAK_SLOT, PrivateValue(ptr as *const c_void));
-            }
-            let box_ = &*ptr;
-            assert!(box_.value.get().is_some());
-            let new_count = box_.count.get() + 1;
-            debug!("Incrementing WeakBox refcount for {:p} to {}.",
-                   self,
-                   new_count);
-            box_.count.set(new_count);
             WeakRef {
-                ptr: NonZero::new(ptr),
+                ptr: NonZero::new(mem::transmute(self))
             }
         }
     }
@@ -87,12 +68,14 @@ impl<T: WeakReferenceable> WeakRef<T> {
 
     /// Root a weak reference. Returns `None` if the object was already collected.
     pub fn root(&self) -> Option<Root<T>> {
-        unsafe { &**self.ptr }.value.get().map(Root::new)
+        unsafe {
+            Some(Root::new(mem::transmute(self.ptr)))
+        }
     }
 
     /// Return whether the weakly-referenced object is still alive.
     pub fn is_alive(&self) -> bool {
-        unsafe { &**self.ptr }.value.get().is_some()
+        true
     }
 }
 
@@ -206,7 +189,7 @@ impl<T: WeakReferenceable> JSTraceable for MutableWeakRef<T> {
 
 /// A vector of weak references. On tracing, the vector retains
 /// only references which still point to live objects.
-#[allow_unrooted_interior]
+
 #[derive(HeapSizeOf)]
 pub struct WeakRefVec<T: WeakReferenceable> {
     vec: Vec<WeakRef<T>>,
@@ -253,7 +236,7 @@ impl<T: WeakReferenceable> DerefMut for WeakRefVec<T> {
 
 /// An entry of a vector of weak references. Passed to the closure
 /// given to `WeakRefVec::update`.
-#[allow_unrooted_interior]
+
 pub struct WeakRefEntry<'a, T: WeakReferenceable + 'a> {
     vec: &'a mut WeakRefVec<T>,
     index: &'a mut usize,

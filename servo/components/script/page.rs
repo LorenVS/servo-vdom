@@ -11,8 +11,7 @@ use std::cell::Cell;
 use std::rc::Rc;
 
 /// Encapsulates a handle to a frame in a frame tree.
-#[derive(JSTraceable, HeapSizeOf)]
-#[allow(unrooted_must_root)] // FIXME(#6687) this is wrong
+
 pub struct Page {
     /// Pipeline id associated with this page.
     id: PipelineId,
@@ -117,15 +116,15 @@ impl Page {
         old
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn set_frame(&self, frame: Option<Frame>) {
         *self.frame.borrow_mut() = frame;
     }
 }
 
 /// Information for one frame in the browsing context.
-#[derive(JSTraceable, HeapSizeOf)]
-#[must_root]
+
+
 pub struct Frame {
     /// The document for this frame.
     pub document: JS<Document>,

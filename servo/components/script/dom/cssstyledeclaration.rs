@@ -20,7 +20,7 @@ use style::selector_impl::PseudoElement;
 use util::str::{DOMString, str_join};
 
 // http://dev.w3.org/csswg/cssom/#the-cssstyledeclaration-interface
-#[dom_struct]
+
 pub struct CSSStyleDeclaration {
     reflector_: Reflector,
     owner: JS<Element>,
@@ -28,7 +28,7 @@ pub struct CSSStyleDeclaration {
     pseudo: Option<PseudoElement>,
 }
 
-#[derive(PartialEq, HeapSizeOf)]
+#[derive(PartialEq)]
 pub enum CSSModificationAccess {
     ReadWrite,
     Readonly,

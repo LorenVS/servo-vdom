@@ -19,7 +19,7 @@ use util::str::{DOMString, LengthOrPercentageOrAuto};
 
 const DEFAULT_COLSPAN: u32 = 1;
 
-#[dom_struct]
+
 pub struct HTMLTableCellElement {
     htmlelement: HTMLElement,
 }

@@ -11,7 +11,7 @@ use dom::element::Element;
 use dom::htmlcollection::{CollectionFilter, HTMLCollection};
 use dom::node::Node;
 
-#[dom_struct]
+
 pub struct HTMLFormControlsCollection {
     collection: HTMLCollection,
 }

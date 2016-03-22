@@ -13,7 +13,7 @@ use dom::window::Window;
 use url::Url;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct Location {
     reflector_: Reflector,
     window: JS<Window>,

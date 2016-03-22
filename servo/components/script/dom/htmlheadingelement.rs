@@ -11,7 +11,7 @@ use dom::htmlelement::HTMLElement;
 use string_cache::Atom;
 use util::str::DOMString;
 
-#[derive(JSTraceable, HeapSizeOf)]
+
 pub enum HeadingLevel {
     Heading1,
     Heading2,
@@ -21,7 +21,7 @@ pub enum HeadingLevel {
     Heading6,
 }
 
-#[dom_struct]
+
 pub struct HTMLHeadingElement {
     htmlelement: HTMLElement,
     level: HeadingLevel,
@@ -39,7 +39,7 @@ impl HTMLHeadingElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document,

@@ -8,7 +8,7 @@ use num::Float;
 use std::ops::Deref;
 
 /// Encapsulates the IDL restricted float type.
-#[derive(JSTraceable, Clone, Copy, Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq)]
 pub struct Finite<T: Float>(T);
 
 impl<T: Float> Finite<T> {

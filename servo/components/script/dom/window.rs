@@ -68,14 +68,14 @@ use util::str::{DOMString, HTML_SPACE_CHARACTERS};
 use util::{breakpoint, opts};
 
 /// Current state of the window object
-#[derive(JSTraceable, Copy, Clone, Debug, PartialEq, HeapSizeOf)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 enum WindowState {
     Alive,
     Zombie,     // Pipeline is closed, but the window hasn't been GCed yet.
 }
 
 /// Extra information concerning the reason for reflowing.
-#[derive(Debug, HeapSizeOf)]
+#[derive(Debug)]
 pub enum ReflowReason {
     CachedPageNeededReflow,
     RefreshTick,
@@ -99,7 +99,7 @@ pub enum ReflowReason {
 
 pub type ScrollPoint = Point2D<Au>;
 
-#[dom_struct]
+
 pub struct Window {
     eventtarget: EventTarget,
     #[ignore_heap_size_of = "trait objects are hard"]

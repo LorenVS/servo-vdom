@@ -8,7 +8,7 @@ use dom::htmlelement::{HTMLElement};
 use string_cache::Atom;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct HTMLMediaElement {
     htmlelement: HTMLElement,
 }

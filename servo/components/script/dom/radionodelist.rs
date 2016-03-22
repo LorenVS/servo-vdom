@@ -13,20 +13,20 @@ use dom::nodelist::{NodeList, NodeListType};
 use dom::window::Window;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct RadioNodeList {
     node_list: NodeList,
 }
 
 impl RadioNodeList {
-    #[allow(unrooted_must_root)]
+    
     fn new_inherited(list_type: NodeListType) -> RadioNodeList {
         RadioNodeList {
             node_list: NodeList::new_inherited(NodeListTypeId::RadioNodeList, list_type)
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(list_type: NodeListType) -> Root<RadioNodeList> {
         Root::new_box(box RadioNodeList::new_inherited(list_type))
     }

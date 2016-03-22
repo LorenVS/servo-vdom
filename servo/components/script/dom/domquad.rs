@@ -14,7 +14,7 @@ use dom::dompoint::DOMPoint;
 use dom::domrect::DOMRect;
 
 // https://drafts.fxtf.org/geometry/#DOMQuad
-#[dom_struct]
+
 pub struct DOMQuad {
     reflector_: Reflector,
     p1: JS<DOMPoint>,

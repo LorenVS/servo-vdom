@@ -11,7 +11,7 @@ use std::sync::mpsc::Sender;
 use string_cache::Atom;
 use task_source::TaskSource;
 
-#[derive(JSTraceable)]
+
 pub struct DOMManipulationTaskSource(pub Sender<MainThreadScriptMsg>);
 
 impl TaskSource<DOMManipulationTask> for DOMManipulationTaskSource {

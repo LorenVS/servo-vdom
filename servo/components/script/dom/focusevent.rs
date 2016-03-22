@@ -15,7 +15,7 @@ use dom::window::Window;
 use std::default::Default;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct FocusEvent {
     uievent: UIEvent,
     related_target: MutNullableHeap<JS<EventTarget>>,

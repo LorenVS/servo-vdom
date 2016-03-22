@@ -5,7 +5,7 @@
 //! Base classes to work with IDL callbacks.
 
 /// A common base class for representing IDL callback function types.
-#[derive(JSTraceable, PartialEq)]
+#[derive(PartialEq)]
 pub struct CallbackFunction {
 }
 
@@ -17,7 +17,7 @@ impl CallbackFunction {
 }
 
 /// A common base class for representing IDL callback interface types.
-#[derive(JSTraceable, PartialEq)]
+#[derive(PartialEq)]
 pub struct CallbackInterface {
 }
 

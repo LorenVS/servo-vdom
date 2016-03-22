@@ -17,14 +17,14 @@ use std::cell::Cell;
 use string_cache::{Atom, Namespace, QualName};
 use util::str::{DOMString, split_html_space_chars};
 
-pub trait CollectionFilter : JSTraceable {
+pub trait CollectionFilter {
     fn filter<'a>(&self, elem: &'a Element, root: &'a Node) -> bool;
 }
 
 // An optional u32, using maxint to represent None.
 // It would be nicer just to use Option<u32> for this, but that would produce word
 // alignment issues since Option<u32> uses 33 bits.
-#[derive(Clone, Copy, JSTraceable, HeapSizeOf)]
+#[derive(Clone, Copy)]
 struct OptionU32 {
     bits: u32,
 }
@@ -48,7 +48,7 @@ impl OptionU32 {
     }
 }
 
-#[dom_struct]
+
 pub struct HTMLCollection {
     reflector_: Reflector,
     #[ignore_heap_size_of = "type_ids are new"]
@@ -66,7 +66,7 @@ pub struct HTMLCollection {
 }
 
 impl HTMLCollection {
-    #[allow(unrooted_must_root)]
+    
     pub fn new_inherited(type_id: HTMLCollectionTypeId, root: &Node, filter: Box<CollectionFilter + 'static>) -> HTMLCollection {
         HTMLCollection {
             reflector_: Reflector::new(),
@@ -81,7 +81,7 @@ impl HTMLCollection {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(root: &Node, filter: Box<CollectionFilter + 'static>) -> Root<HTMLCollection> {
         Root::new_box(box HTMLCollection::new_inherited(HTMLCollectionTypeId::HTMLCollection, root, filter))
     }
@@ -124,7 +124,7 @@ impl HTMLCollection {
 
     pub fn by_atomic_tag_name(root: &Node, tag_atom: Atom, ascii_lower_tag: Atom)
                        -> Root<HTMLCollection> {
-        #[derive(JSTraceable, HeapSizeOf)]
+        
         struct TagNameFilter {
             tag: Atom,
             ascii_lower_tag: Atom,
@@ -156,7 +156,7 @@ impl HTMLCollection {
     }
 
     pub fn by_qual_tag_name(root: &Node, qname: QualName) -> Root<HTMLCollection> {
-        #[derive(JSTraceable, HeapSizeOf)]
+        
         struct TagNameNSFilter {
             qname: QualName
         }
@@ -180,7 +180,7 @@ impl HTMLCollection {
 
     pub fn by_atomic_class_name(root: &Node, classes: Vec<Atom>)
                          -> Root<HTMLCollection> {
-        #[derive(JSTraceable, HeapSizeOf)]
+        
         struct ClassNameFilter {
             classes: Vec<Atom>
         }
@@ -196,7 +196,7 @@ impl HTMLCollection {
     }
 
     pub fn children(root: &Node) -> Root<HTMLCollection> {
-        #[derive(JSTraceable, HeapSizeOf)]
+        
         struct ElementChildFilter;
         impl CollectionFilter for ElementChildFilter {
             fn filter(&self, elem: &Element, root: &Node) -> bool {

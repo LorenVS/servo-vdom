@@ -29,7 +29,7 @@ use std::cell::{Cell, UnsafeCell};
 use std::cmp::{Ord, Ordering, PartialEq, PartialOrd};
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct Range {
     reflector_: Reflector,
     start: BoundaryPoint,
@@ -887,8 +887,7 @@ impl RangeMethods for Range {
     }
 }
 
-#[derive(JSTraceable)]
-#[must_root]
+
 #[privatize]
 #[derive(HeapSizeOf)]
 pub struct BoundaryPoint {
@@ -916,7 +915,6 @@ impl BoundaryPoint {
     }
 }
 
-#[allow(unrooted_must_root)]
 impl PartialOrd for BoundaryPoint {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         bp_position(&self.node.get(), self.offset.get(),
@@ -924,7 +922,6 @@ impl PartialOrd for BoundaryPoint {
     }
 }
 
-#[allow(unrooted_must_root)]
 impl PartialEq for BoundaryPoint {
     fn eq(&self, other: &Self) -> bool {
         self.node.get() == other.node.get() &&

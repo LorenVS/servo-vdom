@@ -12,8 +12,8 @@
 //!    phase. (This happens through `JSClass.trace` for non-proxy bindings, and
 //!    through `ProxyTraps.trace` otherwise.)
 //! 2. `_trace` calls `Foo::trace()` (an implementation of `JSTraceable`).
-//!    This is typically derived via a `#[dom_struct]`
-//!    (implies `#[derive(JSTraceable)]`) annotation.
+//!    This is typically derived via a ``
+//!    (implies ``) annotation.
 //!    Non-JS-managed types have an empty inline `trace()` method,
 //!    achieved via `no_jsmanaged_fields!` or similar.
 //! 3. For all fields, `Foo::trace()`
@@ -131,7 +131,7 @@ pub fn trace_jsval(tracer: *mut JSTracer, description: &str, val: &Heap<JSVal>) 
 }
 
 /// Trace the `JSObject` held by `reflector`.
-#[allow(unrooted_must_root)]
+
 pub fn trace_reflector(tracer: *mut JSTracer, description: &str, reflector: &Reflector) {
     unsafe {
         let name = CString::new(description).unwrap();
@@ -159,128 +159,6 @@ pub fn trace_object(tracer: *mut JSTracer, description: &str, obj: &Heap<*mut JS
     }
 }
 
-impl<T: JSTraceable> JSTraceable for Rc<T> {
-    fn trace(&self, trc: *mut JSTracer) {
-        (**self).trace(trc)
-    }
-}
-
-impl<T: JSTraceable> JSTraceable for Box<T> {
-    fn trace(&self, trc: *mut JSTracer) {
-        (**self).trace(trc)
-    }
-}
-
-impl<T: JSTraceable + Copy> JSTraceable for Cell<T> {
-    fn trace(&self, trc: *mut JSTracer) {
-        self.get().trace(trc)
-    }
-}
-
-impl<T: JSTraceable> JSTraceable for UnsafeCell<T> {
-    fn trace(&self, trc: *mut JSTracer) {
-        unsafe { (*self.get()).trace(trc) }
-    }
-}
-
-
-impl JSTraceable for Heap<*mut JSObject> {
-    fn trace(&self, trc: *mut JSTracer) {
-        if self.get().is_null() {
-            return;
-        }
-        trace_object(trc, "object", self);
-    }
-}
-
-
-impl JSTraceable for Heap<JSVal> {
-    fn trace(&self, trc: *mut JSTracer) {
-        trace_jsval(trc, "val", self);
-    }
-}
-
-// XXXManishearth Check if the following three are optimized to no-ops
-// if e.trace() is a no-op (e.g it is an no_jsmanaged_fields type)
-impl<T: JSTraceable> JSTraceable for Vec<T> {
-    #[inline]
-    fn trace(&self, trc: *mut JSTracer) {
-        for e in &*self {
-            e.trace(trc);
-        }
-    }
-}
-
-// XXXManishearth Check if the following three are optimized to no-ops
-// if e.trace() is a no-op (e.g it is an no_jsmanaged_fields type)
-impl<T: JSTraceable + 'static> JSTraceable for SmallVec<[T; 1]> {
-    #[inline]
-    fn trace(&self, trc: *mut JSTracer) {
-        for e in self.iter() {
-            e.trace(trc);
-        }
-    }
-}
-
-impl<T: JSTraceable> JSTraceable for Option<T> {
-    #[inline]
-    fn trace(&self, trc: *mut JSTracer) {
-        self.as_ref().map(|e| e.trace(trc));
-    }
-}
-
-impl<T: JSTraceable, U: JSTraceable> JSTraceable for Result<T, U> {
-    #[inline]
-    fn trace(&self, trc: *mut JSTracer) {
-        match *self {
-            Ok(ref inner) => inner.trace(trc),
-            Err(ref inner) => inner.trace(trc),
-        }
-    }
-}
-
-impl<K, V, S> JSTraceable for HashMap<K, V, S>
-    where K: Hash + Eq + JSTraceable,
-          V: JSTraceable,
-          S: BuildHasher
-{
-    #[inline]
-    fn trace(&self, trc: *mut JSTracer) {
-        for (k, v) in &*self {
-            k.trace(trc);
-            v.trace(trc);
-        }
-    }
-}
-
-impl<K: Ord + JSTraceable, V: JSTraceable> JSTraceable for BTreeMap<K, V> {
-    #[inline]
-    fn trace(&self, trc: *mut JSTracer) {
-        for (k, v) in self {
-            k.trace(trc);
-            v.trace(trc);
-        }
-    }
-}
-
-impl<A: JSTraceable, B: JSTraceable> JSTraceable for (A, B) {
-    #[inline]
-    fn trace(&self, trc: *mut JSTracer) {
-        let (ref a, ref b) = *self;
-        a.trace(trc);
-        b.trace(trc);
-    }
-}
-
-impl<A: JSTraceable, B: JSTraceable, C: JSTraceable> JSTraceable for (A, B, C) {
-    #[inline]
-    fn trace(&self, trc: *mut JSTracer) {
-        let (ref a, ref b, ref c) = *self;
-        a.trace(trc);
-        b.trace(trc);
-        c.trace(trc);
-    }
-}
 
 no_jsmanaged_fields!(bool, f32, f64, String, Url, AtomicBool, AtomicUsize, Uuid);
 no_jsmanaged_fields!(usize, u8, u16, u32, u64);
@@ -327,75 +205,6 @@ no_jsmanaged_fields!(AttrValue);
 no_jsmanaged_fields!(ElementSnapshot);
 no_jsmanaged_fields!(HttpsState);
 
-impl JSTraceable for ConstellationChan<ScriptMsg> {
-    #[inline]
-    fn trace(&self, _trc: *mut JSTracer) {
-        // Do nothing
-    }
-}
-
-impl JSTraceable for ConstellationChan<LayoutMsg> {
-    #[inline]
-    fn trace(&self, _trc: *mut JSTracer) {
-        // Do nothing
-    }
-}
-
-impl JSTraceable for Box<ScriptChan + Send> {
-    #[inline]
-    fn trace(&self, _trc: *mut JSTracer) {
-        // Do nothing
-    }
-}
-
-impl JSTraceable for Box<FnBox(f64, )> {
-    #[inline]
-    fn trace(&self, _trc: *mut JSTracer) {
-        // Do nothing
-    }
-}
-
-impl<'a> JSTraceable for &'a str {
-    #[inline]
-    fn trace(&self, _: *mut JSTracer) {
-        // Do nothing
-    }
-}
-
-impl<A, B> JSTraceable for fn(A) -> B {
-    #[inline]
-    fn trace(&self, _: *mut JSTracer) {
-        // Do nothing
-    }
-}
-
-impl<T> JSTraceable for IpcSender<T> where T: Deserialize + Serialize {
-    #[inline]
-    fn trace(&self, _: *mut JSTracer) {
-        // Do nothing
-    }
-}
-
-impl JSTraceable for Box<LayoutRPC + 'static> {
-    #[inline]
-    fn trace(&self, _: *mut JSTracer) {
-        // Do nothing
-    }
-}
-
-impl JSTraceable for () {
-    #[inline]
-    fn trace(&self, _: *mut JSTracer) {
-        // Do nothing
-    }
-}
-
-impl<T> JSTraceable for IpcReceiver<T> where T: Deserialize + Serialize {
-    #[inline]
-    fn trace(&self, _: *mut JSTracer) {
-        // Do nothing
-    }
-}
 
 /// Homemade trait object for JSTraceable things
 struct TraceableInfo {
@@ -426,39 +235,13 @@ impl RootedTraceableSet {
         }
     }
 
-    unsafe fn remove<T: JSTraceable>(traceable: &T) {
-        ROOTED_TRACEABLES.with(|ref traceables| {
-            let mut traceables = traceables.borrow_mut();
-            let idx =
-                match traceables.set.iter()
-                                .rposition(|x| x.ptr == traceable as *const T as *const _) {
-                    Some(idx) => idx,
-                    None => unreachable!(),
-                };
-            traceables.set.remove(idx);
-        });
+    unsafe fn remove<T>(traceable: &T) {
     }
 
-    unsafe fn add<T: JSTraceable>(traceable: &T) {
-        ROOTED_TRACEABLES.with(|ref traceables| {
-            fn trace<T: JSTraceable>(obj: *const libc::c_void, tracer: *mut JSTracer) {
-                let obj: &T = unsafe { &*(obj as *const T) };
-                obj.trace(tracer);
-            }
-
-            let mut traceables = traceables.borrow_mut();
-            let info = TraceableInfo {
-                ptr: traceable as *const T as *const libc::c_void,
-                trace: trace::<T>,
-            };
-            traceables.set.push(info);
-        })
+    unsafe fn add<T>(traceable: &T) {
     }
 
     unsafe fn trace(&self, tracer: *mut JSTracer) {
-        for info in &self.set {
-            (info.trace)(info.ptr, tracer);
-        }
     }
 }
 
@@ -468,7 +251,7 @@ impl RootedTraceableSet {
 /// If you have GC things like *mut JSObject or JSVal, use jsapi::Rooted.
 /// If you have an arbitrary number of Reflectables to root, use RootedVec<JS<T>>
 /// If you know what you're doing, use this.
-#[derive(JSTraceable)]
+
 pub struct RootedTraceable<'a, T: 'a + JSTraceable> {
     ptr: &'a T,
 }
@@ -494,16 +277,15 @@ impl<'a, T: JSTraceable> Drop for RootedTraceable<'a, T> {
 }
 
 /// A vector of items that are rooted for the lifetime of this struct.
-#[allow(unrooted_must_root)]
+
 #[no_move]
-#[derive(JSTraceable)]
-#[allow_unrooted_interior]
-pub struct RootedVec<T: JSTraceable> {
+
+pub struct RootedVec<T> {
     v: Vec<T>,
 }
 
 
-impl<T: JSTraceable> RootedVec<T> {
+impl<T> RootedVec<T> {
     /// Create a vector of items of type T that is rooted for
     /// the lifetime of this struct
     pub fn new() -> RootedVec<T> {
@@ -522,14 +304,14 @@ impl<T: JSTraceable> RootedVec<T> {
     }
 }
 
-impl<T: JSTraceable + Reflectable> RootedVec<JS<T>> {
+impl<T> RootedVec<JS<T>> {
     /// Obtain a safe slice of references that can't outlive that RootedVec.
     pub fn r(&self) -> &[&T] {
         unsafe { mem::transmute(&self.v[..]) }
     }
 }
 
-impl<T: JSTraceable> Drop for RootedVec<T> {
+impl<T> Drop for RootedVec<T> {
     fn drop(&mut self) {
         unsafe {
             RootedTraceableSet::remove(self);
@@ -537,20 +319,20 @@ impl<T: JSTraceable> Drop for RootedVec<T> {
     }
 }
 
-impl<T: JSTraceable> Deref for RootedVec<T> {
+impl<T> Deref for RootedVec<T> {
     type Target = Vec<T>;
     fn deref(&self) -> &Vec<T> {
         &self.v
     }
 }
 
-impl<T: JSTraceable> DerefMut for RootedVec<T> {
+impl<T> DerefMut for RootedVec<T> {
     fn deref_mut(&mut self) -> &mut Vec<T> {
         &mut self.v
     }
 }
 
-impl<A: JSTraceable + Reflectable> FromIterator<Root<A>> for RootedVec<JS<A>> {
+impl<A> FromIterator<Root<A>> for RootedVec<JS<A>> {
     #[allow(moved_no_move)]
     fn from_iter<T>(iterable: T) -> RootedVec<JS<A>>
         where T: IntoIterator<Item = Root<A>>

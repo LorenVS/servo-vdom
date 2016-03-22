@@ -21,7 +21,7 @@ use string_cache::Atom;
 use style::attr::parse_unsigned_integer;
 use util::str::{DOMString, LengthOrPercentageOrAuto};
 
-#[dom_struct]
+
 pub struct HTMLTableElement {
     htmlelement: HTMLElement,
     border: Cell<Option<u32>>,
@@ -38,7 +38,7 @@ impl HTMLTableElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom, prefix: Option<DOMString>, document: &Document)
                -> Root<HTMLTableElement> {
         let element = HTMLTableElement::new_inherited(localName, prefix, document);

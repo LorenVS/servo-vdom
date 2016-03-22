@@ -11,7 +11,7 @@ use dom::bindings::inheritance::{TopTypeId,DOMPointReadOnlyTypeId};
 use std::cell::Cell;
 
 // http://dev.w3.org/fxtf/geometry/Overview.html#dompointreadonly
-#[dom_struct]
+
 pub struct DOMPointReadOnly {
     reflector_: Reflector,
     #[ignore_heap_size_of = "type_ids are new"]

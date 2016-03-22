@@ -10,7 +10,7 @@ use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflector};
 use std::cell::Cell;
 
-#[dom_struct]
+
 pub struct DOMRectReadOnly {
     reflector_: Reflector,
     #[ignore_heap_size_of = "type_ids are new"]

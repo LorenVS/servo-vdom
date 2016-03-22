@@ -17,7 +17,7 @@ use string_cache::Atom;
 use style::element_state::*;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct HTMLOptGroupElement {
     htmlelement: HTMLElement
 }
@@ -34,7 +34,7 @@ impl HTMLOptGroupElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLOptGroupElement> {

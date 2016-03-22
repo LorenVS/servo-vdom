@@ -128,8 +128,8 @@ pub trait JSTraceable {
 ```
 
 Any type which can be traced will provide a `trace` method. We will implement
-this method with a custom `derive` target `#[derive(JSTraceable)]`,
-or a custom attribute `#[dom_struct]` which implies it.
+this method with a custom `derive` target ``,
+or a custom attribute `` which implies it.
 
 Let's look at [Servo's implementation][document-rs] of the DOM's
 [`Document`][document-mdn] interface:
@@ -138,7 +138,7 @@ Let's look at [Servo's implementation][document-rs] of the DOM's
 [document-mdn]: https://developer.mozilla.org/en-US/docs/Web/API/document
 
 ```rust
-#[dom_struct]
+
 pub struct Document {
     node: Node,
     window: JS<Window>,

@@ -15,7 +15,7 @@ use std::cell::Cell;
 use url::Url;
 use util::str::DOMString;
 
-#[derive(JSTraceable, PartialEq, Copy, Clone, Debug, HeapSizeOf)]
+#[derive(PartialEq, Copy, Clone, Debug)]
 enum EventSourceReadyState {
     Connecting = 0,
     #[allow(dead_code)]
@@ -23,7 +23,7 @@ enum EventSourceReadyState {
     Closed = 2
 }
 
-#[dom_struct]
+
 pub struct EventSource {
     eventtarget: EventTarget,
     url: Url,

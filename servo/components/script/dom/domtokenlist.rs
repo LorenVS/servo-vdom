@@ -11,7 +11,7 @@ use dom::element::Element;
 use string_cache::Atom;
 use util::str::{DOMString, HTML_SPACE_CHARACTERS};
 
-#[dom_struct]
+
 pub struct DOMTokenList {
     reflector_: Reflector,
     element: JS<Element>,

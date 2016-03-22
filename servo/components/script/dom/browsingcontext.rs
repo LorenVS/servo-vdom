@@ -9,7 +9,7 @@ use dom::document::Document;
 use dom::element::Element;
 use dom::window::Window;
 
-#[dom_struct]
+
 pub struct BrowsingContext {
     reflector: Reflector,
     history: DOMRefCell<Vec<SessionHistoryEntry>>,
@@ -56,10 +56,10 @@ impl BrowsingContext {
 }
 
 // This isn't a DOM struct, just a convenience struct
-// without a reflector, so we don't mark this as #[dom_struct]
-#[must_root]
+// without a reflector, so we don't mark this as 
+
 #[privatize]
-#[derive(JSTraceable, HeapSizeOf)]
+
 pub struct SessionHistoryEntry {
     document: JS<Document>,
     children: Vec<JS<BrowsingContext>>,

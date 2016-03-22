@@ -15,7 +15,7 @@ use dom::virtualmethods::VirtualMethods;
 use string_cache::Atom;
 use util::str::{DOMString, LengthOrPercentageOrAuto};
 
-#[dom_struct]
+
 pub struct HTMLHRElement {
     htmlelement: HTMLElement,
 }
@@ -27,7 +27,7 @@ impl HTMLHRElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLHRElement> {

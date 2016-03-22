@@ -19,7 +19,7 @@ pub use style::attr::{AttrIdentifier, AttrValue};
 use util::str::DOMString;
 
 // https://dom.spec.whatwg.org/#interface-attr
-#[dom_struct]
+
 pub struct Attr {
     reflector_: Reflector,
     identifier: AttrIdentifier,

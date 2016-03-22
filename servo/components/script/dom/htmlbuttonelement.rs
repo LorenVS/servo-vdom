@@ -25,8 +25,8 @@ use string_cache::Atom;
 use style::element_state::*;
 use util::str::DOMString;
 
-#[derive(JSTraceable, PartialEq, Copy, Clone)]
-#[derive(HeapSizeOf)]
+#[derive(PartialEq, Copy, Clone)]
+
 enum ButtonType {
     Submit,
     Reset,
@@ -34,7 +34,7 @@ enum ButtonType {
     Menu
 }
 
-#[dom_struct]
+
 pub struct HTMLButtonElement {
     htmlelement: HTMLElement,
     button_type: Cell<ButtonType>
@@ -53,7 +53,7 @@ impl HTMLButtonElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLButtonElement> {

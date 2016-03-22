@@ -16,7 +16,7 @@ use string_cache::Atom;
 use util::str::DOMString;
 
 // https://dvcs.w3.org/hg/dom3events/raw-file/tip/html/DOM3-Events.html#interface-UIEvent
-#[dom_struct]
+
 pub struct UIEvent {
     event: Event,
     view: MutNullableHeap<JS<Window>>,

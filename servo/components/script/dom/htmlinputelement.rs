@@ -44,9 +44,9 @@ use util::str::{DOMString, search_index};
 const DEFAULT_SUBMIT_VALUE: &'static str = "Submit";
 const DEFAULT_RESET_VALUE: &'static str = "Reset";
 
-#[derive(JSTraceable, PartialEq, Copy, Clone)]
+#[derive(PartialEq, Copy, Clone)]
 #[allow(dead_code)]
-#[derive(HeapSizeOf)]
+
 enum InputType {
     InputSubmit,
     InputReset,
@@ -67,15 +67,15 @@ enum ValueMode {
     Filename,
 }
 
-#[derive(JSTraceable, PartialEq, Copy, Clone)]
-#[derive(HeapSizeOf)]
+#[derive(PartialEq, Copy, Clone)]
+
 enum SelectionDirection {
     Forward,
     Backward,
     None
 }
 
-#[dom_struct]
+
 pub struct HTMLInputElement {
     htmlelement: HTMLElement,
     input_type: Cell<InputType>,
@@ -95,9 +95,9 @@ pub struct HTMLInputElement {
     // TODO: selected files for file input
 }
 
-#[derive(JSTraceable)]
-#[must_root]
-#[derive(HeapSizeOf)]
+
+
+
 struct InputActivationState {
     indeterminate: bool,
     checked: bool,
@@ -146,7 +146,7 @@ impl HTMLInputElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLInputElement> {
@@ -259,13 +259,13 @@ impl LayoutHTMLInputElementHelpers for LayoutJS<HTMLInputElement> {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     #[allow(unsafe_code)]
     unsafe fn get_size_for_layout(self) -> u32 {
         (*self.unsafe_get()).size.get()
     }
 
-    #[allow(unrooted_must_root)]
+    
     #[allow(unsafe_code)]
     unsafe fn get_insertion_point_index_for_layout(self) -> Option<isize> {
         if !(*self.unsafe_get()).upcast::<Element>().get_focus_state() {
@@ -288,13 +288,13 @@ impl LayoutHTMLInputElementHelpers for LayoutJS<HTMLInputElement> {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     #[allow(unsafe_code)]
     unsafe fn get_checked_state_for_layout(self) -> bool {
         self.upcast::<Element>().get_state_for_layout().contains(IN_CHECKED_STATE)
     }
 
-    #[allow(unrooted_must_root)]
+    
     #[allow(unsafe_code)]
     unsafe fn get_indeterminate_state_for_layout(self) -> bool {
         self.upcast::<Element>().get_state_for_layout().contains(IN_INDETERMINATE_STATE)

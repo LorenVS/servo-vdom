@@ -11,15 +11,15 @@ use dom::bindings::typed::Typed;
 use dom::node::{ChildrenMutation, Node};
 use std::cell::Cell;
 
-#[derive(JSTraceable, HeapSizeOf)]
-#[must_root]
+
+
 pub enum NodeListType {
     Simple(Vec<JS<Node>>),
     Children(ChildrenList),
 }
 
 // https://dom.spec.whatwg.org/#interface-nodelist
-#[dom_struct]
+
 pub struct NodeList {
     reflector_: Reflector,
     #[ignore_heap_size_of = "type_ids are new"]
@@ -28,7 +28,7 @@ pub struct NodeList {
 }
 
 impl NodeList {
-    #[allow(unrooted_must_root)]
+
     pub fn new_inherited(type_id: NodeListTypeId, list_type: NodeListType) -> NodeList {
         NodeList {
             reflector_: Reflector::new(),
@@ -37,7 +37,6 @@ impl NodeList {
         }
     }
 
-    #[allow(unrooted_must_root)]
     pub fn new(list_type: NodeListType) -> Root<NodeList> {
         Root::new_box(box NodeList::new_inherited(NodeListTypeId::NodeList, list_type))
     }
@@ -115,8 +114,8 @@ impl Typed for NodeList {
     }
 }
 
-#[derive(JSTraceable, HeapSizeOf)]
-#[must_root]
+
+
 pub struct ChildrenList {
     node: JS<Node>,
     #[ignore_heap_size_of = "Defined in rust-mozjs"]

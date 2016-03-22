@@ -9,7 +9,7 @@ use dom::bindings::reflector::{Reflector};
 use euclid::size::Size2D;
 use std::vec::Vec;
 
-#[dom_struct]
+
 pub struct ImageData {
     reflector_: Reflector,
     width: u32,

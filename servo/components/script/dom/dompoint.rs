@@ -11,7 +11,7 @@ use dom::bindings::inheritance::DOMPointReadOnlyTypeId;
 use dom::dompointreadonly::{DOMPointReadOnly, DOMPointWriteMethods};
 
 // http://dev.w3.org/fxtf/geometry/Overview.html#dompoint
-#[dom_struct]
+
 pub struct DOMPoint {
     point: DOMPointReadOnly,
 }

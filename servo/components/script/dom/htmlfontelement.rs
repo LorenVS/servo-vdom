@@ -17,7 +17,7 @@ use string_cache::Atom;
 use style::values::specified;
 use util::str::{DOMString, WHITESPACE, read_numbers};
 
-#[dom_struct]
+
 pub struct HTMLFontElement {
     htmlelement: HTMLElement,
 }
@@ -30,7 +30,7 @@ impl HTMLFontElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLFontElement> {

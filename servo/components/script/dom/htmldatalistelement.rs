@@ -15,7 +15,7 @@ use dom::node::{Node};
 use string_cache::Atom;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct HTMLDataListElement {
     htmlelement: HTMLElement
 }
@@ -30,7 +30,7 @@ impl HTMLDataListElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLDataListElement> {
@@ -42,7 +42,7 @@ impl HTMLDataListElement {
 impl HTMLDataListElementMethods for HTMLDataListElement {
     // https://html.spec.whatwg.org/multipage/#dom-datalist-options
     fn Options(&self) -> Root<HTMLCollection> {
-        #[derive(JSTraceable, HeapSizeOf)]
+        
         struct HTMLDataListOptionsFilter;
         impl CollectionFilter for HTMLDataListOptionsFilter {
             fn filter(&self, elem: &Element, _root: &Node) -> bool {

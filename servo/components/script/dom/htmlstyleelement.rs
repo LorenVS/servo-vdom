@@ -21,7 +21,7 @@ use style::servo::Stylesheet;
 use style::stylesheets::Origin;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct HTMLStyleElement {
     htmlelement: HTMLElement,
     stylesheet: DOMRefCell<Option<Arc<Stylesheet>>>,
@@ -37,7 +37,7 @@ impl HTMLStyleElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLStyleElement> {

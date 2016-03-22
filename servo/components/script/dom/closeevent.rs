@@ -14,7 +14,7 @@ use script_thread::ScriptChan;
 use string_cache::Atom;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct CloseEvent {
     event: Event,
     wasClean: bool,

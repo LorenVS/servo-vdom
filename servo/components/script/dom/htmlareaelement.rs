@@ -18,7 +18,7 @@ use std::default::Default;
 use string_cache::Atom;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct HTMLAreaElement {
     htmlelement: HTMLElement,
     rel_list: MutNullableHeap<JS<DOMTokenList>>,
@@ -32,7 +32,7 @@ impl HTMLAreaElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLAreaElement> {

@@ -21,7 +21,7 @@ use string_cache::Atom;
 use util::str::DOMString;
 
 
-#[derive(JSTraceable)]
+
 struct CellsFilter;
 impl CollectionFilter for CellsFilter {
     fn filter(&self, elem: &Element, root: &Node) -> bool {
@@ -30,7 +30,7 @@ impl CollectionFilter for CellsFilter {
     }
 }
 
-#[dom_struct]
+
 pub struct HTMLTableRowElement {
     htmlelement: HTMLElement,
     cells: MutNullableHeap<JS<HTMLCollection>>,
@@ -45,7 +45,7 @@ impl HTMLTableRowElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom, prefix: Option<DOMString>, document: &Document)
                -> Root<HTMLTableRowElement> {
         Root::new_box(box HTMLTableRowElement::new_inherited(localName, prefix, document))

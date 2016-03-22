@@ -14,7 +14,7 @@ use util::str::DOMString;
 
 // https://dom.spec.whatwg.org/#documenttype
 /// The `DOCTYPE` tag.
-#[dom_struct]
+
 pub struct DocumentType {
     node: Node,
     name: DOMString,
@@ -35,7 +35,7 @@ impl DocumentType {
             system_id: system_id.unwrap_or_default(),
         }
     }
-    #[allow(unrooted_must_root)]
+    
     pub fn new(name: DOMString,
                public_id: Option<DOMString>,
                system_id: Option<DOMString>,

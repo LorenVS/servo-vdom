@@ -19,7 +19,7 @@ use string_cache::Atom;
 use style::element_state::*;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct HTMLFieldSetElement {
     htmlelement: HTMLElement
 }
@@ -36,7 +36,7 @@ impl HTMLFieldSetElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLFieldSetElement> {
@@ -48,7 +48,7 @@ impl HTMLFieldSetElement {
 impl HTMLFieldSetElementMethods for HTMLFieldSetElement {
     // https://html.spec.whatwg.org/multipage/#dom-fieldset-elements
     fn Elements(&self) -> Root<HTMLCollection> {
-        #[derive(JSTraceable, HeapSizeOf)]
+        
         struct ElementsFilter;
         impl CollectionFilter for ElementsFilter {
             fn filter<'a>(&self, elem: &'a Element, _root: &'a Node) -> bool {

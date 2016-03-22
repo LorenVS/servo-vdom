@@ -7,7 +7,7 @@ use dom::bindings::codegen::Bindings::ScreenBinding::ScreenMethods;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflector};
 
-#[dom_struct]
+
 pub struct Screen {
     reflector_: Reflector,
 }

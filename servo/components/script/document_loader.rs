@@ -14,7 +14,7 @@ use std::sync::Arc;
 use std::thread;
 use url::Url;
 
-#[derive(JSTraceable, PartialEq, Clone, Debug, HeapSizeOf)]
+#[derive(PartialEq, Clone, Debug)]
 pub enum LoadType {
     Image(Url),
     Script(Url),
@@ -47,8 +47,8 @@ impl LoadType {
 /// Canary value ensuring that manually added blocking loads (ie. ones that weren't
 /// created via DocumentLoader::prepare_async_load) are always removed by the time
 /// that the owner is destroyed.
-#[derive(JSTraceable, HeapSizeOf)]
-#[must_root]
+
+
 pub struct LoadBlocker {
     /// The document whose load event is blocked by this object existing.
     doc: JS<Document>,
@@ -88,7 +88,7 @@ impl Drop for LoadBlocker {
     }
 }
 
-#[derive(JSTraceable, HeapSizeOf)]
+
 pub struct DocumentLoader {
     /// We use an `Arc<ResourceThread>` here in order to avoid file descriptor exhaustion when there
     /// are lots of iframes.

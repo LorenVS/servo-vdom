@@ -19,7 +19,7 @@ use dom::virtualmethods::VirtualMethods;
 use string_cache::Atom;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct HTMLTableSectionElement {
     htmlelement: HTMLElement,
 }
@@ -32,7 +32,7 @@ impl HTMLTableSectionElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom, prefix: Option<DOMString>, document: &Document)
                -> Root<HTMLTableSectionElement> {
         let element = HTMLTableSectionElement::new_inherited(localName, prefix, document);
@@ -40,7 +40,7 @@ impl HTMLTableSectionElement {
     }
 }
 
-#[derive(JSTraceable)]
+
 struct RowsFilter;
 impl CollectionFilter for RowsFilter {
     fn filter(&self, elem: &Element, root: &Node) -> bool {

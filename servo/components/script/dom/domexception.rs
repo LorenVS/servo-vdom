@@ -10,7 +10,7 @@ use dom::bindings::reflector::{Reflector};
 use util::str::DOMString;
 
 #[repr(u16)]
-#[derive(JSTraceable, Copy, Clone, Debug, HeapSizeOf)]
+#[derive(Copy, Clone, Debug)]
 pub enum DOMErrorName {
     IndexSizeError = DOMExceptionConstants::INDEX_SIZE_ERR,
     HierarchyRequestError = DOMExceptionConstants::HIERARCHY_REQUEST_ERR,
@@ -37,7 +37,7 @@ pub enum DOMErrorName {
     EncodingError,
 }
 
-#[dom_struct]
+
 pub struct DOMException {
     reflector_: Reflector,
     code: DOMErrorName,

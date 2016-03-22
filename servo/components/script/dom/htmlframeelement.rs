@@ -11,7 +11,7 @@ use dom::htmlelement::HTMLElement;
 use string_cache::Atom;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct HTMLFrameElement {
     htmlelement: HTMLElement
 }
@@ -23,7 +23,7 @@ impl HTMLFrameElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLFrameElement> {

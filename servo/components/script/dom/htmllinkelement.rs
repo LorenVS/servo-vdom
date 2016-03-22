@@ -43,7 +43,7 @@ use util::str::{DOMString, HTML_SPACE_CHARACTERS};
 
 no_jsmanaged_fields!(Stylesheet);
 
-#[dom_struct]
+
 pub struct HTMLLinkElement {
     htmlelement: HTMLElement,
     rel_list: MutNullableHeap<JS<DOMTokenList>>,
@@ -64,7 +64,7 @@ impl HTMLLinkElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document,

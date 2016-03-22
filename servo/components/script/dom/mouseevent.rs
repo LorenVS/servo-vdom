@@ -17,7 +17,7 @@ use std::default::Default;
 use util::prefs;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct MouseEvent {
     uievent: UIEvent,
     screen_x: Cell<i32>,

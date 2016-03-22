@@ -22,7 +22,7 @@ use string_cache::Atom;
 use style::element_state::*;
 use util::str::{DOMString, split_html_space_chars, str_join};
 
-#[dom_struct]
+
 pub struct HTMLOptionElement {
     htmlelement: HTMLElement,
 
@@ -47,7 +47,7 @@ impl HTMLOptionElement {
         }
     }
 
-    #[allow(unrooted_must_root)]
+    
     pub fn new(localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLOptionElement> {

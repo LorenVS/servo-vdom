@@ -11,7 +11,7 @@ use dom::bindings::js::Root;
 
 use dom::domrectreadonly::DOMRectReadOnly;
 
-#[dom_struct]
+
 pub struct DOMRect {
     rect: DOMRectReadOnly,
 }

@@ -8,7 +8,7 @@ use dom::bindings::js::{JS, Root};
 use dom::bindings::reflector::{Reflector};
 use dom::domrect::DOMRect;
 
-#[dom_struct]
+
 pub struct DOMRectList {
     reflector_: Reflector,
     rects: Vec<JS<DOMRect>>,

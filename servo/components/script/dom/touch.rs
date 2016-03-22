@@ -9,7 +9,7 @@ use dom::bindings::num::Finite;
 use dom::bindings::reflector::{Reflector};
 use dom::eventtarget::EventTarget;
 
-#[dom_struct]
+
 pub struct Touch {
     reflector_: Reflector,
     identifier: i32,

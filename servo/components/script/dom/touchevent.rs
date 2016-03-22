@@ -15,7 +15,7 @@ use dom::window::Window;
 use std::cell::Cell;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct TouchEvent {
     uievent: UIEvent,
     touches: MutHeap<JS<TouchList>>,

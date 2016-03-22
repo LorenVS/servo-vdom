@@ -18,7 +18,7 @@ use std::cell::Cell;
 use string_cache::Atom;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct ErrorEvent {
     event: Event,
     message: DOMRefCell<DOMString>,

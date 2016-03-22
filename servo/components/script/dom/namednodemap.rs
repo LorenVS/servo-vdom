@@ -13,7 +13,7 @@ use dom::element::Element;
 use string_cache::Atom;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct NamedNodeMap {
     reflector_: Reflector,
     owner: JS<Element>,

@@ -13,7 +13,7 @@ use dom::event::{Event, EventBubbles, EventCancelable};
 use string_cache::Atom;
 use util::str::DOMString;
 
-#[dom_struct]
+
 pub struct ProgressEvent {
     event: Event,
     length_computable: bool,

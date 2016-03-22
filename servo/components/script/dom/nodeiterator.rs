@@ -13,7 +13,7 @@ use dom::node::Node;
 use std::cell::Cell;
 use std::rc::Rc;
 
-#[dom_struct]
+
 pub struct NodeIterator {
     reflector_: Reflector,
     root_node: JS<Node>,
@@ -195,7 +195,7 @@ impl NodeIterator {
 }
 
 
-#[derive(JSTraceable)]
+
 pub enum Filter {
     None,
     Native(fn (node: &Node) -> u16)
