@@ -185,7 +185,6 @@ pub struct OpaqueStyleAndLayoutData {
 #[allow(unsafe_code)]
 unsafe impl Send for OpaqueStyleAndLayoutData {}
 
-no_jsmanaged_fields!(OpaqueStyleAndLayoutData);
 
 impl OpaqueStyleAndLayoutData {
     /// Sends the style and layout data, if any, back to the layout thread to be destroyed.
@@ -2517,7 +2516,6 @@ struct UniqueId {
     cell: UnsafeCell<Option<Box<Uuid>>>,
 }
 
-no_jsmanaged_fields!(UniqueId);
 
 impl HeapSizeOf for UniqueId {
     #[allow(unsafe_code)]

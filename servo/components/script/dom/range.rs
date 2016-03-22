@@ -16,7 +16,7 @@ use dom::bindings::inheritance::Castable;
 use dom::bindings::inheritance::{CharacterDataTypeId, NodeTypeId};
 use dom::bindings::js::{JS, MutHeap, Root, RootedReference};
 use dom::bindings::reflector::{Reflector};
-use dom::bindings::trace::{JSTraceable, RootedVec};
+use dom::bindings::trace::{RootedVec};
 use dom::bindings::weakref::{WeakRef, WeakRefVec};
 use dom::characterdata::CharacterData;
 use dom::document::Document;
@@ -24,7 +24,6 @@ use dom::documentfragment::DocumentFragment;
 use dom::node::{Node, UnbindContext};
 use dom::text::Text;
 use heapsize::HeapSizeOf;
-use js::jsapi::JSTracer;
 use std::cell::{Cell, UnsafeCell};
 use std::cmp::{Ord, Ordering, PartialEq, PartialOrd};
 use util::str::DOMString;
@@ -1213,12 +1212,5 @@ impl WeakRangeVec {
 impl HeapSizeOf for WeakRangeVec {
     fn heap_size_of_children(&self) -> usize {
         unsafe { (*self.cell.get()).heap_size_of_children() }
-    }
-}
-
-#[allow(unsafe_code)]
-impl JSTraceable for WeakRangeVec {
-    fn trace(&self, _: *mut JSTracer) {
-        unsafe { (*self.cell.get()).retain_alive() }
     }
 }

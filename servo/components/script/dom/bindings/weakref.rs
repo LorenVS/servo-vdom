@@ -14,10 +14,7 @@
 use core::nonzero::NonZero;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::Reflectable;
-use dom::bindings::trace::JSTraceable;
 use heapsize::HeapSizeOf;
-use js::jsapi::{JSTracer, JS_GetReservedSlot, JS_SetReservedSlot};
-use js::jsval::PrivateValue;
 use libc::c_void;
 use std::cell::{Cell, UnsafeCell};
 use std::iter::Iterator;
@@ -117,7 +114,6 @@ impl<T: WeakReferenceable> PartialEq<T> for WeakRef<T> {
     }
 }
 
-no_jsmanaged_fields!(WeakRef<T: WeakReferenceable>);
 
 impl<T: WeakReferenceable> Drop for WeakRef<T> {
     fn drop(&mut self) {
@@ -169,21 +165,6 @@ impl<T: WeakReferenceable> MutableWeakRef<T> {
 impl<T: WeakReferenceable> HeapSizeOf for MutableWeakRef<T> {
     fn heap_size_of_children(&self) -> usize {
         0
-    }
-}
-
-impl<T: WeakReferenceable> JSTraceable for MutableWeakRef<T> {
-    fn trace(&self, _: *mut JSTracer) {
-        let ptr = self.cell.get();
-        unsafe {
-            let should_drop = match *ptr {
-                Some(ref value) => !value.is_alive(),
-                None => false,
-            };
-            if should_drop {
-                mem::drop((*ptr).take().unwrap());
-            }
-        }
     }
 }
 

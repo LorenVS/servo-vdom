@@ -10,7 +10,6 @@ use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable,EventTypeId};
 use dom::bindings::js::{MutHeapJSVal, Root};
-use dom::bindings::trace::JSTraceable;
 use dom::event::{Event, EventBubbles, EventCancelable};
 use js::jsapi::{JSContext};
 use js::jsval::JSVal;

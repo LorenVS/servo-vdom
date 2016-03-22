@@ -22,7 +22,6 @@ use dom::bindings::error::{Error, ErrorResult, Fallible};
 use dom::bindings::inheritance::{Castable, ElementTypeId, HTMLElementTypeId, NodeTypeId};
 use dom::bindings::js::{JS, LayoutJS, MutNullableHeap};
 use dom::bindings::js::{Root, RootedReference};
-use dom::bindings::trace::JSTraceable;
 use dom::bindings::xmlname::XMLName::InvalidXMLName;
 use dom::bindings::xmlname::{namespace_from_domstring, validate_and_extract, xml_name_type};
 use dom::characterdata::CharacterData;

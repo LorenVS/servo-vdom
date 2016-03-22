@@ -99,19 +99,6 @@ pub trait JSTraceable {
     fn trace(&self, trc: *mut JSTracer);
 }
 
-no_jsmanaged_fields!(DOMPointReadOnlyTypeId);
-no_jsmanaged_fields!(DOMRectReadOnlyTypeId);
-no_jsmanaged_fields!(EventTypeId);
-no_jsmanaged_fields!(EventTargetTypeId);
-no_jsmanaged_fields!(HTMLCollectionTypeId);
-no_jsmanaged_fields!(NodeListTypeId);
-
-no_jsmanaged_fields!(CSSError);
-
-no_jsmanaged_fields!(EncodingRef);
-
-no_jsmanaged_fields!(Reflector);
-
 /// Trace a `JSVal`.
 pub fn trace_jsval(tracer: *mut JSTracer, description: &str, val: &Heap<JSVal>) {
     unsafe {
@@ -158,53 +145,6 @@ pub fn trace_object(tracer: *mut JSTracer, description: &str, obj: &Heap<*mut JS
                             GCTraceKindToAscii(JSGCTraceKind::JSTRACE_OBJECT));
     }
 }
-
-
-no_jsmanaged_fields!(bool, f32, f64, String, Url, AtomicBool, AtomicUsize, Uuid);
-no_jsmanaged_fields!(usize, u8, u16, u32, u64);
-no_jsmanaged_fields!(isize, i8, i16, i32, i64);
-no_jsmanaged_fields!(Sender<T>);
-no_jsmanaged_fields!(Receiver<T>);
-no_jsmanaged_fields!(Rect<T>);
-no_jsmanaged_fields!(Size2D<T>);
-no_jsmanaged_fields!(Arc<T>);
-no_jsmanaged_fields!(Image, ImageMetadata, ImageCacheChan, ImageCacheThread);
-no_jsmanaged_fields!(Metadata);
-no_jsmanaged_fields!(Atom, Namespace, QualName);
-no_jsmanaged_fields!(Trusted<T: Reflectable>);
-no_jsmanaged_fields!(PropertyDeclarationBlock);
-no_jsmanaged_fields!(HashSet<T>);
-// These three are interdependent, if you plan to put jsmanaged data
-// in one of these make sure it is propagated properly to containing structs
-no_jsmanaged_fields!(SubpageId, WindowSizeData, PipelineId);
-no_jsmanaged_fields!(TimerEventId, TimerSource);
-no_jsmanaged_fields!(WorkerId);
-no_jsmanaged_fields!(QuirksMode);
-no_jsmanaged_fields!(Runtime);
-no_jsmanaged_fields!(Headers, Method);
-no_jsmanaged_fields!(LayoutChan);
-no_jsmanaged_fields!(UntrustedNodeAddress);
-no_jsmanaged_fields!(LengthOrPercentageOrAuto);
-no_jsmanaged_fields!(RGBA);
-no_jsmanaged_fields!(EuclidLength<Unit, T>);
-no_jsmanaged_fields!(Matrix2D<T>);
-no_jsmanaged_fields!(StorageType);
-no_jsmanaged_fields!(CanvasGradientStop, LinearGradientStyle, RadialGradientStyle);
-no_jsmanaged_fields!(LineCapStyle, LineJoinStyle, CompositionOrBlending);
-no_jsmanaged_fields!(RepetitionStyle);
-no_jsmanaged_fields!(WebGLError);
-no_jsmanaged_fields!(TimeProfilerChan);
-no_jsmanaged_fields!(MemProfilerChan);
-no_jsmanaged_fields!(PseudoElement);
-no_jsmanaged_fields!(Length);
-no_jsmanaged_fields!(ElementState);
-no_jsmanaged_fields!(DOMString);
-no_jsmanaged_fields!(Mime);
-no_jsmanaged_fields!(AttrIdentifier);
-no_jsmanaged_fields!(AttrValue);
-no_jsmanaged_fields!(ElementSnapshot);
-no_jsmanaged_fields!(HttpsState);
-
 
 /// Homemade trait object for JSTraceable things
 struct TraceableInfo {

@@ -263,37 +263,6 @@ macro_rules! make_nonzero_dimension_setter(
     );
 );
 
-/// For use on non-jsmanaged types
-/// Use  on JS managed types
-macro_rules! no_jsmanaged_fields(
-    ($($ty:ident),+) => (
-        $(
-            impl $crate::dom::bindings::trace::JSTraceable for $ty {
-                #[inline]
-                fn trace(&self, _: *mut ::js::jsapi::JSTracer) {
-                    // Do nothing
-                }
-            }
-        )+
-    );
-    ($ty:ident<$($gen:ident),+>) => (
-        impl<$($gen),+> $crate::dom::bindings::trace::JSTraceable for $ty<$($gen),+> {
-            #[inline]
-            fn trace(&self, _: *mut ::js::jsapi::JSTracer) {
-                // Do nothing
-            }
-        }
-    );
-    ($ty:ident<$($gen:ident: $bound:ident),+>) => (
-        impl<$($gen: $bound),+> $crate::dom::bindings::trace::JSTraceable for $ty<$($gen),+> {
-            #[inline]
-            fn trace(&self, _: *mut ::js::jsapi::JSTracer) {
-                // Do nothing
-            }
-        }
-    );
-);
-
 /// These are used to generate a event handler which has no special case.
 macro_rules! define_event_handler(
     ($handler: ident, $event_type: ident, $getter: ident, $setter: ident, $setter_fn: ident) => (

@@ -41,7 +41,6 @@ use style::stylesheets::Origin;
 use url::Url;
 use util::str::{DOMString, HTML_SPACE_CHARACTERS};
 
-no_jsmanaged_fields!(Stylesheet);
 
 
 pub struct HTMLLinkElement {

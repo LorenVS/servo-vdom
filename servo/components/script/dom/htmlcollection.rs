@@ -7,7 +7,6 @@ use dom::bindings::codegen::Bindings::HTMLCollectionBinding::HTMLCollectionMetho
 use dom::bindings::inheritance::{Castable,TopTypeId,HTMLCollectionTypeId};
 use dom::bindings::js::{JS, Root, MutNullableHeap};
 use dom::bindings::reflector::{Reflector};
-use dom::bindings::trace::JSTraceable;
 use dom::bindings::typed::Typed;
 use dom::bindings::xmlname::namespace_from_domstring;
 use dom::element::Element;

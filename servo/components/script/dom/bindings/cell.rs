@@ -4,8 +4,6 @@
 
 //! A shareable mutable container for the DOM.
 
-use dom::bindings::trace::JSTraceable;
-use js::jsapi::JSTracer;
 use std::cell::{BorrowState, Ref, RefCell, RefMut};
 use util::thread_state;
 use util::thread_state::SCRIPT;
@@ -100,14 +98,6 @@ impl<T> DOMRefCell<T> {
     pub fn borrow_mut_for_layout(&self) -> RefMut<T> {
         debug_assert!(thread_state::get().is_layout());
         self.value.borrow_mut()
-    }
-}
-
-impl<T: JSTraceable> JSTraceable for DOMRefCell<T> {
-    fn trace(&self, trc: *mut JSTracer) {
-        unsafe {
-            (*self).borrow_for_gc_trace().trace(trc)
-        }
     }
 }
 

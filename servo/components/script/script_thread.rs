@@ -30,7 +30,6 @@ use dom::bindings::inheritance::Castable;
 use dom::bindings::js::{JS, MutNullableHeap, Root};
 use dom::bindings::js::{RootedReference};
 use dom::bindings::refcounted::{Trusted, TrustedReference};
-use dom::bindings::trace::{JSTraceable};
 use dom::browsingcontext::BrowsingContext;
 use dom::create::create_element_simple;
 use dom::document::{Document, DocumentProgressHandler, DocumentSource, IsHTMLDocument};
