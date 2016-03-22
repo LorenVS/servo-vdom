@@ -67,7 +67,6 @@ use dom::touchlist::TouchList;
 use dom::uievent::UIEvent;
 use dom::window::{ReflowReason, Window};
 use euclid::point::Point2D;
-use html5ever::tree_builder::{LimitedQuirks, NoQuirks, Quirks, QuirksMode};
 use ipc_channel::ipc::{self, IpcSender};
 use layout_interface::{LayoutChan, Msg, ReflowQueryType};
 use msg::constellation_msg::{ALT, CONTROL, SHIFT, SUPER};
@@ -119,7 +118,6 @@ pub struct Document {
     encoding_name: DOMRefCell<DOMString>,
     is_html_document: bool,
     url: Url,
-    quirks_mode: Cell<QuirksMode>,
     /// Caches for the getElement methods
     id_map: DOMRefCell<HashMap<Atom, Vec<JS<Element>>>>,
     tag_map: DOMRefCell<HashMap<Atom, JS<HTMLCollection>>>,
@@ -334,19 +332,6 @@ impl Document {
                        .filter_map(Root::downcast::<HTMLBaseElement>)
                        .find(|element| element.upcast::<Element>().has_attribute(&atom!("href")));
         self.base_element.set(base.r());
-    }
-
-    pub fn quirks_mode(&self) -> QuirksMode {
-        self.quirks_mode.get()
-    }
-
-    pub fn set_quirks_mode(&self, mode: QuirksMode) {
-        self.quirks_mode.set(mode);
-
-        if mode == Quirks {
-            let LayoutChan(ref layout_chan) = self.window.layout_chan();
-            layout_chan.send(Msg::SetQuirksMode).unwrap();
-        }
     }
 
     pub fn set_encoding_name(&self, name: DOMString) {
@@ -1320,8 +1305,6 @@ impl Document {
             },
             last_modified: last_modified,
             url: url,
-            // https://dom.spec.whatwg.org/#concept-document-quirks
-            quirks_mode: Cell::new(NoQuirks),
             // https://dom.spec.whatwg.org/#concept-document-encoding
             encoding_name: DOMRefCell::new(DOMString::from("UTF-8")),
             is_html_document: is_html_document == IsHTMLDocument::HTMLDocument,
@@ -1540,14 +1523,6 @@ impl Document {
     // https://dom.spec.whatwg.org/#dom-document-documenturi
     fn DocumentURI(&self) -> DOMString {
         self.URL()
-    }
-
-    // https://dom.spec.whatwg.org/#dom-document-compatmode
-    fn CompatMode(&self) -> DOMString {
-        DOMString::from(match self.quirks_mode.get() {
-            LimitedQuirks | NoQuirks => "CSS1Compat",
-            Quirks => "BackCompat",
-        })
     }
 
     // https://dom.spec.whatwg.org/#dom-document-characterset

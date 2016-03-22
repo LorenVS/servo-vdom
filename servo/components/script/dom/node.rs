@@ -48,7 +48,6 @@ use euclid::point::Point2D;
 use euclid::rect::Rect;
 use euclid::size::Size2D;
 use heapsize::{HeapSizeOf, heap_size_of};
-use html5ever::tree_builder::QuirksMode;
 use layout_interface::{LayoutChan, Msg};
 use libc::{self, c_void, uintptr_t};
 use ref_slice::ref_slice;
@@ -595,21 +594,7 @@ impl Node {
             })
         }).unwrap_or(false);
 
-        let scroll_area = window.scroll_area_query(self.to_trusted_node_address());
-
-        match (document != window.Document(), is_body_element, document.quirks_mode(),
-               html_element.r() == self.downcast::<Element>()) {
-            // Step 2 && Step 5
-            (true, _, _, _) | (_, false, QuirksMode::Quirks, true) => Rect::zero(),
-            // Step 6 && Step 7
-            (false, false, _, true) | (false, true, QuirksMode::Quirks, _) => {
-                Rect::new(Point2D::new(window.ScrollX(), window.ScrollY()),
-                                       Size2D::new(max(window.InnerWidth(), scroll_area.size.width),
-                                                   max(window.InnerHeight(), scroll_area.size.height)))
-            },
-            // Step 9
-            _ => scroll_area
-        }
+        window.scroll_area_query(self.to_trusted_node_address())
     }
 
     // https://dom.spec.whatwg.org/#dom-childnode-before
@@ -1661,7 +1646,6 @@ impl Node {
                 let node_doc = node.downcast::<Document>().unwrap();
                 let copy_doc = copy.downcast::<Document>().unwrap();
                 copy_doc.set_encoding_name(node_doc.encoding_name().clone());
-                copy_doc.set_quirks_mode(node_doc.quirks_mode());
             },
             NodeTypeId::Element(..) => {
                 let node_elem = node.downcast::<Element>().unwrap();

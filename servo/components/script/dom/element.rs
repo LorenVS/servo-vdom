@@ -55,8 +55,6 @@ use dom::node::{document_from_node, window_from_node};
 use dom::nodelist::NodeList;
 use dom::text::Text;
 use dom::virtualmethods::{VirtualMethods, vtable_for};
-use html5ever::serialize::TraversalScope;
-use html5ever::tree_builder::{LimitedQuirks, NoQuirks, Quirks};
 use ref_filter_map::ref_filter_map;
 use selectors::matching::{DeclarationBlock, ElementFlags, matches};
 use selectors::matching::{HAS_SLOW_SELECTOR, HAS_EDGE_CHILD_SELECTOR, HAS_SLOW_SELECTOR_LATER_SIBLINGS};
@@ -760,10 +758,6 @@ impl Element {
         })
     }
 
-    pub fn serialize(&self, _: TraversalScope) -> Fallible<DOMString> {
-        Ok(DOMString::from(""))
-    }
-
     // https://html.spec.whatwg.org/multipage/#root-element
     pub fn get_root_element(&self) -> Root<Element> {
         if self.node.is_in_doc() {
@@ -1006,12 +1000,8 @@ impl Element {
     }
 
     pub fn has_class(&self, name: &Atom) -> bool {
-        let quirks_mode = document_from_node(self).quirks_mode();
         let is_equal = |lhs: &Atom, rhs: &Atom| {
-            match quirks_mode {
-                NoQuirks | LimitedQuirks => lhs == rhs,
-                Quirks => lhs.eq_ignore_ascii_case(&rhs),
-            }
+            lhs == rhs
         };
         self.get_attribute(&ns!(), &atom!("class"))
             .map_or(false, |attr| attr.value().as_tokens().iter().any(|atom| is_equal(name, atom)))

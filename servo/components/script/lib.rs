@@ -42,7 +42,6 @@ extern crate euclid;
 extern crate fnv;
 extern crate gfx_traits;
 extern crate heapsize;
-extern crate html5ever;
 extern crate hyper;
 extern crate image;
 extern crate ipc_channel;

@@ -43,7 +43,6 @@ use euclid::length::Length as EuclidLength;
 use euclid::matrix2d::Matrix2D;
 use euclid::rect::Rect;
 use euclid::size::Size2D;
-use html5ever::tree_builder::QuirksMode;
 use hyper::header::Headers;
 use hyper::method::Method;
 use hyper::mime::Mime;
