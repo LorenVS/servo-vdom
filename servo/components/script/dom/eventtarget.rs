@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::callback::{CallbackContainer, ExceptionHandling};
 use dom::bindings::cell::DOMRefCell;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::OnErrorEventHandlerNonNull;
@@ -11,7 +10,7 @@ use dom::bindings::codegen::Bindings::EventTargetBinding::EventTargetMethods;
 use dom::bindings::error::{Error, Fallible};
 use dom::bindings::inheritance::{EventTargetTypeId, TopTypeId};
 use dom::bindings::js::Root;
-use dom::bindings::reflector::{Reflectable, Reflector};
+use dom::bindings::reflector::{Reflector};
 use dom::bindings::typed::Typed;
 use dom::event::{Event, EventBubbles, EventCancelable};
 use dom::virtualmethods::VirtualMethods;
@@ -101,15 +100,6 @@ impl HeapSizeOf for EventListenerType {
 pub enum CompiledEventListener {
     Listener(Rc<EventListener>),
     Handler(CommonEventHandler),
-}
-
-impl CompiledEventListener {
-    // https://html.spec.whatwg.org/multipage/#the-event-handler-processing-algorithm
-    pub fn call_or_handle_event<T: Reflectable>(&self,
-                                                _object: &T,
-                                                _event: &Event,
-                                                _exception_handle: ExceptionHandling) {
-    }
 }
 
 #[derive(JSTraceable, Clone, PartialEq, HeapSizeOf)]

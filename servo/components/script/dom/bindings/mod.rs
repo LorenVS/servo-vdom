@@ -139,7 +139,6 @@ pub mod conversions;
 pub mod error;
 pub mod global;
 pub mod inheritance;
-pub mod interface;
 pub mod js;
 pub mod num;
 pub mod proxyhandler;
