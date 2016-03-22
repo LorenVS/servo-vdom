@@ -9,20 +9,10 @@ name = "util"
 path = "lib.rs"
 
 [features]
-
-# This feature allows us to avoid depending on various things we don't need for
-# GeckoLib builds. Conceptually, it would make more sense to have a "geckolib"
-# feature, but Cargo is generally set up for features to add dependencies, not
-# remove them. So we do it this way, and request that all non-GeckoLib builds
-# set this feature.
-non-geckolib = ["js"]
+non-geckolib = []
 
 [dependencies.plugins]
 path = "../plugins"
-
-[dependencies.js]
-git = "https://github.com/servo/rust-mozjs"
-optional = true
 
 [dependencies.ipc-channel]
 git = "https://github.com/servo/ipc-channel"

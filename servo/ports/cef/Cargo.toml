@@ -69,9 +69,6 @@ path = "../../components/devtools"
 git = "https://github.com/servo/rust-azure"
 features = ["plugins"]
 
-[dependencies.js]
-git = "https://github.com/servo/rust-mozjs"
-
 [dependencies.layers]
 git = "https://github.com/servo/rust-layers"
 features = ["plugins"]

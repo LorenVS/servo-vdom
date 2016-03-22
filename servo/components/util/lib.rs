@@ -6,7 +6,6 @@
 #![feature(box_syntax)]
 #![feature(core_intrinsics)]
 #![feature(custom_derive)]
-#![cfg_attr(feature = "non-geckolib", feature(decode_utf16))]
 #![feature(fnbox)]
 #![feature(optin_builtin_traits)]
 #![feature(plugin)]
@@ -26,8 +25,6 @@ extern crate euclid;
 extern crate getopts;
 extern crate heapsize;
 extern crate ipc_channel;
-#[cfg(feature = "non-geckolib")]
-extern crate js;
 #[macro_use]
 extern crate lazy_static;
 extern crate libc;
@@ -50,7 +47,6 @@ pub mod debug_utils;
 pub mod geometry;
 pub mod ipc;
 pub mod linked_list;
-#[cfg(feature = "non-geckolib")]
 pub mod non_geckolib;
 pub mod opts;
 pub mod prefs;

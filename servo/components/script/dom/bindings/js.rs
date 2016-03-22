@@ -29,8 +29,6 @@ use dom::bindings::inheritance::Castable;
 use dom::bindings::reflector::{Reflector};
 use dom::node::Node;
 use heapsize::HeapSizeOf;
-use js::jsapi::{Heap};
-use js::jsval::JSVal;
 use layout_interface::TrustedNodeAddress;
 use std::cell::UnsafeCell;
 use std::default::Default;
@@ -195,63 +193,13 @@ impl LayoutJS<Node> {
     }
 }
 
-
-/// A trait to be implemented for JS-managed types that can be stored in
-/// mutable member fields.
-///
-/// Do not implement this trait yourself.
-pub trait HeapGCValue {
-}
-
-impl HeapGCValue for Heap<JSVal> {
-}
-
-impl<T> HeapGCValue for JS<T> {
-}
-
-/// A holder that provides interior mutability for GC-managed JSVals.
-///
-/// Must be used in place of traditional interior mutability to ensure proper
-/// GC barriers are enforced.
-
-pub struct MutHeapJSVal {
-    val: UnsafeCell<Heap<JSVal>>,
-}
-
-impl MutHeapJSVal {
-    /// Create a new `MutHeapJSVal`.
-    pub fn new() -> MutHeapJSVal {
-        debug_assert!(thread_state::get().is_script());
-        MutHeapJSVal {
-            val: UnsafeCell::new(Heap::default()),
-        }
-    }
-
-    /// Set this `MutHeapJSVal` to the given value, calling write barriers as
-    /// appropriate.
-    pub fn set(&self, val: JSVal) {
-        debug_assert!(thread_state::get().is_script());
-        unsafe {
-            let cell = self.val.get();
-            (*cell).set(val);
-        }
-    }
-
-    /// Get the value in this `MutHeapJSVal`, calling read barriers as appropriate.
-    pub fn get(&self) -> JSVal {
-        debug_assert!(thread_state::get().is_script());
-        unsafe { (*self.val.get()).get() }
-    }
-}
-
-
 /// A holder that provides interior mutability for GC-managed values such as
 /// `JS<T>`.  Essentially a `Cell<JS<T>>`, but safer.
 ///
 /// This should only be used as a field in other DOM objects; see warning
 /// on `JS<T>`.
 
-pub struct MutHeap<T: HeapGCValue> {
+pub struct MutHeap<T> {
     val: UnsafeCell<T>,
 }
 
@@ -281,7 +229,7 @@ impl<T> MutHeap<JS<T>> {
     }
 }
 
-impl<T: HeapGCValue> HeapSizeOf for MutHeap<T> {
+impl<T> HeapSizeOf for MutHeap<T> {
     fn heap_size_of_children(&self) -> usize {
         // See comment on HeapSizeOf for JS<T>.
         0
@@ -311,7 +259,7 @@ impl<T: PartialEq> PartialEq<T> for MutHeap<JS<T>> {
 /// This should only be used as a field in other DOM objects; see warning
 /// on `JS<T>`.
 
-pub struct MutNullableHeap<T: HeapGCValue> {
+pub struct MutNullableHeap<T> {
     ptr: UnsafeCell<Option<T>>,
 }
 
@@ -383,7 +331,7 @@ impl<'a, T> PartialEq<Option<&'a T>> for MutNullableHeap<JS<T>> {
     }
 }
 
-impl<T: HeapGCValue> Default for MutNullableHeap<T> {
+impl<T> Default for MutNullableHeap<T> {
     
     fn default() -> MutNullableHeap<T> {
         debug_assert!(thread_state::get().is_script());
@@ -393,7 +341,7 @@ impl<T: HeapGCValue> Default for MutNullableHeap<T> {
     }
 }
 
-impl<T: HeapGCValue> HeapSizeOf for MutNullableHeap<T> {
+impl<T> HeapSizeOf for MutNullableHeap<T> {
     fn heap_size_of_children(&self) -> usize {
         // See comment on HeapSizeOf for JS<T>.
         0
