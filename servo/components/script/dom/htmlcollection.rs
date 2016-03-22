@@ -333,54 +333,10 @@ impl HTMLCollectionMethods for HTMLCollection {
         }
     }
 
-    // https://dom.spec.whatwg.org/#dom-htmlcollection-nameditem
-    fn NamedItem(&self, key: DOMString) -> Option<Root<Element>> {
-        // Step 1.
-        if key.is_empty() {
-            return None;
-        }
-
-        // Step 2.
-        self.elements_iter().find(|elem| {
-            elem.get_string_attribute(&atom!("id")) == key ||
-            (elem.namespace() == &ns!(html) && elem.get_string_attribute(&atom!("name")) == key)
-        })
-    }
-
     // https://dom.spec.whatwg.org/#dom-htmlcollection-item
     fn IndexedGetter(&self, index: u32, found: &mut bool) -> Option<Root<Element>> {
         let maybe_elem = self.Item(index);
         *found = maybe_elem.is_some();
         maybe_elem
-    }
-
-    // check-tidy: no specs after this line
-    fn NamedGetter(&self, name: DOMString, found: &mut bool) -> Option<Root<Element>> {
-        let maybe_elem = self.NamedItem(name);
-        *found = maybe_elem.is_some();
-        maybe_elem
-    }
-
-    // https://dom.spec.whatwg.org/#interface-htmlcollection
-    fn SupportedPropertyNames(&self) -> Vec<DOMString> {
-        // Step 1
-        let mut result = vec![];
-
-        // Step 2
-        for elem in self.elements_iter() {
-            // Step 2.1
-            let id_attr = elem.get_string_attribute(&atom!("id"));
-            if !id_attr.is_empty() && !result.contains(&id_attr) {
-                result.push(id_attr)
-            }
-            // Step 2.2
-            let name_attr = elem.get_string_attribute(&atom!("name"));
-            if !name_attr.is_empty() && !result.contains(&name_attr) && *elem.namespace() == ns!(html) {
-                result.push(name_attr)
-            }
-        }
-
-        // Step 3
-        result
     }
 }

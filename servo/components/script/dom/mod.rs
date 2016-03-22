@@ -235,7 +235,6 @@ pub mod domquad;
 pub mod domrect;
 pub mod domrectlist;
 pub mod domrectreadonly;
-pub mod domstringmap;
 pub mod domtokenlist;
 pub mod element;
 pub mod errorevent;

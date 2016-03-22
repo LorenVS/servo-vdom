@@ -3,15 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // https://dom.spec.whatwg.org/#interface-namednodemap
-
-[LegacyUnenumerableNamedProperties]
 interface NamedNodeMap {
   [Pure]
   readonly attribute unsigned long length;
   [Pure]
   getter Attr? item(unsigned long index);
-  [Pure]
-  getter Attr? getNamedItem(DOMString name);
   [Pure]
   Attr? getNamedItemNS(DOMString? namespace, DOMString localName);
   [Throws]

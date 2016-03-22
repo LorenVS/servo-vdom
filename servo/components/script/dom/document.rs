@@ -69,7 +69,6 @@ use dom::window::{ReflowReason, Window};
 use euclid::point::Point2D;
 use html5ever::tree_builder::{LimitedQuirks, NoQuirks, Quirks, QuirksMode};
 use ipc_channel::ipc::{self, IpcSender};
-use js::jsapi::{JSContext, JSObject};
 use layout_interface::{LayoutChan, Msg, ReflowQueryType};
 use msg::constellation_msg::{ALT, CONTROL, SHIFT, SUPER};
 use msg::constellation_msg::{ConstellationChan, Key, KeyModifiers, KeyState};
@@ -90,7 +89,6 @@ use std::collections::hash_map::Entry::{Occupied, Vacant};
 use std::collections::{BTreeMap, HashMap};
 use std::default::Default;
 use std::mem;
-use std::ptr;
 use std::sync::Arc;
 use string_cache::{Atom, QualName};
 use style::context::ReflowGoal;
@@ -2153,98 +2151,6 @@ impl DocumentMethods for Document {
     // https://html.spec.whatwg.org/multipage/#dom-document-fgcolor
     fn SetFgColor(&self, value: DOMString) {
         self.set_body_attribute(&atom!("text"), value)
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-tree-accessors:dom-document-nameditem-filter
-    fn NamedGetter(&self, _cx: *mut JSContext, name: DOMString, found: &mut bool) -> *mut JSObject {
-        #[derive(JSTraceable, HeapSizeOf)]
-        struct NamedElementFilter {
-            name: Atom,
-        }
-        impl CollectionFilter for NamedElementFilter {
-            fn filter(&self, elem: &Element, _root: &Node) -> bool {
-                filter_by_name(&self.name, elem.upcast())
-            }
-        }
-        // https://html.spec.whatwg.org/multipage/#dom-document-nameditem-filter
-        fn filter_by_name(name: &Atom, node: &Node) -> bool {
-            let html_elem_type = match node.type_id() {
-                NodeTypeId::Element(ElementTypeId::HTMLElement(type_)) => type_,
-                _ => return false,
-            };
-            let elem = match node.downcast::<Element>() {
-                Some(elem) => elem,
-                None => return false,
-            };
-            match html_elem_type {
-                HTMLElementTypeId::HTMLAppletElement => {
-                    match elem.get_attribute(&ns!(), &atom!("name")) {
-                        Some(ref attr) if attr.value().as_atom() == name => true,
-                        _ => {
-                            match elem.get_attribute(&ns!(), &atom!("id")) {
-                                Some(ref attr) => attr.value().as_atom() == name,
-                                None => false,
-                            }
-                        },
-                    }
-                },
-                HTMLElementTypeId::HTMLFormElement => {
-                    match elem.get_attribute(&ns!(), &atom!("name")) {
-                        Some(ref attr) => attr.value().as_atom() == name,
-                        None => false,
-                    }
-                },
-                HTMLElementTypeId::HTMLImageElement => {
-                    match elem.get_attribute(&ns!(), &atom!("name")) {
-                        Some(ref attr) => {
-                            if attr.value().as_atom() == name {
-                                true
-                            } else {
-                                match elem.get_attribute(&ns!(), &atom!("id")) {
-                                    Some(ref attr) => attr.value().as_atom() == name,
-                                    None => false,
-                                }
-                            }
-                        },
-                        None => false,
-                    }
-                },
-                // TODO: Handle <embed>, <iframe> and <object>.
-                _ => false,
-            }
-        }
-        let name = Atom::from(name);
-        let root = self.upcast::<Node>();
-        {
-            // Step 1.
-            let mut elements = root.traverse_preorder()
-                                   .filter(|node| filter_by_name(&name, node.r()))
-                                   .peekable();
-            if let Some(first) = elements.next() {
-                if elements.is_empty() {
-                    *found = true;
-                    // TODO: Step 2.
-                    // Step 3.
-                    return first.reflector().get_jsobject().get();
-                }
-            } else {
-                *found = false;
-                return ptr::null_mut();
-            }
-        }
-        // Step 4.
-        *found = true;
-        let filter = NamedElementFilter {
-            name: name,
-        };
-        let collection = HTMLCollection::create(root, box filter);
-        collection.reflector().get_jsobject().get()
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-tree-accessors:supported-property-names
-    fn SupportedPropertyNames(&self) -> Vec<DOMString> {
-        // FIXME: unimplemented (https://github.com/servo/servo/issues/7273)
-        vec![]
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-document-clear

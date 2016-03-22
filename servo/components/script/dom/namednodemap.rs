@@ -10,7 +10,6 @@ use dom::bindings::js::{JS, Root};
 use dom::bindings::reflector::{Reflector};
 use dom::bindings::xmlname::namespace_from_domstring;
 use dom::element::Element;
-use std::ascii::AsciiExt;
 use string_cache::Atom;
 use util::str::DOMString;
 
@@ -42,11 +41,6 @@ impl NamedNodeMapMethods for NamedNodeMap {
     // https://dom.spec.whatwg.org/#dom-namednodemap-item
     fn Item(&self, index: u32) -> Option<Root<Attr>> {
         self.owner.attrs().get(index as usize).map(|js| Root::from_ref(&**js))
-    }
-
-    // https://dom.spec.whatwg.org/#dom-namednodemap-getnameditem
-    fn GetNamedItem(&self, name: DOMString) -> Option<Root<Attr>> {
-        self.owner.get_attribute_by_name(name)
     }
 
     // https://dom.spec.whatwg.org/#dom-namednodemap-getnameditemns
@@ -85,29 +79,5 @@ impl NamedNodeMapMethods for NamedNodeMap {
         let item = self.Item(index);
         *found = item.is_some();
         item
-    }
-
-    // check-tidy: no specs after this line
-    fn NamedGetter(&self, name: DOMString, found: &mut bool) -> Option<Root<Attr>> {
-        let item = self.GetNamedItem(name);
-        *found = item.is_some();
-        item
-    }
-
-    // https://heycam.github.io/webidl/#dfn-supported-property-names
-    fn SupportedPropertyNames(&self) -> Vec<DOMString> {
-        let mut names = vec!();
-        let html_element_in_html_document = self.owner.html_element_in_html_document();
-        for attr in self.owner.attrs().iter() {
-            let s = &**attr.name();
-            if html_element_in_html_document && !s.bytes().all(|b| b.to_ascii_lowercase() == b) {
-                continue
-            }
-
-            if !names.iter().any(|name| &*name == s) {
-                names.push(DOMString::from(s));
-            }
-        }
-        names
     }
 }

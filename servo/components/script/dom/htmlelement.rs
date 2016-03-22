@@ -17,7 +17,6 @@ use dom::bindings::js::{JS, MutNullableHeap, Root, RootedReference};
 use dom::bindings::reflector::Reflectable;
 use dom::cssstyledeclaration::{CSSModificationAccess, CSSStyleDeclaration};
 use dom::document::{Document, FocusType};
-use dom::domstringmap::DOMStringMap;
 use dom::element::{AttributeMutation, Element};
 use dom::eventtarget::EventTarget;
 use dom::htmlbodyelement::HTMLBodyElement;
@@ -41,8 +40,7 @@ use util::str::DOMString;
 #[dom_struct]
 pub struct HTMLElement {
     element: Element,
-    style_decl: MutNullableHeap<JS<CSSStyleDeclaration>>,
-    dataset: MutNullableHeap<JS<DOMStringMap>>,
+    style_decl: MutNullableHeap<JS<CSSStyleDeclaration>>
 }
 
 impl HTMLElement {
@@ -58,7 +56,6 @@ impl HTMLElement {
             element:
                 Element::new_inherited_with_state(state, ElementTypeId::HTMLElement(type_id), tag_name, ns!(html), prefix, document),
             style_decl: Default::default(),
-            dataset: Default::default(),
         }
     }
 
@@ -135,11 +132,6 @@ impl HTMLElementMethods for HTMLElement {
 
     // https://html.spec.whatwg.org/multipage/#globaleventhandlers
     global_event_handlers!(NoOnload);
-
-    // https://html.spec.whatwg.org/multipage/#dom-dataset
-    fn Dataset(&self) -> Root<DOMStringMap> {
-        self.dataset.or_init(|| DOMStringMap::new(self))
-    }
 
     // https://html.spec.whatwg.org/multipage/#handler-onload
     fn GetOnload(&self) -> Option<Rc<EventHandlerNonNull>> {

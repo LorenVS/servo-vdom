@@ -4,16 +4,12 @@
 
 use dom::bindings::codegen::Bindings::HTMLCollectionBinding::HTMLCollectionMethods;
 use dom::bindings::codegen::Bindings::HTMLFormControlsCollectionBinding::HTMLFormControlsCollectionMethods;
-use dom::bindings::codegen::UnionTypes::RadioNodeListOrElement;
-use dom::bindings::inheritance::{Castable, HTMLCollectionTypeId};
+use dom::bindings::inheritance::{HTMLCollectionTypeId};
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflectable};
 use dom::element::Element;
 use dom::htmlcollection::{CollectionFilter, HTMLCollection};
 use dom::node::Node;
-use dom::radionodelist::RadioNodeList;
-use std::iter;
-use util::str::DOMString;
 
 #[dom_struct]
 pub struct HTMLFormControlsCollection {
@@ -41,45 +37,7 @@ impl HTMLFormControlsCollection {
 }
 
 impl HTMLFormControlsCollectionMethods for HTMLFormControlsCollection {
-    // https://html.spec.whatwg.org/multipage/#dom-htmlformcontrolscollection-nameditem
-    fn NamedItem(&self, name: DOMString) -> Option<RadioNodeListOrElement> {
-        // Step 1
-        if name.is_empty() { return None; }
 
-        let mut filter_map = self.collection.elements_iter().filter_map(|elem| {
-            if elem.get_string_attribute(&atom!("name")) == name
-               || elem.get_string_attribute(&atom!("id")) == name {
-                Some(elem)
-            } else { None }
-        });
-
-        if let Some(elem) = filter_map.next() {
-            let mut peekable = filter_map.peekable();
-            // Step 2
-            if peekable.peek().is_none() {
-                Some(RadioNodeListOrElement::Element(elem))
-            } else {
-                // Step 4-5
-                let once = iter::once(Root::upcast::<Node>(elem));
-                let list = once.chain(peekable.map(Root::upcast));
-                Some(RadioNodeListOrElement::RadioNodeList(RadioNodeList::new_simple_list(list)))
-            }
-        // Step 3
-        } else { None }
-
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-htmlformcontrolscollection-nameditem
-    fn NamedGetter(&self, name: DOMString, found: &mut bool) -> Option<RadioNodeListOrElement> {
-        let maybe_elem = self.NamedItem(name);
-        *found = maybe_elem.is_some();
-        maybe_elem
-    }
-
-    // https://html.spec.whatwg.org/multipage/#the-htmlformcontrolscollection-interface:supported-property-names
-    fn SupportedPropertyNames(&self) -> Vec<DOMString> {
-        self.collection.SupportedPropertyNames()
-    }
 
     // FIXME: This shouldn't need to be implemented here since HTMLCollection (the parent of
     // HTMLFormControlsCollection) implements IndexedGetter.
