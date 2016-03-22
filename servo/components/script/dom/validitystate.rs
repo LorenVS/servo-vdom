@@ -2,11 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-use dom::bindings::global::GlobalRef;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflector};
-use dom::window::Window;
 
 // https://html.spec.whatwg.org/multipage/#validitystate
 #[dom_struct]
@@ -23,9 +20,7 @@ impl ValidityState {
         }
     }
 
-    pub fn new(window: &Window) -> Root<ValidityState> {
-        reflect_dom_object(box ValidityState::new_inherited(),
-                           GlobalRef::Window(window),
-                           ValidityStateBinding::Wrap)
+    pub fn new() -> Root<ValidityState> {
+        Root::new_box(box ValidityState::new_inherited())
     }
 }
