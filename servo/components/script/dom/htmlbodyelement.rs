@@ -14,7 +14,7 @@ use dom::document::Document;
 use dom::element::{AttributeMutation, Element, RawLayoutElementHelpers};
 use dom::eventtarget::EventTarget;
 use dom::htmlelement::HTMLElement;
-use dom::node::{Node, document_from_node, window_from_node};
+use dom::node::{document_from_node, window_from_node};
 use dom::virtualmethods::VirtualMethods;
 use msg::constellation_msg::ConstellationChan;
 use script_traits::ScriptMsg as ConstellationMsg;

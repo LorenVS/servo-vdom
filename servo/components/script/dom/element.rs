@@ -1354,8 +1354,7 @@ impl ElementMethods for Element {
 
     // https://dom.spec.whatwg.org/#dom-element-getelementsbytagname
     fn GetElementsByTagName(&self, localname: DOMString) -> Root<HTMLCollection> {
-        let window = window_from_node(self);
-        HTMLCollection::by_tag_name(window.r(), self.upcast(), localname)
+        HTMLCollection::by_tag_name(self.upcast(), localname)
     }
 
     // https://dom.spec.whatwg.org/#dom-element-getelementsbytagnamens
@@ -1363,19 +1362,16 @@ impl ElementMethods for Element {
                               maybe_ns: Option<DOMString>,
                               localname: DOMString)
                               -> Root<HTMLCollection> {
-        let window = window_from_node(self);
-        HTMLCollection::by_tag_name_ns(window.r(), self.upcast(), localname, maybe_ns)
+        HTMLCollection::by_tag_name_ns(self.upcast(), localname, maybe_ns)
     }
 
     // https://dom.spec.whatwg.org/#dom-element-getelementsbyclassname
     fn GetElementsByClassName(&self, classes: DOMString) -> Root<HTMLCollection> {
-        let window = window_from_node(self);
-        HTMLCollection::by_class_name(window.r(), self.upcast(), classes)
+        HTMLCollection::by_class_name(self.upcast(), classes)
     }
 
     // https://drafts.csswg.org/cssom-view/#dom-element-getclientrects
     fn GetClientRects(&self) -> Root<DOMRectList> {
-        let win = window_from_node(self);
         let raw_rects = self.upcast::<Node>().get_content_boxes();
         let rects = raw_rects.iter().map(|rect| {
             DOMRect::new(rect.origin.x.to_f64_px(),
@@ -1383,12 +1379,11 @@ impl ElementMethods for Element {
                          rect.size.width.to_f64_px(),
                          rect.size.height.to_f64_px())
         });
-        DOMRectList::new(win.r(), rects)
+        DOMRectList::new(rects)
     }
 
     // https://drafts.csswg.org/cssom-view/#dom-element-getboundingclientrect
     fn GetBoundingClientRect(&self) -> Root<DOMRect> {
-        let win = window_from_node(self);
         let rect = self.upcast::<Node>().get_bounding_content_box();
         DOMRect::new(rect.origin.x.to_f64_px(),
                      rect.origin.y.to_f64_px(),
@@ -1438,8 +1433,7 @@ impl ElementMethods for Element {
 
     // https://dom.spec.whatwg.org/#dom-parentnode-children
     fn Children(&self) -> Root<HTMLCollection> {
-        let window = window_from_node(self);
-        HTMLCollection::children(window.r(), self.upcast())
+        HTMLCollection::children(self.upcast())
     }
 
     // https://dom.spec.whatwg.org/#dom-parentnode-firstelementchild

@@ -6,7 +6,6 @@ use dom::bindings::codegen::Bindings::DOMRectReadOnlyBinding::{DOMRectReadOnlyMe
 use dom::bindings::inheritance::{DOMRectReadOnlyTypeId,TopTypeId};
 use dom::bindings::typed::Typed;
 use dom::bindings::error::Fallible;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::js::Root;
 use dom::bindings::reflector::{Reflector};
 use std::cell::Cell;
@@ -34,8 +33,7 @@ impl DOMRectReadOnly {
         }
     }
 
-    pub fn new(global: GlobalRef,
-               x: f64,
+    pub fn new(x: f64,
                y: f64,
                width: f64,
                height: f64)
@@ -43,13 +41,12 @@ impl DOMRectReadOnly {
         Root::new_box(box DOMRectReadOnly::new_inherited(DOMRectReadOnlyTypeId::DOMRectReadOnly, x, y, width, height))
     }
 
-    pub fn Constructor(global: GlobalRef,
-                       x: f64,
+    pub fn Constructor(x: f64,
                        y: f64,
                        width: f64,
                        height: f64)
                        -> Fallible<Root<DOMRectReadOnly>> {
-        Ok(DOMRectReadOnly::new(global, x, y, width, height))
+        Ok(DOMRectReadOnly::new(x, y, width, height))
     }
 
     pub fn set_x(&self, value: f64) {

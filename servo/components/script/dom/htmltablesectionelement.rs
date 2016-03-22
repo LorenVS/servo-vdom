@@ -14,7 +14,7 @@ use dom::element::{Element, RawLayoutElementHelpers};
 use dom::htmlcollection::{CollectionFilter, HTMLCollection};
 use dom::htmlelement::HTMLElement;
 use dom::htmltablerowelement::HTMLTableRowElement;
-use dom::node::{Node, window_from_node};
+use dom::node::{Node};
 use dom::virtualmethods::VirtualMethods;
 use string_cache::Atom;
 use util::str::DOMString;
@@ -52,7 +52,7 @@ impl CollectionFilter for RowsFilter {
 impl HTMLTableSectionElementMethods for HTMLTableSectionElement {
     // https://html.spec.whatwg.org/multipage/#dom-tbody-rows
     fn Rows(&self) -> Root<HTMLCollection> {
-        HTMLCollection::create(&window_from_node(self), self.upcast(), box RowsFilter)
+        HTMLCollection::create(self.upcast(), box RowsFilter)
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-tbody-insertrow

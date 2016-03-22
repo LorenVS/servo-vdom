@@ -28,8 +28,7 @@ impl DOMRect {
         Root::new_box(box DOMRect::new_inherited(x, y, width, height))
     }
 
-    pub fn Constructor(global: GlobalRef,
-                       x: f64,
+    pub fn Constructor(x: f64,
                        y: f64,
                        width: f64,
                        height: f64)

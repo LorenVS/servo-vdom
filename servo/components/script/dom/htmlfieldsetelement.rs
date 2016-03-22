@@ -58,7 +58,7 @@ impl HTMLFieldSetElementMethods for HTMLFieldSetElement {
         }
         let filter = box ElementsFilter;
         let window = window_from_node(self);
-        HTMLCollection::create(window.r(), self.upcast(), filter)
+        HTMLCollection::create(self.upcast(), filter)
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-fieldset-disabled

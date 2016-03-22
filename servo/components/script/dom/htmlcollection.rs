@@ -84,13 +84,13 @@ impl HTMLCollection {
     }
 
     #[allow(unrooted_must_root)]
-    pub fn new(window: &Window, root: &Node, filter: Box<CollectionFilter + 'static>) -> Root<HTMLCollection> {
+    pub fn new(root: &Node, filter: Box<CollectionFilter + 'static>) -> Root<HTMLCollection> {
         Root::new_box(box HTMLCollection::new_inherited(HTMLCollectionTypeId::HTMLCollection, root, filter))
     }
 
-    pub fn create(window: &Window, root: &Node,
+    pub fn create(root: &Node,
                   filter: Box<CollectionFilter + 'static>) -> Root<HTMLCollection> {
-        HTMLCollection::new(window, root, filter)
+        HTMLCollection::new(root, filter)
     }
 
     fn validate_cache(&self) {
@@ -116,15 +116,15 @@ impl HTMLCollection {
         }
     }
 
-    pub fn by_tag_name(window: &Window, root: &Node, mut tag: DOMString)
+    pub fn by_tag_name(root: &Node, mut tag: DOMString)
                        -> Root<HTMLCollection> {
         let tag_atom = Atom::from(&*tag);
         tag.make_ascii_lowercase();
         let ascii_lower_tag = Atom::from(tag); // FIXME(ajeffrey): don't clone atom if it was already lowercased.
-        HTMLCollection::by_atomic_tag_name(window, root, tag_atom, ascii_lower_tag)
+        HTMLCollection::by_atomic_tag_name(root, tag_atom, ascii_lower_tag)
     }
 
-    pub fn by_atomic_tag_name(window: &Window, root: &Node, tag_atom: Atom, ascii_lower_tag: Atom)
+    pub fn by_atomic_tag_name(root: &Node, tag_atom: Atom, ascii_lower_tag: Atom)
                        -> Root<HTMLCollection> {
         #[derive(JSTraceable, HeapSizeOf)]
         struct TagNameFilter {
@@ -146,18 +146,18 @@ impl HTMLCollection {
             tag: tag_atom,
             ascii_lower_tag: ascii_lower_tag,
         };
-        HTMLCollection::create(window, root, box filter)
+        HTMLCollection::create(root, box filter)
     }
 
-    pub fn by_tag_name_ns(window: &Window, root: &Node, tag: DOMString,
+    pub fn by_tag_name_ns(root: &Node, tag: DOMString,
                           maybe_ns: Option<DOMString>) -> Root<HTMLCollection> {
         let local = Atom::from(tag);
         let ns = namespace_from_domstring(maybe_ns);
         let qname = QualName::new(ns, local);
-        HTMLCollection::by_qual_tag_name(window, root, qname)
+        HTMLCollection::by_qual_tag_name(root, qname)
     }
 
-    pub fn by_qual_tag_name(window: &Window, root: &Node, qname: QualName) -> Root<HTMLCollection> {
+    pub fn by_qual_tag_name(root: &Node, qname: QualName) -> Root<HTMLCollection> {
         #[derive(JSTraceable, HeapSizeOf)]
         struct TagNameNSFilter {
             qname: QualName
@@ -171,16 +171,16 @@ impl HTMLCollection {
         let filter = TagNameNSFilter {
             qname: qname
         };
-        HTMLCollection::create(window, root, box filter)
+        HTMLCollection::create(root, box filter)
     }
 
-    pub fn by_class_name(window: &Window, root: &Node, classes: DOMString)
+    pub fn by_class_name(root: &Node, classes: DOMString)
                          -> Root<HTMLCollection> {
         let class_atoms = split_html_space_chars(&classes).map(Atom::from).collect();
-        HTMLCollection::by_atomic_class_name(window, root, class_atoms)
+        HTMLCollection::by_atomic_class_name(root, class_atoms)
     }
 
-    pub fn by_atomic_class_name(window: &Window, root: &Node, classes: Vec<Atom>)
+    pub fn by_atomic_class_name(root: &Node, classes: Vec<Atom>)
                          -> Root<HTMLCollection> {
         #[derive(JSTraceable, HeapSizeOf)]
         struct ClassNameFilter {
@@ -194,10 +194,10 @@ impl HTMLCollection {
         let filter = ClassNameFilter {
             classes: classes
         };
-        HTMLCollection::create(window, root, box filter)
+        HTMLCollection::create(root, box filter)
     }
 
-    pub fn children(window: &Window, root: &Node) -> Root<HTMLCollection> {
+    pub fn children(root: &Node) -> Root<HTMLCollection> {
         #[derive(JSTraceable, HeapSizeOf)]
         struct ElementChildFilter;
         impl CollectionFilter for ElementChildFilter {
@@ -205,7 +205,7 @@ impl HTMLCollection {
                 root.is_parent_of(elem.upcast())
             }
         }
-        HTMLCollection::create(window, root, box ElementChildFilter)
+        HTMLCollection::create(root, box ElementChildFilter)
     }
 
     pub fn elements_iter_after(&self, after: &Node) -> HTMLCollectionElementsIter {

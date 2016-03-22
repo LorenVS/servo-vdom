@@ -26,7 +26,7 @@ impl DOMRectList {
         }
     }
 
-    pub fn new<T>(window: &Window, rects: T) -> Root<DOMRectList>
+    pub fn new<T>(rects: T) -> Root<DOMRectList>
         where T: Iterator<Item = Root<DOMRect>>
     {
         Root::new_box(box DOMRectList::new_inherited(rects))

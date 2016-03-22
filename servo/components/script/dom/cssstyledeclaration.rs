@@ -9,7 +9,6 @@ use dom::bindings::js::{JS, Root};
 use dom::bindings::reflector::{Reflector};
 use dom::element::{Element, StylePriority};
 use dom::node::{Node, NodeDamage, document_from_node, window_from_node};
-use dom::window::Window;
 use std::ascii::AsciiExt;
 use std::borrow::ToOwned;
 use std::cell::Ref;

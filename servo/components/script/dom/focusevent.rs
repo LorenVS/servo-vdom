@@ -31,8 +31,7 @@ impl FocusEvent {
         }
     }
 
-    pub fn new(window: &Window,
-               type_: DOMString,
+    pub fn new(type_: DOMString,
                can_bubble: EventBubbles,
                cancelable: EventCancelable,
                view: Option<&Window>,
@@ -48,8 +47,7 @@ impl FocusEvent {
         ev
     }
 
-    pub fn Constructor(global: GlobalRef,
-                       type_: DOMString,
+    pub fn Constructor(type_: DOMString,
                        init: &FocusEventInit) -> Fallible<Root<FocusEvent>> {
         let bubbles = if init.parent.parent.bubbles {
             EventBubbles::Bubbles
@@ -61,7 +59,7 @@ impl FocusEvent {
         } else {
             EventCancelable::NotCancelable
         };
-        let event = FocusEvent::new(global.as_window(), type_,
+        let event = FocusEvent::new(type_,
                                     bubbles,
                                     cancelable,
                                     init.parent.view.r(),

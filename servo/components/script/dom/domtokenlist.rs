@@ -5,11 +5,9 @@
 use dom::attr::Attr;
 use dom::bindings::codegen::Bindings::DOMTokenListBinding::DOMTokenListMethods;
 use dom::bindings::error::{Error, ErrorResult, Fallible};
-use dom::bindings::global::GlobalRef;
 use dom::bindings::js::{JS, Root};
 use dom::bindings::reflector::{Reflector};
 use dom::element::Element;
-use dom::node::window_from_node;
 use string_cache::Atom;
 use util::str::{DOMString, HTML_SPACE_CHARACTERS};
 
@@ -30,7 +28,6 @@ impl DOMTokenList {
     }
 
     pub fn new(element: &Element, local_name: &Atom) -> Root<DOMTokenList> {
-        let window = window_from_node(element);
         Root::new_box(box DOMTokenList::new_inherited(element, local_name.clone()))
     }
 

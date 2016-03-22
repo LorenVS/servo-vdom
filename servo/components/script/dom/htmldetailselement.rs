@@ -12,7 +12,7 @@ use dom::document::Document;
 use dom::element::AttributeMutation;
 use dom::eventtarget::EventTarget;
 use dom::htmlelement::HTMLElement;
-use dom::node::{Node, window_from_node};
+use dom::node::{window_from_node};
 use dom::virtualmethods::VirtualMethods;
 use script_thread::{MainThreadScriptChan, Runnable, ScriptChan};
 use std::cell::Cell;

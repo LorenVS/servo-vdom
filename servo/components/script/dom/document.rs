@@ -1250,8 +1250,7 @@ impl Document {
             FocusEventType::Focus => (DOMString::from("focus"), EventBubbles::DoesNotBubble),
             FocusEventType::Blur => (DOMString::from("blur"), EventBubbles::DoesNotBubble),
         };
-        let event = FocusEvent::new(&self.window,
-                                    event_name,
+        let event = FocusEvent::new(event_name,
                                     does_bubble,
                                     EventCancelable::NotCancelable,
                                     Some(&self.window),
@@ -1614,8 +1613,7 @@ impl DocumentMethods for Document {
                 let mut tag_copy = tag_name;
                 tag_copy.make_ascii_lowercase();
                 let ascii_lower_tag = Atom::from(tag_copy);
-                let result = HTMLCollection::by_atomic_tag_name(&self.window,
-                                                                self.upcast(),
+                let result = HTMLCollection::by_atomic_tag_name(self.upcast(),
                                                                 tag_atom,
                                                                 ascii_lower_tag);
                 entry.insert(JS::from_rooted(&result));
@@ -1635,7 +1633,7 @@ impl DocumentMethods for Document {
         match self.tagns_map.borrow_mut().entry(qname.clone()) {
             Occupied(entry) => Root::from_ref(entry.get()),
             Vacant(entry) => {
-                let result = HTMLCollection::by_qual_tag_name(&self.window, self.upcast(), qname);
+                let result = HTMLCollection::by_qual_tag_name(self.upcast(), qname);
                 entry.insert(JS::from_rooted(&result));
                 result
             }
@@ -1650,8 +1648,7 @@ impl DocumentMethods for Document {
         match self.classes_map.borrow_mut().entry(class_atoms.clone()) {
             Occupied(entry) => Root::from_ref(entry.get()),
             Vacant(entry) => {
-                let result = HTMLCollection::by_atomic_class_name(&self.window,
-                                                                  self.upcast(),
+                let result = HTMLCollection::by_atomic_class_name(self.upcast(),
                                                                   class_atoms);
                 entry.insert(JS::from_rooted(&result));
                 result
@@ -2022,7 +2019,7 @@ impl DocumentMethods for Document {
     fn Images(&self) -> Root<HTMLCollection> {
         self.images.or_init(|| {
             let filter = box ImagesFilter;
-            HTMLCollection::create(&self.window, self.upcast(), filter)
+            HTMLCollection::create(self.upcast(), filter)
         })
     }
 
@@ -2030,7 +2027,7 @@ impl DocumentMethods for Document {
     fn Embeds(&self) -> Root<HTMLCollection> {
         self.embeds.or_init(|| {
             let filter = box EmbedsFilter;
-            HTMLCollection::create(&self.window, self.upcast(), filter)
+            HTMLCollection::create(self.upcast(), filter)
         })
     }
 
@@ -2043,7 +2040,7 @@ impl DocumentMethods for Document {
     fn Links(&self) -> Root<HTMLCollection> {
         self.links.or_init(|| {
             let filter = box LinksFilter;
-            HTMLCollection::create(&self.window, self.upcast(), filter)
+            HTMLCollection::create(self.upcast(), filter)
         })
     }
 
@@ -2051,7 +2048,7 @@ impl DocumentMethods for Document {
     fn Forms(&self) -> Root<HTMLCollection> {
         self.forms.or_init(|| {
             let filter = box FormsFilter;
-            HTMLCollection::create(&self.window, self.upcast(), filter)
+            HTMLCollection::create(self.upcast(), filter)
         })
     }
 
@@ -2059,7 +2056,7 @@ impl DocumentMethods for Document {
     fn Anchors(&self) -> Root<HTMLCollection> {
         self.anchors.or_init(|| {
             let filter = box AnchorsFilter;
-            HTMLCollection::create(&self.window, self.upcast(), filter)
+            HTMLCollection::create(self.upcast(), filter)
         })
     }
 
@@ -2068,13 +2065,13 @@ impl DocumentMethods for Document {
         // FIXME: This should be return OBJECT elements containing applets.
         self.applets.or_init(|| {
             let filter = box AppletsFilter;
-            HTMLCollection::create(&self.window, self.upcast(), filter)
+            HTMLCollection::create(self.upcast(), filter)
         })
     }
 
     // https://dom.spec.whatwg.org/#dom-parentnode-children
     fn Children(&self) -> Root<HTMLCollection> {
-        HTMLCollection::children(&self.window, self.upcast())
+        HTMLCollection::children(self.upcast())
     }
 
     // https://dom.spec.whatwg.org/#dom-parentnode-firstelementchild
@@ -2252,7 +2249,7 @@ impl DocumentMethods for Document {
         let filter = NamedElementFilter {
             name: name,
         };
-        let collection = HTMLCollection::create(self.window(), root, box filter);
+        let collection = HTMLCollection::create(root, box filter);
         collection.reflector().get_jsobject().get()
     }
 

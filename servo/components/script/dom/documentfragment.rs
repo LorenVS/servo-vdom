@@ -46,8 +46,7 @@ impl DocumentFragment {
 impl DocumentFragmentMethods for DocumentFragment {
     // https://dom.spec.whatwg.org/#dom-parentnode-children
     fn Children(&self) -> Root<HTMLCollection> {
-        let window = window_from_node(self);
-        HTMLCollection::children(&window, self.upcast())
+        HTMLCollection::children(self.upcast())
     }
 
     // https://dom.spec.whatwg.org/#dom-nonelementparentnode-getelementbyid

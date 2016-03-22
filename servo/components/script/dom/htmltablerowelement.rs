@@ -62,9 +62,8 @@ impl HTMLTableRowElementMethods for HTMLTableRowElement {
     // https://html.spec.whatwg.org/multipage/#dom-tr-cells
     fn Cells(&self) -> Root<HTMLCollection> {
         self.cells.or_init(|| {
-            let window = window_from_node(self);
             let filter = box CellsFilter;
-            HTMLCollection::create(window.r(), self.upcast(), filter)
+            HTMLCollection::create(self.upcast(), filter)
         })
     }
 

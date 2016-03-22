@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::HTMLProgressElementBinding::{self, HTMLProgressElementMethods};
+use dom::bindings::codegen::Bindings::HTMLProgressElementBinding::{HTMLProgressElementMethods};
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::Root;
 use dom::document::Document;

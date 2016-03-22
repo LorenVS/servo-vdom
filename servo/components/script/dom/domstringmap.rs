@@ -5,11 +5,9 @@
 
 use dom::bindings::codegen::Bindings::DOMStringMapBinding::DOMStringMapMethods;
 use dom::bindings::error::ErrorResult;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::js::{JS, Root};
 use dom::bindings::reflector::{Reflector};
 use dom::htmlelement::HTMLElement;
-use dom::node::window_from_node;
 use util::str::DOMString;
 
 #[dom_struct]
@@ -27,7 +25,6 @@ impl DOMStringMap {
     }
 
     pub fn new(element: &HTMLElement) -> Root<DOMStringMap> {
-        let window = window_from_node(element);
         Root::new_box(box DOMStringMap::new_inherited(element))
     }
 }

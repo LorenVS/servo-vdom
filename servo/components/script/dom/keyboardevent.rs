@@ -6,7 +6,6 @@ use dom::bindings::cell::DOMRefCell;
 use dom::bindings::codegen::Bindings::KeyboardEventBinding::{KeyboardEventConstants, KeyboardEventMethods, KeyboardEventInit};
 use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::error::Fallible;
-use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, UIEventTypeId};
 use dom::bindings::js::{Root, RootedReference};
 use dom::bindings::reflector::{Reflectable};
