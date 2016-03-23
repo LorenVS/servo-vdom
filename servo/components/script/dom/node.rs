@@ -1668,6 +1668,10 @@ impl Node {
         self.next_sibling.get()
     }
 
+    pub fn GetParent(&self) -> Option<Root<Node>> {
+        self.parent_node.get()
+    }
+
     // https://dom.spec.whatwg.org/#dom-node-nodevalue
     fn GetNodeValue(&self) -> Option<DOMString> {
         self.downcast::<CharacterData>().map(CharacterData::Data)
@@ -2101,6 +2105,19 @@ impl VirtualMethods for Node {
         if let Some(list) = self.child_list.get() {
             list.as_children_list().children_changed(mutation);
         }
+    }
+
+    fn bind_to_tree(&self, tree_in_doc: bool) {
+        if let Some(ref s) = self.super_type() {
+            s.bind_to_tree(tree_in_doc);
+        }
+
+        if !tree_in_doc {
+            return;
+        }
+
+        let doc = document_from_node(self);
+        doc.register_node_id(self.id, self);
     }
 
     // This handles the ranges mentioned in steps 2-3 when removing a node.

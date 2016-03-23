@@ -117,7 +117,7 @@ pub struct Document {
     encoding_name: DOMRefCell<DOMString>,
     is_html_document: bool,
     url: Url,
-    node_id_map: DOMRefCell<HashMap<u64, Root<Node>>>,
+    node_id_map: DOMRefCell<HashMap<u64, JS<Node>>>,
     /// Caches for the getElement methods
     id_map: DOMRefCell<HashMap<Atom, Vec<JS<Element>>>>,
     tag_map: DOMRefCell<HashMap<Atom, JS<HTMLCollection>>>,
@@ -466,6 +466,11 @@ impl Document {
                 elements.insert(head, JS::from_ref(element));
             }
         }
+    }
+
+    pub fn register_node_id(&self, id: u64, node: &Node) {
+        let mut node_id_map = self.node_id_map.borrow_mut();
+        node_id_map.insert(id, JS::from_ref(node));
     }
 
     /// Attempt to find a named element in this page's document.
@@ -1414,6 +1419,10 @@ impl Document {
             new_doc.appropriate_template_contents_owner_document.set(Some(&new_doc));
             new_doc
         })
+    }
+
+    pub fn get_node_by_id(&self, id: u64) -> Option<Root<Node>> {
+        self.node_id_map.borrow().get(&id).map(|r| Root::from_ref(&**r))
     }
 
     pub fn get_element_by_id(&self, id: &Atom) -> Option<Root<Element>> {

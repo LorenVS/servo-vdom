@@ -74,6 +74,7 @@ use dom::htmltrackelement::HTMLTrackElement;
 use dom::htmlulistelement::HTMLUListElement;
 use dom::htmlunknownelement::HTMLUnknownElement;
 use dom::htmlvideoelement::HTMLVideoElement;
+use servo_vdom_client::patch::ElementName;
 use string_cache::{Atom, QualName};
 use util::str::DOMString;
 
@@ -238,5 +239,158 @@ pub fn create_element_simple(
         atom!("wbr")        => make!(HTMLElement),
         atom!("xmp")        => make!(HTMLPreElement),
         _                   => make!(HTMLUnknownElement),
+    }
+}
+
+
+pub fn create_element_named(
+                      id: u64,
+                      name: ElementName,
+                      document: &Document,
+                      creator: ElementCreator)
+                      -> Root<Element> {
+
+    macro_rules! make(
+        ($ctor:ident, $atom:expr) => ({
+            let obj = $ctor::new(id, $atom, None, document);
+            Root::upcast(obj)
+        });
+        ($ctor:ident, $atom:expr, $($arg:expr),+) => ({
+            let obj = $ctor::new(id, $atom, None, document, $($arg),+);
+            Root::upcast(obj)
+        })
+    );
+
+    // This is a big match, and the IDs for inline-interned atoms are not very structured.
+    // Perhaps we should build a perfect hash from those IDs instead.
+    match name {
+        ElementName::A          => make!(HTMLAnchorElement, atom!("a")),
+        ElementName::Acronym    => make!(HTMLElement, atom!("acronym")),
+        ElementName::Address    => make!(HTMLElement, atom!("address")),
+        ElementName::Applet     => make!(HTMLAppletElement, atom!("applet")),
+        ElementName::Area       => make!(HTMLAreaElement, atom!("area")),
+        ElementName::Article    => make!(HTMLElement, atom!("article")),
+        ElementName::Aside      => make!(HTMLElement, atom!("aside")),
+        ElementName::Audio      => make!(HTMLAudioElement, atom!("audio")),
+        ElementName::B          => make!(HTMLElement, atom!("b")),
+        ElementName::Base       => make!(HTMLBaseElement, atom!("base")),
+        ElementName::Bdi        => make!(HTMLElement, atom!("bdi")),
+        ElementName::Bdo        => make!(HTMLElement, atom!("bdo")),
+        ElementName::Bgsound    => make!(HTMLUnknownElement, atom!("bgsound")),
+        ElementName::Big        => make!(HTMLElement, atom!("big")),
+        ElementName::Blink      => make!(HTMLUnknownElement, atom!("blink")),
+        ElementName::Blockquote => make!(HTMLQuoteElement, atom!("blockquote")),
+        ElementName::Body       => make!(HTMLBodyElement, atom!("body")),
+        ElementName::Br         => make!(HTMLBRElement, atom!("br")),
+        ElementName::Button     => make!(HTMLButtonElement, atom!("button")),
+        ElementName::Canvas     => make!(HTMLCanvasElement, atom!("canvas")),
+        ElementName::Caption    => make!(HTMLTableCaptionElement, atom!("caption")),
+        ElementName::Center     => make!(HTMLElement, atom!("center")),
+        ElementName::Cite       => make!(HTMLElement, atom!("cite")),
+        ElementName::Code       => make!(HTMLElement, atom!("code")),
+        ElementName::Col        => make!(HTMLTableColElement, atom!("col")),
+        ElementName::Colgroup   => make!(HTMLTableColElement, atom!("colgroup")),
+        ElementName::Data       => make!(HTMLDataElement, atom!("data")),
+        ElementName::Datalist   => make!(HTMLDataListElement, atom!("datalist")),
+        ElementName::Dd         => make!(HTMLElement, atom!("dd")),
+        ElementName::Del        => make!(HTMLModElement, atom!("del")),
+        ElementName::Details    => make!(HTMLDetailsElement, atom!("details")),
+        ElementName::Dfn        => make!(HTMLElement, atom!("dfn")),
+        ElementName::Dialog     => make!(HTMLDialogElement, atom!("dialog")),
+        ElementName::Dir        => make!(HTMLDirectoryElement, atom!("dir")),
+        ElementName::Div        => make!(HTMLDivElement, atom!("div")),
+        ElementName::Dl         => make!(HTMLDListElement, atom!("dl")),
+        ElementName::Dt         => make!(HTMLElement, atom!("dt")),
+        ElementName::Em         => make!(HTMLElement, atom!("em")),
+        ElementName::Embed      => make!(HTMLEmbedElement, atom!("embed")),
+        ElementName::Fieldset   => make!(HTMLFieldSetElement, atom!("fieldset")),
+        ElementName::Figcaption => make!(HTMLElement, atom!("figcaption")),
+        ElementName::Figure     => make!(HTMLElement, atom!("figure")),
+        ElementName::Font       => make!(HTMLFontElement, atom!("font")),
+        ElementName::Footer     => make!(HTMLElement, atom!("footer")),
+        ElementName::Form       => make!(HTMLFormElement, atom!("form")),
+        ElementName::Frame      => make!(HTMLFrameElement, atom!("frame")),
+        ElementName::Frameset   => make!(HTMLFrameSetElement, atom!("frameset")),
+        ElementName::H1         => make!(HTMLHeadingElement, atom!("h1"), HeadingLevel::Heading1),
+        ElementName::H2         => make!(HTMLHeadingElement, atom!("h2"), HeadingLevel::Heading2),
+        ElementName::H3         => make!(HTMLHeadingElement, atom!("h3"), HeadingLevel::Heading3),
+        ElementName::H4         => make!(HTMLHeadingElement, atom!("h4"), HeadingLevel::Heading4),
+        ElementName::H5         => make!(HTMLHeadingElement, atom!("h5"), HeadingLevel::Heading5),
+        ElementName::H6         => make!(HTMLHeadingElement, atom!("h6"), HeadingLevel::Heading6),
+        ElementName::Head       => make!(HTMLHeadElement, atom!("head")),
+        ElementName::Header     => make!(HTMLElement, atom!("header")),
+        ElementName::Hgroup     => make!(HTMLElement, atom!("hgroup")),
+        ElementName::Hr         => make!(HTMLHRElement, atom!("hr")),
+        ElementName::Html       => make!(HTMLHtmlElement, atom!("html")),
+        ElementName::I          => make!(HTMLElement, atom!("i")),
+        ElementName::Img        => make!(HTMLImageElement, atom!("img")),
+        ElementName::Input      => make!(HTMLInputElement, atom!("input")),
+        ElementName::Ins        => make!(HTMLModElement, atom!("ins")),
+        ElementName::Isindex    => make!(HTMLUnknownElement, atom!("isindex")),
+        ElementName::Kbd        => make!(HTMLElement, atom!("kbd")),
+        ElementName::Label      => make!(HTMLLabelElement, atom!("label")),
+        ElementName::Legend     => make!(HTMLLegendElement, atom!("legend")),
+        ElementName::Li         => make!(HTMLLIElement, atom!("li")),
+        ElementName::Link       => make!(HTMLLinkElement, atom!("link"), creator),
+        ElementName::Listing    => make!(HTMLPreElement, atom!("listing")),
+        ElementName::Main       => make!(HTMLElement, atom!("main")),
+        ElementName::Map        => make!(HTMLMapElement, atom!("map")),
+        ElementName::Mark       => make!(HTMLElement, atom!("mark")),
+        ElementName::Marquee    => make!(HTMLElement, atom!("marquee")),
+        ElementName::Meta       => make!(HTMLMetaElement, atom!("meta")),
+        ElementName::Meter      => make!(HTMLMeterElement, atom!("meter")),
+        ElementName::Multicol   => make!(HTMLUnknownElement, atom!("multicol")),
+        ElementName::Nav        => make!(HTMLElement, atom!("nav")),
+        ElementName::Nextid     => make!(HTMLUnknownElement, atom!("nextid")),
+        ElementName::Nobr       => make!(HTMLElement, atom!("nobr")),
+        ElementName::Noframes   => make!(HTMLElement, atom!("noframes")),
+        ElementName::Noscript   => make!(HTMLElement, atom!("noscript")),
+        ElementName::Object     => make!(HTMLObjectElement, atom!("object")),
+        ElementName::Ol         => make!(HTMLOListElement, atom!("ol")),
+        ElementName::Optgroup   => make!(HTMLOptGroupElement, atom!("optgroup")),
+        ElementName::Option     => make!(HTMLOptionElement, atom!("option")),
+        ElementName::Output     => make!(HTMLOutputElement, atom!("output")),
+        ElementName::P          => make!(HTMLParagraphElement, atom!("p")),
+        ElementName::Param      => make!(HTMLParamElement, atom!("param")),
+        ElementName::Plaintext  => make!(HTMLPreElement, atom!("plaintext")),
+        ElementName::Pre        => make!(HTMLPreElement, atom!("pre")),
+        ElementName::Progress   => make!(HTMLProgressElement, atom!("progress")),
+        ElementName::Q          => make!(HTMLQuoteElement, atom!("q")),
+        ElementName::Rp         => make!(HTMLElement, atom!("rp")),
+        ElementName::Rt         => make!(HTMLElement, atom!("rt")),
+        ElementName::Ruby       => make!(HTMLElement, atom!("ruby")),
+        ElementName::S          => make!(HTMLElement, atom!("s")),
+        ElementName::Samp       => make!(HTMLElement, atom!("samp")),
+        ElementName::Section    => make!(HTMLElement, atom!("section")),
+        ElementName::Select     => make!(HTMLSelectElement, atom!("select")),
+        ElementName::Small      => make!(HTMLElement, atom!("small")),
+        ElementName::Source     => make!(HTMLSourceElement, atom!("source")),
+        ElementName::Spacer     => make!(HTMLUnknownElement, atom!("spacer")),
+        ElementName::Span       => make!(HTMLSpanElement, atom!("span")),
+        ElementName::Strike     => make!(HTMLElement, atom!("strike")),
+        ElementName::Strong     => make!(HTMLElement, atom!("strong")),
+        ElementName::Style      => make!(HTMLStyleElement, atom!("style")),
+        ElementName::Sub        => make!(HTMLElement, atom!("sub")),
+        ElementName::Summary    => make!(HTMLElement, atom!("summary")),
+        ElementName::Sup        => make!(HTMLElement, atom!("sup")),
+        ElementName::Table      => make!(HTMLTableElement, atom!("table")),
+        ElementName::Tbody      => make!(HTMLTableSectionElement, atom!("tbody")),
+        ElementName::Td         => make!(HTMLTableDataCellElement, atom!("td")),
+        ElementName::Template   => make!(HTMLTemplateElement, atom!("template")),
+        ElementName::Textarea   => make!(HTMLTextAreaElement, atom!("textarea")),
+        ElementName::Tfoot      => make!(HTMLTableSectionElement, atom!("tfoot")),
+        ElementName::Th         => make!(HTMLTableHeaderCellElement, atom!("th")),
+        ElementName::Thead      => make!(HTMLTableSectionElement, atom!("thead")),
+        ElementName::Time       => make!(HTMLTimeElement, atom!("time")),
+        ElementName::Title      => make!(HTMLTitleElement, atom!("title")),
+        ElementName::Tr         => make!(HTMLTableRowElement, atom!("tr")),
+        ElementName::Tt         => make!(HTMLElement, atom!("tt")),
+        ElementName::Track      => make!(HTMLTrackElement, atom!("track")),
+        ElementName::U          => make!(HTMLElement, atom!("u")),
+        ElementName::Ul         => make!(HTMLUListElement, atom!("ul")),
+        ElementName::Var        => make!(HTMLElement, atom!("var")),
+        ElementName::Video      => make!(HTMLVideoElement, atom!("video")),
+        ElementName::Wbr        => make!(HTMLElement, atom!("wbr")),
+        ElementName::Xmp        => make!(HTMLPreElement, atom!("xmp")),
     }
 }

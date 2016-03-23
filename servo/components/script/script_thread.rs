@@ -64,9 +64,12 @@ use script_traits::{InitialScriptState, MouseButton, MouseEventType};
 use script_traits::{LayoutMsg, OpaqueScriptLayoutChannel, ScriptMsg as ConstellationMsg};
 use script_traits::{ScriptThreadFactory, ScriptToCompositorMsg,TimerEventRequest};
 use script_traits::{TouchEventType, TouchId};
+use servo_vdom_client::patch::*;
 use std::any::Any;
 use std::cell::{RefCell};
 use std::collections::HashSet;
+use std::io;
+use std::io::Cursor;
 use std::option::Option;
 use std::path::Path;
 use std::rc::Rc;
@@ -938,8 +941,29 @@ impl ScriptThread {
         msg.responder.unwrap().respond(msg.image_response);
     }
 
+    fn try_apply_patch(&self, cursor: &mut Cursor<Vec<u8>>) -> io::Result<()> {
+        let _ = try!(cursor.read_msg_type());
+
+        let page = self.page.borrow();
+            if let Some(page) = page.as_ref() {
+            let doc = page.document();
+            let node_type = try!(cursor.read_node_type());
+
+            if let Some(NodeType::Text) = node_type {
+                let (id,text) = try!(cursor.read_text());
+                let tnode = Text::new(id, DOMString::from(text), &doc);
+                let node = doc.get_node_by_id(id).unwrap();
+                let parent = node.GetParent().unwrap();
+                parent.ReplaceChild(tnode.upcast(), &*node);
+            }
+        }
+
+        Ok(())
+    }
+
     fn handle_msg_from_vdom(&self, msg: Vec<u8>) {
-        println!("Got Vdom Message");
+        let mut cursor = Cursor::new(msg);
+        self.try_apply_patch(&mut cursor).unwrap();
     }
 
     fn handle_resize(&self, id: PipelineId, size: WindowSizeData) {

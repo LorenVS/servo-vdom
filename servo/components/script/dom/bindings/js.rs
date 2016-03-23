@@ -397,6 +397,7 @@ impl<T> OptionalRootedReference<T> for Option<Option<Root<T>>> {
 /// for the same JS value. `Root`s cannot outlive the associated
 /// `RootCollection` object.
 
+#[Derive(Clone)]
 pub struct Root<T> {
     /// Reference to rooted value that must not outlive this container
     ptr: NonZero<*const T>
