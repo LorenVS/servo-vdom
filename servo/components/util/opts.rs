@@ -189,6 +189,9 @@ pub struct Opts {
 
     // Which rendering API to use.
     pub render_api: RenderApi,
+
+    // The path to the vdom ipc file
+    pub vdom_ipc: Option<String>
 }
 
 fn print_usage(app: &str, opts: &Options) {
@@ -499,6 +502,7 @@ pub fn default_opts() -> Opts {
         webrender_stats: false,
         use_msaa: false,
         render_api: DEFAULT_RENDER_API,
+        vdom_ipc: None
     }
 }
 
@@ -544,6 +548,7 @@ pub fn from_cmdline_args(args: &[String]) -> ArgumentParsingResult {
     opts.optflag("b", "no-native-titlebar", "Do not use native titlebar");
     opts.optflag("w", "webrender", "Use webrender backend");
     opts.optopt("G", "graphics", "Select graphics backend (gl or es2)", "gl");
+    opts.optopt("", "vdom-ipc", "File containing vdom ipc", "PATH");
 
     let opt_match = match opts.parse(args) {
         Ok(m) => m,
@@ -695,6 +700,11 @@ pub fn from_cmdline_args(args: &[String]) -> ArgumentParsingResult {
         _ => args_fail(&format!("error: graphics option must be gl or es2:")),
     };
 
+    let vdom_ipc = match opt_match.opt_str("vdom-ipc") {
+        Some(ref path) => Some(path.to_string()),
+        None => None
+    };
+
     let opts = Opts {
         is_running_problem_test: is_running_problem_test,
         url: Some(url),
@@ -746,6 +756,7 @@ pub fn from_cmdline_args(args: &[String]) -> ArgumentParsingResult {
         use_webrender: use_webrender,
         webrender_stats: debug_options.webrender_stats,
         use_msaa: debug_options.use_msaa,
+        vdom_ipc: vdom_ipc
     };
 
     set_defaults(opts);

@@ -53,6 +53,9 @@ git = "https://github.com/servo/ipc-channel"
 [dependencies.gfx_traits]
 path = "../gfx_traits"
 
+[dependencies.servo-vdom-client]
+path = "../../../../servo-vdom-client"
+
 [dependencies]
 app_units = {version = "0.2.3", features = ["plugins"]}
 bitflags = "0.3"

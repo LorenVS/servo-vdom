@@ -44,7 +44,7 @@ use euclid::Rect;
 use euclid::point::Point2D;
 use gfx_traits::LayerId;
 use hyper::method::Method;
-use ipc_channel::ipc::{self, IpcSender};
+use ipc_channel::ipc::{self, IpcOneShotServer, IpcSender, IpcReceiver};
 use ipc_channel::router::ROUTER;
 use layout_interface::{ReflowQueryType};
 use layout_interface::{self, LayoutChan, ScriptLayoutChan};
@@ -64,10 +64,12 @@ use script_traits::{InitialScriptState, MouseButton, MouseEventType};
 use script_traits::{LayoutMsg, OpaqueScriptLayoutChannel, ScriptMsg as ConstellationMsg};
 use script_traits::{ScriptThreadFactory, ScriptToCompositorMsg,TimerEventRequest};
 use script_traits::{TouchEventType, TouchId};
+use servo_vdom_client::ServoSide;
 use std::any::Any;
 use std::cell::{RefCell};
 use std::collections::HashSet;
 use std::option::Option;
+use std::path::Path;
 use std::rc::Rc;
 use std::result::Result;
 use std::sync::atomic::{Ordering, AtomicBool};
@@ -173,6 +175,7 @@ enum MixedMessage {
     FromScript(MainThreadScriptMsg),
     FromDevtools(DevtoolScriptControlMsg),
     FromImageCache(ImageCacheResult),
+    FromVdom(Vec<u8>)
 }
 
 /// Common messages used to control the event loops in both the script and the worker
@@ -383,6 +386,9 @@ pub struct ScriptThread {
     scheduler_chan: IpcSender<TimerEventRequest>,
 
     content_process_shutdown_chan: IpcSender<()>,
+
+    vdom_chan: IpcSender<Vec<u8>>,
+    vdom_port: Receiver<Vec<u8>>
 }
 
 /// In the event of thread failure, all data on the stack runs its destructor. However, there
@@ -514,6 +520,24 @@ impl ScriptThread {
         // Ask the router to proxy IPC messages from the control port to us.
         let control_port = ROUTER.route_ipc_receiver_to_new_mpsc_receiver(state.control_port);
 
+        let (vdom_port, vdom_chan) = match opts::get().vdom_ipc {
+            Some(ref token) => {
+                println!("Token one servo: {}", token);
+                let chan = IpcSender::connect(token.clone()).unwrap();
+                let (oss,token2) = IpcOneShotServer::new().unwrap();
+                println!("Token two servo: {}", token);
+                chan.send(token2.into_bytes());
+                let (port,_) = oss.accept().unwrap();
+                (port, chan)
+            },
+            None => {
+                let (chan1,port1) = ipc::channel().unwrap();
+                let (chan2,port2) = ipc::channel().unwrap();
+                (port1, chan2)
+            }
+        };
+        let vdom_port = ROUTER.route_ipc_receiver_to_new_mpsc_receiver(vdom_port);
+
         ScriptThread {
             page: DOMRefCell::new(None),
             incomplete_loads: DOMRefCell::new(vec!()),
@@ -551,6 +575,9 @@ impl ScriptThread {
             scheduler_chan: state.scheduler_chan,
 
             content_process_shutdown_chan: state.content_process_shutdown_chan,
+
+            vdom_chan: vdom_chan,
+            vdom_port: vdom_port
         }
     }
 
@@ -579,7 +606,7 @@ impl ScriptThread {
 
     /// Handle incoming control messages.
     fn handle_msgs(&self) -> bool {
-        use self::MixedMessage::{FromScript, FromConstellation, FromDevtools, FromImageCache};
+        use self::MixedMessage::{FromScript, FromConstellation, FromDevtools, FromImageCache, FromVdom};
 
         // Handle pending resize events.
         // Gather them first to avoid a double mut borrow on self.
@@ -614,6 +641,8 @@ impl ScriptThread {
             let mut control_port = sel.handle(&self.control_port);
             let mut devtools_port = sel.handle(&self.devtools_port);
             let mut image_cache_port = sel.handle(&self.image_cache_port);
+            let mut vdom_port = sel.handle(&self.vdom_port);
+
             unsafe {
                 script_port.add();
                 control_port.add();
@@ -621,6 +650,7 @@ impl ScriptThread {
                     devtools_port.add();
                 }
                 image_cache_port.add();
+                vdom_port.add();
             }
             let ret = sel.wait();
             if ret == script_port.id() {
@@ -631,6 +661,8 @@ impl ScriptThread {
                 FromDevtools(self.devtools_port.recv().unwrap())
             } else if ret == image_cache_port.id() {
                 FromImageCache(self.image_cache_port.recv().unwrap())
+            } else if ret == vdom_port.id() {
+                FromVdom(self.vdom_port.recv().unwrap())
             } else {
                 panic!("unexpected select result")
             }
@@ -691,7 +723,10 @@ impl ScriptThread {
                 Err(_) => match self.port.try_recv() {
                     Err(_) => match self.devtools_port.try_recv() {
                         Err(_) => match self.image_cache_port.try_recv() {
-                            Err(_) => break,
+                            Err(_) => match self.vdom_port.try_recv() {
+                                Err(_) => break,
+                                Ok(ev) => event = FromVdom(ev)
+                            },
                             Ok(ev) => event = FromImageCache(ev),
                         },
                         Ok(ev) => event = FromDevtools(ev),
@@ -717,6 +752,7 @@ impl ScriptThread {
                     FromScript(inner_msg) => self.handle_msg_from_script(inner_msg),
                     FromDevtools(inner_msg) => self.handle_msg_from_devtools(inner_msg),
                     FromImageCache(inner_msg) => self.handle_msg_from_image_cache(inner_msg),
+                    FromVdom(inner_msg) => self.handle_msg_from_vdom(inner_msg)
                 }
 
                 None
@@ -771,6 +807,9 @@ impl ScriptThread {
                         *category,
                     _ => ScriptThreadEventCategory::ScriptEvent
                 }
+            },
+            MixedMessage::FromVdom(_) => {
+                ScriptThreadEventCategory::ScriptEvent
             }
         }
     }
@@ -898,6 +937,10 @@ impl ScriptThread {
 
     fn handle_msg_from_image_cache(&self, msg: ImageCacheResult) {
         msg.responder.unwrap().respond(msg.image_response);
+    }
+
+    fn handle_msg_from_vdom(&self, msg: Vec<u8>) {
+        println!("Got Vdom Message");
     }
 
     fn handle_resize(&self, id: PipelineId, size: WindowSizeData) {

@@ -63,6 +63,7 @@ extern crate rustc_serialize;
 extern crate script_traits;
 extern crate selectors;
 extern crate serde;
+extern crate servo_vdom_client;
 extern crate smallvec;
 #[macro_use(atom, ns)] extern crate string_cache;
 #[macro_use]
