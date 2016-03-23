@@ -15,12 +15,13 @@ pub struct HTMLMediaElement {
 
 impl HTMLMediaElement {
     pub fn new_inherited(type_id: HTMLMediaElementTypeId,
+                         id: u64,
                          tag_name: Atom,
                          prefix: Option<DOMString>, document: &Document)
                          -> HTMLMediaElement {
         HTMLMediaElement {
             htmlelement:
-                HTMLElement::new_inherited(HTMLElementTypeId::HTMLMediaElement(type_id), tag_name, prefix, document)
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLMediaElement(type_id), id, tag_name, prefix, document)
         }
     }
 

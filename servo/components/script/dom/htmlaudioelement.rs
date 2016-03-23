@@ -17,20 +17,22 @@ pub struct HTMLAudioElement {
 }
 
 impl HTMLAudioElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLAudioElement {
         HTMLAudioElement {
             htmlmediaelement:
-                HTMLMediaElement::new_inherited(HTMLMediaElementTypeId::HTMLAudioElement, localName, prefix, document)
+                HTMLMediaElement::new_inherited(HTMLMediaElementTypeId::HTMLAudioElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLAudioElement> {
-        let element = HTMLAudioElement::new_inherited(localName, prefix, document);
+        let element = HTMLAudioElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 }

@@ -19,18 +19,13 @@ pub struct Comment {
 }
 
 impl Comment {
-    fn new_inherited(text: DOMString, document: &Document) -> Comment {
+    fn new_inherited(id: u64, text: DOMString, document: &Document) -> Comment {
         Comment {
-            characterdata: CharacterData::new_inherited(CharacterDataTypeId::Comment, text, document),
+            characterdata: CharacterData::new_inherited(CharacterDataTypeId::Comment, id, text, document),
         }
     }
 
-    pub fn new(text: DOMString, document: &Document) -> Root<Comment> {
-        Root::new_box(box Comment::new_inherited(text, document))
-    }
-
-    pub fn Constructor(global: GlobalRef, data: DOMString) -> Fallible<Root<Comment>> {
-        let document = global.as_window().Document();
-        Ok(Comment::new(data, document.r()))
+    pub fn new(id: u64, text: DOMString, document: &Document) -> Root<Comment> {
+        Root::new_box(box Comment::new_inherited(id, text, document))
     }
 }

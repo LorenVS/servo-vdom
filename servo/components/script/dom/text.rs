@@ -22,51 +22,14 @@ pub struct Text {
 }
 
 impl Text {
-    fn new_inherited(text: DOMString, document: &Document) -> Text {
+    fn new_inherited(id: u64, text: DOMString, document: &Document) -> Text {
         Text {
-            characterdata: CharacterData::new_inherited(CharacterDataTypeId::Text, text, document)
+            characterdata: CharacterData::new_inherited(CharacterDataTypeId::Text, id, text, document)
         }
     }
 
-    pub fn new(text: DOMString, document: &Document) -> Root<Text> {
-        Root::new_box(box Text::new_inherited(text, document))
-    }
-
-    // https://dom.spec.whatwg.org/#dom-text-splittextoffset
-    pub fn SplitText(&self, offset: u32) -> Fallible<Root<Text>> {
-        let cdata = self.upcast::<CharacterData>();
-        // Step 1.
-        let length = cdata.Length();
-        if offset > length {
-            // Step 2.
-            return Err(Error::IndexSize);
-        }
-        // Step 3.
-        let count = length - offset;
-        // Step 4.
-        let new_data = cdata.SubstringData(offset, count).unwrap();
-        // Step 5.
-        let node = self.upcast::<Node>();
-        let owner_doc = node.owner_doc();
-        let new_node = owner_doc.CreateTextNode(new_data);
-        // Step 6.
-        let parent = node.GetParentNode();
-        if let Some(ref parent) = parent {
-            // Step 7.1.
-            parent.InsertBefore(new_node.upcast(), node.GetNextSibling().r()).unwrap();
-            // Steps 7.2-3.
-            node.ranges().move_to_following_text_sibling_above(node, offset, new_node.upcast());
-            // Steps 7.4-5.
-            parent.ranges().increment_at(&parent, node.index() + 1);
-        }
-        // Step 8.
-        cdata.DeleteData(offset, count).unwrap();
-        if parent.is_none() {
-            // Step 9.
-            node.ranges().clamp_above(&node, offset);
-        }
-        // Step 10.
-        Ok(new_node)
+    pub fn new(id: u64, text: DOMString, document: &Document) -> Root<Text> {
+        Root::new_box(box Text::new_inherited(id, text, document))
     }
 
     // https://dom.spec.whatwg.org/#dom-text-wholetext

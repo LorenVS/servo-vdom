@@ -41,23 +41,26 @@ pub struct HTMLButtonElement {
 }
 
 impl HTMLButtonElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLButtonElement {
         HTMLButtonElement {
             htmlelement:
                 HTMLElement::new_inherited_with_state(IN_ENABLED_STATE,
                                                       HTMLElementTypeId::HTMLButtonElement,
+                                                      id,
                                                       localName, prefix, document),
             button_type: Cell::new(ButtonType::Submit)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLButtonElement> {
-        let element = HTMLButtonElement::new_inherited(localName, prefix, document);
+        let element = HTMLButtonElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
     

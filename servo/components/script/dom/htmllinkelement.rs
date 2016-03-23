@@ -53,10 +53,10 @@ pub struct HTMLLinkElement {
 }
 
 impl HTMLLinkElement {
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document,
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document,
                      creator: ElementCreator) -> HTMLLinkElement {
         HTMLLinkElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLLinkElement, localName, prefix, document),
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLLinkElement, id, localName, prefix, document),
             rel_list: Default::default(),
             parser_inserted: Cell::new(creator == ElementCreator::ParserCreated),
             stylesheet: DOMRefCell::new(None),
@@ -64,11 +64,12 @@ impl HTMLLinkElement {
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document,
                creator: ElementCreator) -> Root<HTMLLinkElement> {
-        let element = HTMLLinkElement::new_inherited(localName, prefix, document, creator);
+        let element = HTMLLinkElement::new_inherited(id, localName, prefix, document, creator);
         Root::new_box(box element)
     }
 

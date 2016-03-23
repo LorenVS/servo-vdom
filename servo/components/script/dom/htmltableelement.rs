@@ -29,19 +29,19 @@ pub struct HTMLTableElement {
 }
 
 impl HTMLTableElement {
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document)
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document)
                      -> HTMLTableElement {
         HTMLTableElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTableElement, localName, prefix, document),
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTableElement, id, localName, prefix, document),
             border: Cell::new(None),
             cellspacing: Cell::new(None),
         }
     }
 
     
-    pub fn new(localName: Atom, prefix: Option<DOMString>, document: &Document)
+    pub fn new(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document)
                -> Root<HTMLTableElement> {
-        let element = HTMLTableElement::new_inherited(localName, prefix, document);
+        let element = HTMLTableElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 
@@ -67,44 +67,11 @@ impl HTMLTableElement {
         }
     }
 
-    // https://html.spec.whatwg.org/multipage/#dom-table-createcaption
-    fn CreateCaption(&self) -> Root<HTMLElement> {
-        let caption = match self.GetCaption() {
-            Some(caption) => caption,
-            None => {
-                let caption = HTMLTableCaptionElement::new(atom!("caption"),
-                                                           None,
-                                                           document_from_node(self).r());
-                self.SetCaption(Some(caption.r()));
-                caption
-            }
-        };
-        Root::upcast(caption)
-    }
-
     // https://html.spec.whatwg.org/multipage/#dom-table-deletecaption
     fn DeleteCaption(&self) {
         if let Some(caption) = self.GetCaption() {
             caption.upcast::<Node>().remove_self();
         }
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-table-createtbody
-    fn CreateTBody(&self) -> Root<HTMLTableSectionElement> {
-        let tbody = HTMLTableSectionElement::new(atom!("tbody"),
-                                                 None,
-                                                 document_from_node(self).r());
-        let node = self.upcast::<Node>();
-        let last_tbody =
-            node.rev_children()
-                .filter_map(Root::downcast::<Element>)
-                .find(|n| n.is::<HTMLTableSectionElement>() && n.local_name() == &atom!("tbody"));
-        let reference_element =
-            last_tbody.and_then(|t| t.upcast::<Node>().GetNextSibling());
-
-        node.InsertBefore(tbody.upcast(), reference_element.r())
-            .expect("Insertion failed");
-        tbody
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-table-bgcolor

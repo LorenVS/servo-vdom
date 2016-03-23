@@ -25,32 +25,23 @@ pub struct HTMLTableSectionElement {
 }
 
 impl HTMLTableSectionElement {
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document)
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document)
                      -> HTMLTableSectionElement {
         HTMLTableSectionElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTableSectionElement, localName, prefix, document),
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTableSectionElement, id, localName, prefix, document),
         }
     }
 
     
-    pub fn new(localName: Atom, prefix: Option<DOMString>, document: &Document)
+    pub fn new(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document)
                -> Root<HTMLTableSectionElement> {
-        let element = HTMLTableSectionElement::new_inherited(localName, prefix, document);
+        let element = HTMLTableSectionElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-tbody-rows
     fn Rows(&self) -> Root<HTMLCollection> {
         HTMLCollection::create(self.upcast(), box RowsFilter)
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-tbody-insertrow
-    fn InsertRow(&self, index: i32) -> Fallible<Root<HTMLElement>> {
-        let node = self.upcast::<Node>();
-        node.insert_cell_or_row(
-            index,
-            || self.Rows(),
-            || HTMLTableRowElement::new(atom!("tr"), None, node.owner_doc().r()))
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-tbody-deleterow

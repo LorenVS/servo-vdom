@@ -134,9 +134,9 @@ impl HTMLImageElement {
         }
     }
 
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLImageElement {
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLImageElement {
         HTMLImageElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLImageElement, localName, prefix, document),
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLImageElement, id, localName, prefix, document),
             url: DOMRefCell::new(None),
             image: DOMRefCell::new(None),
             metadata: DOMRefCell::new(None),
@@ -144,26 +144,12 @@ impl HTMLImageElement {
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLImageElement> {
-        let element = HTMLImageElement::new_inherited(localName, prefix, document);
+        let element = HTMLImageElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
-    }
-
-    pub fn Image(global: GlobalRef,
-                 width: Option<u32>,
-                 height: Option<u32>) -> Fallible<Root<HTMLImageElement>> {
-        let document = global.as_window().Document();
-        let image = HTMLImageElement::new(atom!("img"), None, document.r());
-        if let Some(w) = width {
-            image.SetWidth(w);
-        }
-        if let Some(h) = height {
-            image.SetHeight(h);
-        }
-
-        Ok(image)
     }
     
     // https://html.spec.whatwg.org/multipage/#dom-img-alt

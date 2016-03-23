@@ -19,15 +19,15 @@ pub struct ProcessingInstruction {
 }
 
 impl ProcessingInstruction {
-    fn new_inherited(target: DOMString, data: DOMString, document: &Document) -> ProcessingInstruction {
+    fn new_inherited(id: u64, target: DOMString, data: DOMString, document: &Document) -> ProcessingInstruction {
         ProcessingInstruction {
-            characterdata: CharacterData::new_inherited(CharacterDataTypeId::ProcessingInstruction, data, document),
+            characterdata: CharacterData::new_inherited(CharacterDataTypeId::ProcessingInstruction, id, data, document),
             target: target
         }
     }
 
-    pub fn new(target: DOMString, data: DOMString, document: &Document) -> Root<ProcessingInstruction> {
-        Root::new_box(box ProcessingInstruction::new_inherited(target, data, document))
+    pub fn new(id: u64, target: DOMString, data: DOMString, document: &Document) -> Root<ProcessingInstruction> {
+        Root::new_box(box ProcessingInstruction::new_inherited(id, target, data, document))
     }
 
     pub fn target(&self) -> &DOMString {

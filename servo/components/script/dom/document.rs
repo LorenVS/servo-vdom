@@ -23,7 +23,6 @@ use dom::bindings::js::RootedReference;
 use dom::bindings::js::{JS, LayoutJS, MutNullableHeap, Root};
 use dom::bindings::num::Finite;
 use dom::bindings::refcounted::Trusted;
-
 use dom::bindings::trace::RootedVec;
 use dom::bindings::xmlname::XMLName::InvalidXMLName;
 use dom::bindings::xmlname::{validate_and_extract, namespace_from_domstring, xml_name_type};
@@ -118,6 +117,7 @@ pub struct Document {
     encoding_name: DOMRefCell<DOMString>,
     is_html_document: bool,
     url: Url,
+    node_id_map: DOMRefCell<HashMap<u64, Root<Node>>>,
     /// Caches for the getElement methods
     id_map: DOMRefCell<HashMap<Atom, Vec<JS<Element>>>>,
     tag_map: DOMRefCell<HashMap<Atom, JS<HTMLCollection>>>,
@@ -1005,34 +1005,6 @@ impl Document {
                            ReflowReason::KeyEvent);
     }
 
-    // https://dom.spec.whatwg.org/#converting-nodes-into-a-node
-    pub fn node_from_nodes_and_strings(&self,
-                                       mut nodes: Vec<NodeOrString>)
-                                       -> Fallible<Root<Node>> {
-        if nodes.len() == 1 {
-            Ok(match nodes.pop().unwrap() {
-                NodeOrString::Node(node) => node,
-                NodeOrString::String(string) => Root::upcast(self.CreateTextNode(string)),
-            })
-        } else {
-            let fragment = Root::upcast::<Node>(self.CreateDocumentFragment());
-            for node in nodes {
-                match node {
-                    NodeOrString::Node(node) => {
-                        try!(fragment.AppendChild(node.r()));
-                    },
-                    NodeOrString::String(string) => {
-                        let node = Root::upcast::<Node>(self.CreateTextNode(string));
-                        // No try!() here because appending a text node
-                        // should not fail.
-                        fragment.AppendChild(node.r()).unwrap();
-                    }
-                }
-            }
-            Ok(fragment)
-        }
-    }
-
     pub fn get_body_attribute(&self, local_name: &Atom) -> DOMString {
         match self.GetBody().and_then(Root::downcast::<HTMLBodyElement>) {
             Some(ref body) => {
@@ -1308,6 +1280,7 @@ impl Document {
             // https://dom.spec.whatwg.org/#concept-document-encoding
             encoding_name: DOMRefCell::new(DOMString::from("UTF-8")),
             is_html_document: is_html_document == IsHTMLDocument::HTMLDocument,
+            node_id_map: DOMRefCell::new(HashMap::new()),
             id_map: DOMRefCell::new(HashMap::new()),
             tag_map: DOMRefCell::new(HashMap::new()),
             tagns_map: DOMRefCell::new(HashMap::new()),
@@ -1612,30 +1585,6 @@ impl Document {
         self.get_element_by_id(&Atom::from(id))
     }
 
-    // https://dom.spec.whatwg.org/#dom-document-createelement
-    pub fn CreateElement(&self, mut local_name: DOMString) -> Fallible<Root<Element>> {
-        if xml_name_type(&local_name) == InvalidXMLName {
-            debug!("Not a valid element name");
-            return Err(Error::InvalidCharacter);
-        }
-        if self.is_html_document {
-            local_name.make_ascii_lowercase();
-        }
-        let name = QualName::new(ns!(html), Atom::from(local_name));
-        Ok(Element::create(name, None, self, ElementCreator::ScriptCreated))
-    }
-
-    // https://dom.spec.whatwg.org/#dom-document-createelementns
-    pub fn CreateElementNS(&self,
-                       namespace: Option<DOMString>,
-                       qualified_name: DOMString)
-                       -> Fallible<Root<Element>> {
-        let (namespace, prefix, local_name) = try!(validate_and_extract(namespace,
-                                                                        &qualified_name));
-        let name = QualName::new(namespace, local_name);
-        Ok(Element::create(name, prefix, self, ElementCreator::ScriptCreated))
-    }
-
     // https://dom.spec.whatwg.org/#dom-document-createattribute
     fn CreateAttribute(&self, mut local_name: DOMString) -> Fallible<Root<Attr>> {
         if xml_name_type(&local_name) == InvalidXMLName {
@@ -1666,57 +1615,6 @@ impl Document {
                      namespace,
                      prefix,
                      None))
-    }
-
-    // https://dom.spec.whatwg.org/#dom-document-createdocumentfragment
-    pub fn CreateDocumentFragment(&self) -> Root<DocumentFragment> {
-        DocumentFragment::new(self)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-document-createtextnode
-    pub fn CreateTextNode(&self, data: DOMString) -> Root<Text> {
-        Text::new(data, self)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-document-createcomment
-    fn CreateComment(&self, data: DOMString) -> Root<Comment> {
-        Comment::new(data, self)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-document-createprocessinginstruction
-    fn CreateProcessingInstruction(&self,
-                                   target: DOMString,
-                                   data: DOMString)
-                                   -> Fallible<Root<ProcessingInstruction>> {
-        // Step 1.
-        if xml_name_type(&target) == InvalidXMLName {
-            return Err(Error::InvalidCharacter);
-        }
-
-        // Step 2.
-        if data.contains("?>") {
-            return Err(Error::InvalidCharacter);
-        }
-
-        // Step 3.
-        Ok(ProcessingInstruction::new(target, data, self))
-    }
-
-    // https://dom.spec.whatwg.org/#dom-document-importnode
-    fn ImportNode(&self, node: &Node, deep: bool) -> Fallible<Root<Node>> {
-        // Step 1.
-        if node.is::<Document>() {
-            return Err(Error::NotSupported);
-        }
-
-        // Step 2.
-        let clone_children = if deep {
-            CloneChildrenFlag::CloneChildren
-        } else {
-            CloneChildrenFlag::DoNotCloneChildren
-        };
-
-        Ok(Node::clone(node, Some(self), clone_children))
     }
 
     // https://dom.spec.whatwg.org/#dom-document-adoptnode
@@ -1831,56 +1729,6 @@ impl Document {
         }
     }
 
-    // https://html.spec.whatwg.org/multipage/#document.title
-    fn SetTitle(&self, title: DOMString) {
-        let root = match self.GetDocumentElement() {
-            Some(root) => root,
-            None => return,
-        };
-
-        let elem = if root.namespace() == &ns!(svg) && root.local_name() == &atom!("svg") {
-            let elem = root.upcast::<Node>().child_elements().find(|node| {
-                node.namespace() == &ns!(svg) && node.local_name() == &atom!("title")
-            });
-            match elem {
-                Some(elem) => Root::upcast::<Node>(elem),
-                None => {
-                    let name = QualName::new(ns!(svg), atom!("title"));
-                    let elem = Element::create(name, None, self, ElementCreator::ScriptCreated);
-                    let parent = root.upcast::<Node>();
-                    let child = elem.upcast::<Node>();
-                    parent.InsertBefore(child, parent.GetFirstChild().r())
-                          .unwrap()
-                }
-            }
-        } else if root.namespace() == &ns!(html) {
-            let elem = root.upcast::<Node>()
-                           .traverse_preorder()
-                           .find(|node| node.is::<HTMLTitleElement>());
-            match elem {
-                Some(elem) => elem,
-                None => {
-                    match self.GetHead() {
-                        Some(head) => {
-                            let name = QualName::new(ns!(html), atom!("title"));
-                            let elem = Element::create(name,
-                                                       None,
-                                                       self,
-                                                       ElementCreator::ScriptCreated);
-                            head.upcast::<Node>()
-                                .AppendChild(elem.upcast())
-                                .unwrap()
-                        },
-                        None => return,
-                    }
-                }
-            }
-        } else {
-            return;
-        };
-
-        elem.SetTextContent(Some(title));
-    }
 
     // https://html.spec.whatwg.org/multipage/#dom-document-head
     fn GetHead(&self) -> Option<Root<HTMLHeadElement>> {
@@ -1900,46 +1748,6 @@ impl Document {
                 }
             }).map(|node| Root::downcast(node).unwrap())
         })
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-document-body
-    fn SetBody(&self, new_body: Option<&HTMLElement>) -> ErrorResult {
-        // Step 1.
-        let new_body = match new_body {
-            Some(new_body) => new_body,
-            None => return Err(Error::HierarchyRequest),
-        };
-
-        let node = new_body.upcast::<Node>();
-        match node.type_id() {
-            NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLBodyElement)) |
-            NodeTypeId::Element(ElementTypeId::HTMLElement(HTMLElementTypeId::HTMLFrameSetElement)) => {}
-            _ => return Err(Error::HierarchyRequest),
-        }
-
-        // Step 2.
-        let old_body = self.GetBody();
-        if old_body.as_ref().map(|body| body.r()) == Some(new_body) {
-            return Ok(());
-        }
-
-        match (self.get_html_element(), &old_body) {
-            // Step 3.
-            (Some(ref root), &Some(ref child)) => {
-                let root = root.upcast::<Node>();
-                root.ReplaceChild(new_body.upcast(), child.upcast()).unwrap();
-            },
-
-            // Step 4.
-            (None, _) => return Err(Error::HierarchyRequest),
-
-            // Step 5.
-            (Some(ref root), &None) => {
-                let root = root.upcast::<Node>();
-                root.AppendChild(new_body.upcast()).unwrap();
-            }
-        }
-        Ok(())
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-document-getelementsbyname
@@ -2029,16 +1837,6 @@ impl Document {
     // https://dom.spec.whatwg.org/#dom-parentnode-childelementcount
     fn ChildElementCount(&self) -> u32 {
         self.upcast::<Node>().child_elements().count() as u32
-    }
-
-    // https://dom.spec.whatwg.org/#dom-parentnode-prepend
-    fn Prepend(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().prepend(nodes)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-parentnode-append
-    fn Append(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().append(nodes)
     }
 
     // https://dom.spec.whatwg.org/#dom-parentnode-queryselector

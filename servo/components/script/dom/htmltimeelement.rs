@@ -17,17 +17,18 @@ pub struct HTMLTimeElement {
 }
 
 impl HTMLTimeElement {
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLTimeElement {
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLTimeElement {
         HTMLTimeElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTimeElement, localName, prefix, document)
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTimeElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLTimeElement> {
-        let element = HTMLTimeElement::new_inherited(localName, prefix, document);
+        let element = HTMLTimeElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 }

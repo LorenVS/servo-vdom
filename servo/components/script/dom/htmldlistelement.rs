@@ -17,18 +17,19 @@ pub struct HTMLDListElement {
 }
 
 impl HTMLDListElement {
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLDListElement {
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLDListElement {
         HTMLDListElement {
             htmlelement:
-                HTMLElement::new_inherited(HTMLElementTypeId::HTMLDListElement, localName, prefix, document)
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLDListElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLDListElement> {
-        let element = HTMLDListElement::new_inherited(localName, prefix, document);
+        let element = HTMLDListElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 }

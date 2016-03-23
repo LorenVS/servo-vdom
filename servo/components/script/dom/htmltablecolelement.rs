@@ -17,20 +17,22 @@ pub struct HTMLTableColElement {
 }
 
 impl HTMLTableColElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLTableColElement {
         HTMLTableColElement {
             htmlelement:
-                HTMLElement::new_inherited(HTMLElementTypeId::HTMLTableColElement, localName, prefix, document)
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLTableColElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLTableColElement> {
-        let element = HTMLTableColElement::new_inherited(localName, prefix, document);
+        let element = HTMLTableColElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 }

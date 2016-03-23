@@ -25,7 +25,6 @@ use dom::bindings::js::{Root, RootedReference};
 use dom::bindings::xmlname::XMLName::InvalidXMLName;
 use dom::bindings::xmlname::{namespace_from_domstring, validate_and_extract, xml_name_type};
 use dom::characterdata::CharacterData;
-use dom::create::create_element;
 use dom::document::{Document, LayoutDocumentHelpers};
 use dom::domrect::DOMRect;
 use dom::domrectlist::DOMRectList;
@@ -108,27 +107,22 @@ pub enum ElementCreator {
 // Element methods
 //
 impl Element {
-    pub fn create(name: QualName, prefix: Option<Atom>,
-                  document: &Document, creator: ElementCreator)
-                  -> Root<Element> {
-        create_element(name, prefix, document, creator)
-    }
-
 
     pub fn new_inherited(type_id: ElementTypeId,
+                         id: u64,
                          local_name: Atom,
                          namespace: Namespace, prefix: Option<DOMString>,
                          document: &Document) -> Element {
-        Element::new_inherited_with_state(ElementState::empty(), type_id, local_name,
+        Element::new_inherited_with_state(ElementState::empty(), type_id, id, local_name,
                                           namespace, prefix, document)
     }
 
-    pub fn new_inherited_with_state(state: ElementState, type_id: ElementTypeId, local_name: Atom,
+    pub fn new_inherited_with_state(state: ElementState, type_id: ElementTypeId, id: u64, local_name: Atom,
                                     namespace: Namespace, prefix: Option<DOMString>,
                                     document: &Document)
                                     -> Element {
         Element {
-            node: Node::new_inherited(NodeTypeId::Element(type_id), document),
+            node: Node::new_inherited(NodeTypeId::Element(type_id), id, document),
             local_name: local_name,
             namespace: namespace,
             prefix: prefix,
@@ -143,11 +137,12 @@ impl Element {
     }
 
     pub fn new(type_id: ElementTypeId,
+               id: u64,
                local_name: Atom,
                namespace: Namespace,
                prefix: Option<DOMString>,
                document: &Document) -> Root<Element> {
-        Root::new_box(box Element::new_inherited(type_id, local_name, namespace, prefix, document))
+        Root::new_box(box Element::new_inherited(type_id, id, local_name, namespace, prefix, document))
     }
 }
 
@@ -1436,16 +1431,6 @@ impl Element {
         self.upcast::<Node>().child_elements().count() as u32
     }
 
-    // https://dom.spec.whatwg.org/#dom-parentnode-prepend
-    fn Prepend(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().prepend(nodes)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-parentnode-append
-    fn Append(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().append(nodes)
-    }
-
     // https://dom.spec.whatwg.org/#dom-parentnode-queryselector
     fn QuerySelector(&self, selectors: DOMString) -> Fallible<Option<Root<Element>>> {
         let root = self.upcast::<Node>();
@@ -1456,21 +1441,6 @@ impl Element {
     fn QuerySelectorAll(&self, selectors: DOMString) -> Fallible<Root<NodeList>> {
         let root = self.upcast::<Node>();
         root.query_selector_all(selectors)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-childnode-before
-    fn Before(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().before(nodes)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-childnode-after
-    fn After(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().after(nodes)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-childnode-replacewith
-    fn ReplaceWith(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().replace_with(nodes)
     }
 
     // https://dom.spec.whatwg.org/#dom-childnode-remove

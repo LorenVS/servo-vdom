@@ -25,30 +25,24 @@ pub struct HTMLTemplateElement {
 }
 
 impl HTMLTemplateElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLTemplateElement {
         HTMLTemplateElement {
             htmlelement:
-                HTMLElement::new_inherited(HTMLElementTypeId::HTMLTemplateElement, localName, prefix, document),
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLTemplateElement, id, localName, prefix, document),
             contents: MutNullableHeap::new(None),
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLTemplateElement> {
-        let element = HTMLTemplateElement::new_inherited(localName, prefix, document);
+        let element = HTMLTemplateElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
-    }
-    
-    /// https://html.spec.whatwg.org/multipage/#dom-template-content
-    fn Content(&self) -> Root<DocumentFragment> {
-        self.contents.or_init(|| {
-            let doc = document_from_node(self);
-            doc.appropriate_template_contents_owner_document().CreateDocumentFragment()
-        })
     }
 }
 
@@ -60,28 +54,5 @@ impl VirtualMethods for HTMLTemplateElement {
     /// https://html.spec.whatwg.org/multipage/#template-adopting-steps
     fn adopting_steps(&self, old_doc: &Document) {
         self.super_type().unwrap().adopting_steps(old_doc);
-        // Step 1.
-        let doc = document_from_node(self).appropriate_template_contents_owner_document();
-        // Step 2.
-        Node::adopt(self.Content().upcast(), &doc);
-    }
-
-    /// https://html.spec.whatwg.org/multipage/#the-template-element:concept-node-clone-ext
-    fn cloning_steps(&self, copy: &Node, maybe_doc: Option<&Document>,
-                     clone_children: CloneChildrenFlag) {
-        self.super_type().unwrap().cloning_steps(copy, maybe_doc, clone_children);
-        if clone_children == CloneChildrenFlag::DoNotCloneChildren {
-            // Step 1.
-            return;
-        }
-        let copy = copy.downcast::<HTMLTemplateElement>().unwrap();
-        // Steps 2-3.
-        let copy_contents = Root::upcast::<Node>(copy.Content());
-        let copy_contents_doc = copy_contents.owner_doc();
-        for child in self.Content().upcast::<Node>().children() {
-            let copy_child = Node::clone(
-                &child, Some(&copy_contents_doc), CloneChildrenFlag::CloneChildren);
-            copy_contents.AppendChild(&copy_child).unwrap();
-        }
     }
 }

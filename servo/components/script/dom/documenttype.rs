@@ -23,25 +23,27 @@ pub struct DocumentType {
 }
 
 impl DocumentType {
-    fn new_inherited(name: DOMString,
+    fn new_inherited(id: u64,
+                     name: DOMString,
                      public_id: Option<DOMString>,
                      system_id: Option<DOMString>,
                      document: &Document)
                      -> DocumentType {
         DocumentType {
-            node: Node::new_inherited(NodeTypeId::DocumentFragment, document),
+            node: Node::new_inherited(NodeTypeId::DocumentType, id, document),
             name: name,
             public_id: public_id.unwrap_or_default(),
             system_id: system_id.unwrap_or_default(),
         }
     }
     
-    pub fn new(name: DOMString,
+    pub fn new(id: u64,
+               name: DOMString,
                public_id: Option<DOMString>,
                system_id: Option<DOMString>,
                document: &Document)
                -> Root<DocumentType> {
-        let documenttype = DocumentType::new_inherited(name, public_id, system_id, document);
+        let documenttype = DocumentType::new_inherited(id, name, public_id, system_id, document);
         Root::new_box(box documenttype)
     }
 
@@ -73,21 +75,6 @@ impl DocumentType {
     // https://dom.spec.whatwg.org/#dom-documenttype-systemid
     fn SystemId(&self) -> DOMString {
         self.system_id.clone()
-    }
-
-    // https://dom.spec.whatwg.org/#dom-childnode-before
-    fn Before(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().before(nodes)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-childnode-after
-    fn After(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().after(nodes)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-childnode-replacewith
-    fn ReplaceWith(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().replace_with(nodes)
     }
 
     // https://dom.spec.whatwg.org/#dom-childnode-remove

@@ -37,18 +37,18 @@ pub struct HTMLTableRowElement {
 }
 
 impl HTMLTableRowElement {
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document)
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document)
                      -> HTMLTableRowElement {
         HTMLTableRowElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTableRowElement, localName, prefix, document),
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTableRowElement, id, localName, prefix, document),
             cells: Default::default(),
         }
     }
 
     
-    pub fn new(localName: Atom, prefix: Option<DOMString>, document: &Document)
+    pub fn new(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document)
                -> Root<HTMLTableRowElement> {
-        Root::new_box(box HTMLTableRowElement::new_inherited(localName, prefix, document))
+        Root::new_box(box HTMLTableRowElement::new_inherited(id, localName, prefix, document))
     }
     
     // https://html.spec.whatwg.org/multipage/#dom-tr-bgcolor
@@ -63,15 +63,6 @@ impl HTMLTableRowElement {
             let filter = box CellsFilter;
             HTMLCollection::create(self.upcast(), filter)
         })
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-tr-insertcell
-    fn InsertCell(&self, index: i32) -> Fallible<Root<HTMLElement>> {
-        let node = self.upcast::<Node>();
-        node.insert_cell_or_row(
-            index,
-            || self.Cells(),
-            || HTMLTableDataCellElement::new(atom!("td"), None, node.owner_doc().r()))
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-tr-deletecell

@@ -17,19 +17,21 @@ pub struct HTMLDataElement {
 }
 
 impl HTMLDataElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLDataElement {
         HTMLDataElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLDataElement, localName, prefix, document)
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLDataElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLDataElement> {
-        let element = HTMLDataElement::new_inherited(localName, prefix, document);
+        let element = HTMLDataElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 }

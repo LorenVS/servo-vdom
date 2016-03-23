@@ -44,24 +44,24 @@ pub struct HTMLElement {
 }
 
 impl HTMLElement {
-    pub fn new_inherited(type_id: HTMLElementTypeId, tag_name: Atom, prefix: Option<DOMString>,
+    pub fn new_inherited(type_id: HTMLElementTypeId, id: u64, tag_name: Atom, prefix: Option<DOMString>,
                          document: &Document) -> HTMLElement {
-        HTMLElement::new_inherited_with_state(ElementState::empty(), type_id, tag_name, prefix, document)
+        HTMLElement::new_inherited_with_state(ElementState::empty(), type_id, id, tag_name, prefix, document)
     }
 
-    pub fn new_inherited_with_state(state: ElementState, type_id: HTMLElementTypeId, tag_name: Atom,
+    pub fn new_inherited_with_state(state: ElementState, type_id: HTMLElementTypeId, id: u64, tag_name: Atom,
                                     prefix: Option<DOMString>, document: &Document)
                                     -> HTMLElement {
         HTMLElement {
             element:
-                Element::new_inherited_with_state(state, ElementTypeId::HTMLElement(type_id), tag_name, ns!(html), prefix, document),
+                Element::new_inherited_with_state(state, ElementTypeId::HTMLElement(type_id), id, tag_name, ns!(html), prefix, document),
             style_decl: Default::default(),
         }
     }
 
     
-    pub fn new(localName: Atom, prefix: Option<DOMString>, document: &Document) -> Root<HTMLElement> {
-        let element = HTMLElement::new_inherited(HTMLElementTypeId::HTMLElement, localName, prefix, document);
+    pub fn new(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document) -> Root<HTMLElement> {
+        let element = HTMLElement::new_inherited(HTMLElementTypeId::HTMLElement, id, localName, prefix, document);
         Root::new_box(box element)
     }
 

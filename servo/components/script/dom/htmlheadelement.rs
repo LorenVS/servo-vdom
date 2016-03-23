@@ -18,19 +18,21 @@ pub struct HTMLHeadElement {
 }
 
 impl HTMLHeadElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLHeadElement {
         HTMLHeadElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLHeadElement, localName, prefix, document)
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLHeadElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLHeadElement> {
-        let element = HTMLHeadElement::new_inherited(localName, prefix, document);
+        let element = HTMLHeadElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 }

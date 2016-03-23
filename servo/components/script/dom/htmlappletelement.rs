@@ -21,20 +21,22 @@ pub struct HTMLAppletElement {
 }
 
 impl HTMLAppletElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLAppletElement {
         HTMLAppletElement {
             htmlelement:
-                HTMLElement::new_inherited(HTMLElementTypeId::HTMLAppletElement, localName, prefix, document)
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLAppletElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLAppletElement> {
-        let element = HTMLAppletElement::new_inherited(localName, prefix, document);
+        let element = HTMLAppletElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
     

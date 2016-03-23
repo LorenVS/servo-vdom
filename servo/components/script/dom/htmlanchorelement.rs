@@ -34,32 +34,29 @@ pub struct HTMLAnchorElement {
 }
 
 impl HTMLAnchorElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLAnchorElement {
         HTMLAnchorElement {
             htmlelement:
-                HTMLElement::new_inherited(HTMLElementTypeId::HTMLAnchorElement, localName, prefix, document),
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLAnchorElement, id, localName, prefix, document),
             rel_list: Default::default(),
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLAnchorElement> {
-        let element = HTMLAnchorElement::new_inherited(localName, prefix, document);
+        let element = HTMLAnchorElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
     
     // https://html.spec.whatwg.org/multipage/#dom-a-text
     fn Text(&self) -> DOMString {
         self.upcast::<Node>().GetTextContent().unwrap()
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-a-text
-    fn SetText(&self, value: DOMString) {
-        self.upcast::<Node>().SetTextContent(Some(value))
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-a-rellist

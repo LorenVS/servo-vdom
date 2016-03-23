@@ -61,6 +61,7 @@ use std::cmp::max;
 use std::default::Default;
 use std::iter::{self, FilterMap, Peekable};
 use std::mem;
+use std::u64;
 use string_cache::{Atom, Namespace, QualName};
 use style::selector_impl::ServoSelectorImpl;
 use util::str::DOMString;
@@ -76,6 +77,9 @@ use uuid::Uuid;
 pub struct Node {
     /// The JavaScript reflector for this node.
     eventtarget: EventTarget,
+
+    /// The id of the node, provided by the vdom client.
+    id: u64,
 
     /// The parent of this node.
     parent_node: MutNullableHeap<JS<Node>>,
@@ -595,100 +599,6 @@ impl Node {
         }).unwrap_or(false);
 
         window.scroll_area_query(self.to_trusted_node_address())
-    }
-
-    // https://dom.spec.whatwg.org/#dom-childnode-before
-    pub fn before(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        // Step 1.
-        let parent = &self.parent_node;
-
-        // Step 2.
-        let parent = match parent.get() {
-            None => return Ok(()),
-            Some(parent) => parent,
-        };
-
-        // Step 3.
-        let viable_previous_sibling = first_node_not_in(self.preceding_siblings(), &nodes);
-
-        // Step 4.
-        let node = try!(self.owner_doc().node_from_nodes_and_strings(nodes));
-
-        // Step 5.
-        let viable_previous_sibling = match viable_previous_sibling {
-            Some(ref viable_previous_sibling) => viable_previous_sibling.next_sibling.get(),
-            None => parent.first_child.get(),
-        };
-
-        // Step 6.
-        try!(Node::pre_insert(&node, &parent, viable_previous_sibling.r()));
-
-        Ok(())
-    }
-
-    // https://dom.spec.whatwg.org/#dom-childnode-after
-    pub fn after(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        // Step 1.
-        let parent = &self.parent_node;
-
-        // Step 2.
-        let parent = match parent.get() {
-            None => return Ok(()),
-            Some(parent) => parent,
-        };
-
-        // Step 3.
-        let viable_next_sibling = first_node_not_in(self.following_siblings(), &nodes);
-
-        // Step 4.
-        let node = try!(self.owner_doc().node_from_nodes_and_strings(nodes));
-
-        // Step 5.
-        try!(Node::pre_insert(&node, &parent, viable_next_sibling.r()));
-
-        Ok(())
-    }
-
-    // https://dom.spec.whatwg.org/#dom-childnode-replacewith
-    pub fn replace_with(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        // Step 1.
-        let parent = if let Some(parent) = self.GetParentNode() {
-            parent
-        } else {
-            // Step 2.
-            return Ok(());
-        };
-        // Step 3.
-        let viable_next_sibling = first_node_not_in(self.following_siblings(), &nodes);
-        // Step 4.
-        let node = try!(self.owner_doc().node_from_nodes_and_strings(nodes));
-        if self.parent_node == Some(&*parent) {
-            // Step 5.
-            try!(parent.ReplaceChild(&node, self));
-        } else {
-            // Step 6.
-            try!(Node::pre_insert(&node, &parent, viable_next_sibling.r()));
-        }
-        Ok(())
-    }
-
-    // https://dom.spec.whatwg.org/#dom-parentnode-prepend
-    pub fn prepend(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        // Step 1.
-        let doc = self.owner_doc();
-        let node = try!(doc.node_from_nodes_and_strings(nodes));
-        // Step 2.
-        let first_child = self.first_child.get();
-        Node::pre_insert(node.r(), self, first_child.r()).map(|_| ())
-    }
-
-    // https://dom.spec.whatwg.org/#dom-parentnode-append
-    pub fn append(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        // Step 1.
-        let doc = self.owner_doc();
-        let node = try!(doc.node_from_nodes_and_strings(nodes));
-        // Step 2.
-        self.AppendChild(node.r()).map(|_| ())
     }
 
     // https://dom.spec.whatwg.org/#dom-parentnode-queryselector
@@ -1245,17 +1155,18 @@ fn as_uintptr<T>(t: &T) -> uintptr_t { t as *const T as uintptr_t }
 
 impl Node {
 
-    pub fn new_inherited(type_id: NodeTypeId, doc: &Document) -> Node {
-        Node::new_(type_id, NodeFlags::new(), Some(doc))
+    pub fn new_inherited(type_id: NodeTypeId, id: u64, doc: &Document) -> Node {
+        Node::new_(type_id, id, NodeFlags::new(), Some(doc))
     }
 
     pub fn new_document_node() -> Node {
-        Node::new_(NodeTypeId::Document, NodeFlags::new() | IS_IN_DOC, None)
+        Node::new_(NodeTypeId::Document, u64::MAX, NodeFlags::new() | IS_IN_DOC, None)
     }
 
-    fn new_(type_id: NodeTypeId, flags: NodeFlags, doc: Option<&Document>) -> Node {
+    fn new_(type_id: NodeTypeId, id: u64, flags: NodeFlags, doc: Option<&Document>) -> Node {
         Node {
             eventtarget: EventTarget::new_inherited(EventTargetTypeId::Node(type_id)),
+            id: id,
 
             parent_node: Default::default(),
             first_child: Default::default(),
@@ -1577,107 +1488,6 @@ impl Node {
         }
     }
 
-    // https://dom.spec.whatwg.org/#concept-node-clone
-    pub fn clone(node: &Node, maybe_doc: Option<&Document>,
-                 clone_children: CloneChildrenFlag) -> Root<Node> {
-
-        // Step 1.
-        let document = match maybe_doc {
-            Some(doc) => Root::from_ref(doc),
-            None => node.owner_doc()
-        };
-
-        // Step 2.
-        // XXXabinader: clone() for each node as trait?
-        let copy: Root<Node> = match node.type_id() {
-            NodeTypeId::DocumentType => {
-                let doctype = node.downcast::<DocumentType>().unwrap();
-                let doctype = DocumentType::new(doctype.name().clone(),
-                                                Some(doctype.public_id().clone()),
-                                                Some(doctype.system_id().clone()), document.r());
-                Root::upcast::<Node>(doctype)
-            },
-            NodeTypeId::DocumentFragment => {
-                let doc_fragment = DocumentFragment::new(document.r());
-                Root::upcast::<Node>(doc_fragment)
-            },
-            NodeTypeId::CharacterData(_) => {
-                let cdata = node.downcast::<CharacterData>().unwrap();
-                cdata.clone_with_data(cdata.Data(), &document)
-            },
-            NodeTypeId::Document => {
-                let document = node.downcast::<Document>().unwrap();
-                let is_html_doc = if document.is_html_document() {
-                    IsHTMLDocument::HTMLDocument
-                } else {
-                    IsHTMLDocument::NonHTMLDocument
-                };
-                let window = document.window();
-                let loader = DocumentLoader::new(&*document.loader());
-                let document = Document::new(window, None,
-                                             Some((*document.url()).clone()),
-                                             is_html_doc, None,
-                                             None, DocumentSource::NotFromParser, loader);
-                Root::upcast::<Node>(document)
-            },
-            NodeTypeId::Element(..) => {
-                let element = node.downcast::<Element>().unwrap();
-                let name = QualName {
-                    ns: element.namespace().clone(),
-                    local: element.local_name().clone()
-                };
-                let element = Element::create(name,
-                    element.prefix().as_ref().map(|p| Atom::from(&**p)),
-                    document.r(), ElementCreator::ScriptCreated);
-                Root::upcast::<Node>(element)
-            },
-        };
-
-        // Step 3.
-        let document = match copy.downcast::<Document>() {
-            Some(doc) => Root::from_ref(doc),
-            None => Root::from_ref(document.r()),
-        };
-        assert!(copy.owner_doc() == document);
-
-        // Step 4 (some data already copied in step 2).
-        match node.type_id() {
-            NodeTypeId::Document => {
-                let node_doc = node.downcast::<Document>().unwrap();
-                let copy_doc = copy.downcast::<Document>().unwrap();
-                copy_doc.set_encoding_name(node_doc.encoding_name().clone());
-            },
-            NodeTypeId::Element(..) => {
-                let node_elem = node.downcast::<Element>().unwrap();
-                let copy_elem = copy.downcast::<Element>().unwrap();
-
-                for attr in node_elem.attrs().iter() {
-                    copy_elem.push_new_attribute(attr.local_name().clone(),
-                                                 attr.value().clone(),
-                                                 attr.name().clone(),
-                                                 attr.namespace().clone(),
-                                                 attr.prefix().clone());
-                }
-            },
-            _ => ()
-        }
-
-        // Step 5: cloning steps.
-        vtable_for(&node).cloning_steps(copy.r(), maybe_doc, clone_children);
-
-        // Step 6.
-        if clone_children == CloneChildrenFlag::CloneChildren {
-            for child in node.children() {
-                let child_copy = Node::clone(child.r(), Some(document.r()),
-                                             clone_children);
-                let _inserted_node = Node::pre_insert(child_copy.r(), copy.r(), None);
-            }
-        }
-
-        // Step 7.
-        copy
-    }
-
     pub fn collect_text_contents<T: Iterator<Item=Root<Node>>>(iterator: T) -> DOMString {
         let mut content = String::new();
         for node in iterator {
@@ -1889,30 +1699,6 @@ impl Node {
         }
     }
 
-    // https://dom.spec.whatwg.org/#dom-node-textcontent
-    pub fn SetTextContent(&self, value: Option<DOMString>) {
-        let value = value.unwrap_or_default();
-        match self.type_id() {
-            NodeTypeId::DocumentFragment |
-            NodeTypeId::Element(..) => {
-                // Step 1-2.
-                let node = if value.is_empty() {
-                    None
-                } else {
-                    Some(Root::upcast(self.owner_doc().CreateTextNode(value)))
-                };
-
-                // Step 3.
-                Node::replace_all(node.r(), self);
-            }
-            NodeTypeId::CharacterData(..) => {
-                let characterdata = self.downcast::<CharacterData>().unwrap();
-                characterdata.SetData(value);
-            }
-            NodeTypeId::DocumentType |
-            NodeTypeId::Document => {}
-        }
-    }
 
     // https://dom.spec.whatwg.org/#dom-node-insertbefore
     pub fn InsertBefore(&self, node: &Node, child: Option<&Node>) -> Fallible<Root<Node>> {
@@ -2089,15 +1875,6 @@ impl Node {
                 node.Normalize();
             }
         }
-    }
-
-    // https://dom.spec.whatwg.org/#dom-node-clonenode
-    pub fn CloneNode(&self, deep: bool) -> Root<Node> {
-        Node::clone(self, None, if deep {
-            CloneChildrenFlag::CloneChildren
-        } else {
-            CloneChildrenFlag::DoNotCloneChildren
-        })
     }
 
     // https://dom.spec.whatwg.org/#dom-node-isequalnode

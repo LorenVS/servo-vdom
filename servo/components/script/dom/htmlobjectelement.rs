@@ -24,21 +24,23 @@ pub struct HTMLObjectElement {
 }
 
 impl HTMLObjectElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLObjectElement {
         HTMLObjectElement {
             htmlelement:
-                HTMLElement::new_inherited(HTMLElementTypeId::HTMLObjectElement, localName, prefix, document),
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLObjectElement, id, localName, prefix, document),
             image: DOMRefCell::new(None),
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLObjectElement> {
-        let element = HTMLObjectElement::new_inherited(localName, prefix, document);
+        let element = HTMLObjectElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 

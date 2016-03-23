@@ -93,7 +93,8 @@ static DEFAULT_COLS: u32 = 20;
 static DEFAULT_ROWS: u32 = 2;
 
 impl HTMLTextAreaElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLTextAreaElement {
         let chan = document.window().constellation_chan();
@@ -101,6 +102,7 @@ impl HTMLTextAreaElement {
             htmlelement:
                 HTMLElement::new_inherited_with_state(IN_ENABLED_STATE,
                                                       HTMLElementTypeId::HTMLTextAreaElement,
+                                                      id,
                                                       localName, prefix, document),
             textinput: DOMRefCell::new(TextInput::new(Lines::Multiple, DOMString::new(), chan, None)),
             value_changed: Cell::new(false),
@@ -108,10 +110,11 @@ impl HTMLTextAreaElement {
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLTextAreaElement> {
-        let element = HTMLTextAreaElement::new_inherited(localName, prefix, document);
+        let element = HTMLTextAreaElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 
@@ -179,17 +182,6 @@ impl HTMLTextAreaElement {
     // https://html.spec.whatwg.org/multipage/#dom-textarea-defaultvalue
     fn DefaultValue(&self) -> DOMString {
         self.upcast::<Node>().GetTextContent().unwrap()
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-textarea-defaultvalue
-    fn SetDefaultValue(&self, value: DOMString) {
-        self.upcast::<Node>().SetTextContent(Some(value));
-
-        // if the element's dirty value flag is false, then the element's
-        // raw value must be set to the value of the element's textContent IDL attribute
-        if !self.value_changed.get() {
-            self.reset();
-        }
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-textarea-value

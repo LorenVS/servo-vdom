@@ -26,20 +26,14 @@ pub struct DocumentFragment {
 
 impl DocumentFragment {
     /// Creates a new DocumentFragment.
-    fn new_inherited(document: &Document) -> DocumentFragment {
+    fn new_inherited(id: u64, document: &Document) -> DocumentFragment {
         DocumentFragment {
-            node: Node::new_inherited(NodeTypeId::DocumentFragment, document),
+            node: Node::new_inherited(NodeTypeId::DocumentFragment, id, document),
         }
     }
 
-    pub fn new(document: &Document) -> Root<DocumentFragment> {
-        Root::new_box(box DocumentFragment::new_inherited(document))
-    }
-
-    pub fn Constructor(global: GlobalRef) -> Fallible<Root<DocumentFragment>> {
-        let document = global.as_window().Document();
-
-        Ok(DocumentFragment::new(document.r()))
+    pub fn new(id: u64, document: &Document) -> Root<DocumentFragment> {
+        Root::new_box(box DocumentFragment::new_inherited(id, document))
     }
     
     // https://dom.spec.whatwg.org/#dom-parentnode-children
@@ -72,16 +66,6 @@ impl DocumentFragment {
     // https://dom.spec.whatwg.org/#dom-parentnode-childelementcount
     fn ChildElementCount(&self) -> u32 {
         self.upcast::<Node>().child_elements().count() as u32
-    }
-
-    // https://dom.spec.whatwg.org/#dom-parentnode-prepend
-    fn Prepend(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().prepend(nodes)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-parentnode-append
-    fn Append(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().append(nodes)
     }
 
     // https://dom.spec.whatwg.org/#dom-parentnode-queryselector

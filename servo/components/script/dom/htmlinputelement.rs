@@ -126,12 +126,13 @@ static DEFAULT_INPUT_SIZE: u32 = 20;
 static DEFAULT_MAX_LENGTH: i32 = -1;
 
 impl HTMLInputElement {
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLInputElement {
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLInputElement {
         let chan = document.window().constellation_chan();
         HTMLInputElement {
             htmlelement:
                 HTMLElement::new_inherited_with_state(IN_ENABLED_STATE,
                                                       HTMLElementTypeId::HTMLInputElement,
+                                                      id,
                                                       localName, prefix, document),
             input_type: Cell::new(InputType::InputText),
             placeholder: DOMRefCell::new(DOMString::new()),
@@ -147,10 +148,11 @@ impl HTMLInputElement {
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLInputElement> {
-        let element = HTMLInputElement::new_inherited(localName, prefix, document);
+        let element = HTMLInputElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 

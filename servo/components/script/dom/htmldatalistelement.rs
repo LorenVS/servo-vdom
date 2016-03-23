@@ -21,20 +21,22 @@ pub struct HTMLDataListElement {
 }
 
 impl HTMLDataListElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLDataListElement {
         HTMLDataListElement {
             htmlelement:
-                HTMLElement::new_inherited(HTMLElementTypeId::HTMLDataListElement, localName, prefix, document)
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLDataListElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLDataListElement> {
-        let element = HTMLDataListElement::new_inherited(localName, prefix, document);
+        let element = HTMLDataListElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
     

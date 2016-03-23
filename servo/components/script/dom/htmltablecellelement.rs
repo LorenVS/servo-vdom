@@ -26,12 +26,13 @@ pub struct HTMLTableCellElement {
 
 impl HTMLTableCellElement {
     pub fn new_inherited(type_id: HTMLTableCellElementTypeId,
+                         id: u64,
                          tag_name: Atom,
                          prefix: Option<DOMString>,
                          document: &Document)
                          -> HTMLTableCellElement {
         HTMLTableCellElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTableCellElement(type_id), tag_name, prefix, document),
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTableCellElement(type_id), id, tag_name, prefix, document),
         }
     }
 

@@ -24,17 +24,18 @@ pub struct HTMLFontElement {
 
 
 impl HTMLFontElement {
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLFontElement {
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLFontElement {
         HTMLFontElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLFontElement, localName, prefix, document),
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLFontElement, id, localName, prefix, document),
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLFontElement> {
-        let element = HTMLFontElement::new_inherited(localName, prefix, document);
+        let element = HTMLFontElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
     

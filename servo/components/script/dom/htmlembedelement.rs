@@ -17,17 +17,18 @@ pub struct HTMLEmbedElement {
 }
 
 impl HTMLEmbedElement {
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLEmbedElement {
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLEmbedElement {
         HTMLEmbedElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLEmbedElement, localName, prefix, document)
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLEmbedElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLEmbedElement> {
-        let element = HTMLEmbedElement::new_inherited(localName, prefix, document);
+        let element = HTMLEmbedElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 }

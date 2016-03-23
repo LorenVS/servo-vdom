@@ -58,11 +58,12 @@ pub struct HTMLFormElement {
 }
 
 impl HTMLFormElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLFormElement {
         HTMLFormElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLFormElement, localName, prefix, document),
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLFormElement, id, localName, prefix, document),
             marked_for_reset: Cell::new(false),
             elements: Default::default(),
             generation_id: Cell::new(GenerationId(0))
@@ -70,10 +71,11 @@ impl HTMLFormElement {
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLFormElement> {
-        let element = HTMLFormElement::new_inherited(localName, prefix, document);
+        let element = HTMLFormElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 

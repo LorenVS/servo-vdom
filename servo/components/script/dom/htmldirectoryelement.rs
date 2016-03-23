@@ -17,20 +17,22 @@ pub struct HTMLDirectoryElement {
 }
 
 impl HTMLDirectoryElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLDirectoryElement {
         HTMLDirectoryElement {
             htmlelement:
-                HTMLElement::new_inherited(HTMLElementTypeId::HTMLDirectoryElement, localName, prefix, document)
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLDirectoryElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLDirectoryElement> {
-        let element = HTMLDirectoryElement::new_inherited(localName, prefix, document);
+        let element = HTMLDirectoryElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 }

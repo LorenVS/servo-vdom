@@ -17,17 +17,18 @@ pub struct HTMLHtmlElement {
 }
 
 impl HTMLHtmlElement {
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLHtmlElement {
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLHtmlElement {
         HTMLHtmlElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLHtmlElement, localName, prefix, document)
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLHtmlElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLHtmlElement> {
-        let element = HTMLHtmlElement::new_inherited(localName, prefix, document);
+        let element = HTMLHtmlElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 }

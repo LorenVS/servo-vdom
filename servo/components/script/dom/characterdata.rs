@@ -28,26 +28,10 @@ pub struct CharacterData {
 }
 
 impl CharacterData {
-    pub fn new_inherited(type_id: CharacterDataTypeId, data: DOMString, document: &Document) -> CharacterData {
+    pub fn new_inherited(type_id: CharacterDataTypeId, id: u64, data: DOMString, document: &Document) -> CharacterData {
         CharacterData {
-            node: Node::new_inherited(NodeTypeId::CharacterData(type_id), document),
+            node: Node::new_inherited(NodeTypeId::CharacterData(type_id), id, document),
             data: DOMRefCell::new(data),
-        }
-    }
-
-    pub fn clone_with_data(&self, data: DOMString, document: &Document) -> Root<Node> {
-        match self.upcast::<Node>().type_id() {
-            NodeTypeId::CharacterData(CharacterDataTypeId::Comment) => {
-                Root::upcast(Comment::new(data, &document))
-            }
-            NodeTypeId::CharacterData(CharacterDataTypeId::ProcessingInstruction) => {
-                let pi = self.downcast::<ProcessingInstruction>().unwrap();
-                Root::upcast(ProcessingInstruction::new(pi.Target(), data, &document))
-            },
-            NodeTypeId::CharacterData(CharacterDataTypeId::Text) => {
-                Root::upcast(Text::new(data, &document))
-            },
-            _ => unreachable!(),
         }
     }
 
@@ -150,27 +134,6 @@ impl CharacterData {
         node.ranges().replace_code_units(
             node, offset, count, arg.encode_utf16().count() as u32);
         Ok(())
-    }
-
-    // https://dom.spec.whatwg.org/#dom-childnode-before
-    fn Before(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().before(nodes)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-childnode-after
-    fn After(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().after(nodes)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-childnode-replacewith
-    fn ReplaceWith(&self, nodes: Vec<NodeOrString>) -> ErrorResult {
-        self.upcast::<Node>().replace_with(nodes)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-childnode-remove
-    fn Remove(&self) {
-        let node = self.upcast::<Node>();
-        node.remove_self();
     }
 
     // https://dom.spec.whatwg.org/#dom-nondocumenttypechildnode-previouselementsibling

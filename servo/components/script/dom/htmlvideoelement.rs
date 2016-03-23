@@ -17,18 +17,19 @@ pub struct HTMLVideoElement {
 }
 
 impl HTMLVideoElement {
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLVideoElement {
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLVideoElement {
         HTMLVideoElement {
             htmlmediaelement:
-                HTMLMediaElement::new_inherited(HTMLMediaElementTypeId::HTMLVideoElement, localName, prefix, document)
+                HTMLMediaElement::new_inherited(HTMLMediaElementTypeId::HTMLVideoElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLVideoElement> {
-        let element = HTMLVideoElement::new_inherited(localName, prefix, document);
+        let element = HTMLVideoElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 }

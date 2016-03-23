@@ -25,18 +25,19 @@ pub struct HTMLAreaElement {
 }
 
 impl HTMLAreaElement {
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLAreaElement {
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLAreaElement {
         HTMLAreaElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLAreaElement, localName, prefix, document),
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLAreaElement, id, localName, prefix, document),
             rel_list: Default::default(),
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLAreaElement> {
-        let element = HTMLAreaElement::new_inherited(localName, prefix, document);
+        let element = HTMLAreaElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
     

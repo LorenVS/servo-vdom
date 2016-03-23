@@ -64,7 +64,6 @@ use script_traits::{InitialScriptState, MouseButton, MouseEventType};
 use script_traits::{LayoutMsg, OpaqueScriptLayoutChannel, ScriptMsg as ConstellationMsg};
 use script_traits::{ScriptThreadFactory, ScriptToCompositorMsg,TimerEventRequest};
 use script_traits::{TouchEventType, TouchId};
-use servo_vdom_client::ServoSide;
 use std::any::Any;
 use std::cell::{RefCell};
 use std::collections::HashSet;
@@ -1183,18 +1182,20 @@ impl ScriptThread {
         browsing_context.init(&document);
 
         let htmlel = create_element_simple(
+            1,
             atom!("html"),
             &document,
             ElementCreator::ParserCreated);
         assert!(document.upcast::<Node>().InsertBefore(htmlel.upcast::<Node>(), None).is_ok());
 
         let bodyel = create_element_simple(
+            2,
             atom!("body"),
             &document,
             ElementCreator::ParserCreated);
         assert!(htmlel.upcast::<Node>().InsertBefore(bodyel.upcast::<Node>(), None).is_ok());
 
-        let text = Text::new(DOMString::from("Hello World!"), &document);
+        let text = Text::new(3, DOMString::from("Hello World!"), &document);
         assert!(bodyel.upcast::<Node>().InsertBefore(text.upcast(), None).is_ok());
 
         document.set_ready_state(DocumentReadyState::Complete);

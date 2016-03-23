@@ -22,17 +22,18 @@ pub struct HTMLTitleElement {
 }
 
 impl HTMLTitleElement {
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLTitleElement {
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLTitleElement {
         HTMLTitleElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTitleElement, localName, prefix, document)
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTitleElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLTitleElement> {
-        let element = HTMLTitleElement::new_inherited(localName, prefix, document);
+        let element = HTMLTitleElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
     
@@ -47,10 +48,6 @@ impl HTMLTitleElement {
         DOMString::from(content)
     }
 
-    // https://html.spec.whatwg.org/multipage/#dom-title-text
-    fn SetText(&self, value: DOMString) {
-        self.upcast::<Node>().SetTextContent(Some(value))
-    }
 }
 
 impl VirtualMethods for HTMLTitleElement {

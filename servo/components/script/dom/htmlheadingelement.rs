@@ -28,23 +28,25 @@ pub struct HTMLHeadingElement {
 }
 
 impl HTMLHeadingElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document,
                      level: HeadingLevel) -> HTMLHeadingElement {
         HTMLHeadingElement {
             htmlelement:
-                HTMLElement::new_inherited(HTMLElementTypeId::HTMLHeadingElement, localName, prefix, document),
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLHeadingElement, id, localName, prefix, document),
             level: level,
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document,
                level: HeadingLevel) -> Root<HTMLHeadingElement> {
-        let element = HTMLHeadingElement::new_inherited(localName, prefix, document, level);
+        let element = HTMLHeadingElement::new_inherited(id, localName, prefix, document, level);
         Root::new_box(box element)
     }
 }

@@ -34,13 +34,15 @@ pub struct HTMLOptionElement {
 }
 
 impl HTMLOptionElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLOptionElement {
         HTMLOptionElement {
             htmlelement:
                 HTMLElement::new_inherited_with_state(IN_ENABLED_STATE,
                                                       HTMLElementTypeId::HTMLOptionElement,
+                                                      id,
                                                       localName, prefix, document),
             selectedness: Cell::new(false),
             dirtiness: Cell::new(false),
@@ -48,10 +50,11 @@ impl HTMLOptionElement {
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLOptionElement> {
-        let element = HTMLOptionElement::new_inherited(localName, prefix, document);
+        let element = HTMLOptionElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 
@@ -81,11 +84,6 @@ impl HTMLOptionElement {
         let mut content = String::new();
         collect_text(self.upcast(), &mut content);
         DOMString::from(str_join(split_html_space_chars(&content), " "))
-    }
-
-    // https://html.spec.whatwg.org/multipage/#dom-option-text
-    fn SetText(&self, value: DOMString) {
-        self.upcast::<Node>().SetTextContent(Some(value))
     }
 
     // https://html.spec.whatwg.org/multipage/#attr-option-value

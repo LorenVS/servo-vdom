@@ -25,20 +25,22 @@ pub struct HTMLLabelElement {
 }
 
 impl HTMLLabelElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLLabelElement {
         HTMLLabelElement {
             htmlelement:
-                HTMLElement::new_inherited(HTMLElementTypeId::HTMLLabelElement, localName, prefix, document)
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLLabelElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLLabelElement> {
-        let element = HTMLLabelElement::new_inherited(localName, prefix, document);
+        let element = HTMLLabelElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
     

@@ -17,20 +17,22 @@ pub struct HTMLQuoteElement {
 }
 
 impl HTMLQuoteElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLQuoteElement {
         HTMLQuoteElement {
             htmlelement:
-                HTMLElement::new_inherited(HTMLElementTypeId::HTMLQuoteElement, localName, prefix, document)
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLQuoteElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLQuoteElement> {
-        let element = HTMLQuoteElement::new_inherited(localName, prefix, document);
+        let element = HTMLQuoteElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 }

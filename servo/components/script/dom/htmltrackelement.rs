@@ -17,17 +17,18 @@ pub struct HTMLTrackElement {
 }
 
 impl HTMLTrackElement {
-    fn new_inherited(localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLTrackElement {
+    fn new_inherited(id: u64, localName: Atom, prefix: Option<DOMString>, document: &Document) -> HTMLTrackElement {
         HTMLTrackElement {
-            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTrackElement, localName, prefix, document)
+            htmlelement: HTMLElement::new_inherited(HTMLElementTypeId::HTMLTrackElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLTrackElement> {
-        let element = HTMLTrackElement::new_inherited(localName, prefix, document);
+        let element = HTMLTrackElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
 }

@@ -19,20 +19,22 @@ pub struct HTMLOutputElement {
 }
 
 impl HTMLOutputElement {
-    fn new_inherited(localName: Atom,
+    fn new_inherited(id: u64,
+                     localName: Atom,
                      prefix: Option<DOMString>,
                      document: &Document) -> HTMLOutputElement {
         HTMLOutputElement {
             htmlelement:
-                HTMLElement::new_inherited(HTMLElementTypeId::HTMLOutputElement, localName, prefix, document)
+                HTMLElement::new_inherited(HTMLElementTypeId::HTMLOutputElement, id, localName, prefix, document)
         }
     }
 
     
-    pub fn new(localName: Atom,
+    pub fn new(id: u64,
+               localName: Atom,
                prefix: Option<DOMString>,
                document: &Document) -> Root<HTMLOutputElement> {
-        let element = HTMLOutputElement::new_inherited(localName, prefix, document);
+        let element = HTMLOutputElement::new_inherited(id, localName, prefix, document);
         Root::new_box(box element)
     }
     
