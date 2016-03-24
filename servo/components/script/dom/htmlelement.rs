@@ -107,7 +107,7 @@ impl HTMLElement {
     }
     
     // https://html.spec.whatwg.org/multipage/#the-style-attribute
-    fn Style(&self) -> Root<CSSStyleDeclaration> {
+    pub fn Style(&self) -> Root<CSSStyleDeclaration> {
         self.style_decl.or_init(|| {
             CSSStyleDeclaration::new(self.upcast::<Element>(), None, CSSModificationAccess::ReadWrite)
         })

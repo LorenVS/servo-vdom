@@ -1186,6 +1186,11 @@ impl Node {
         }
     }
 
+    /// Retrieves the id of the node.
+    pub fn get_id(&self) -> u64 {
+        self.id
+    }
+
     // https://dom.spec.whatwg.org/#concept-node-adopt
     pub fn adopt(node: &Node, document: &Document) {
         // Step 1.

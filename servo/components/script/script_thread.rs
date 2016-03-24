@@ -89,6 +89,7 @@ use util::opts;
 use util::str::DOMString;
 use util::thread;
 use util::thread_state;
+use vdom::read_node;
 
 thread_local!(static SCRIPT_THREAD_ROOT: RefCell<Option<*const ScriptThread>> = RefCell::new(None));
 
@@ -945,16 +946,13 @@ impl ScriptThread {
         let _ = try!(cursor.read_msg_type());
 
         let page = self.page.borrow();
-            if let Some(page) = page.as_ref() {
+        if let Some(page) = page.as_ref() {
             let doc = page.document();
-            let node_type = try!(cursor.read_node_type());
 
-            if let Some(NodeType::Text) = node_type {
-                let (id,text) = try!(cursor.read_text());
-                let tnode = Text::new(id, DOMString::from(text), &doc);
-                let node = doc.get_node_by_id(id).unwrap();
-                let parent = node.GetParent().unwrap();
-                parent.ReplaceChild(tnode.upcast(), &*node);
+            while let Some(node) = try!(read_node(cursor, &*doc)) {
+                let existing = doc.get_node_by_id(node.get_id()).unwrap();
+                let parent = existing.GetParent().unwrap();
+                parent.ReplaceChild(&*node, &*existing);
             }
         }
 

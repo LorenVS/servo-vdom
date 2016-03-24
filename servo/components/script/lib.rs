@@ -90,6 +90,7 @@ pub mod reporter;
 pub mod script_thread;
 mod task_source;
 pub mod textinput;
+pub mod vdom;
 
 #[cfg(target_os = "linux")]
 #[allow(unsafe_code)]
