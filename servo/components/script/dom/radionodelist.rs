@@ -2,9 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::HTMLInputElementBinding::HTMLInputElementMethods;
-use dom::bindings::codegen::Bindings::NodeListBinding::NodeListMethods;
-use dom::bindings::codegen::Bindings::RadioNodeListBinding::RadioNodeListMethods;
 use dom::bindings::inheritance::{Castable, NodeListTypeId};
 use dom::bindings::js::{JS, Root};
 use dom::htmlinputelement::HTMLInputElement;
@@ -12,7 +9,6 @@ use dom::node::Node;
 use dom::nodelist::{NodeList, NodeListType};
 use dom::window::Window;
 use util::str::DOMString;
-
 
 pub struct RadioNodeList {
     node_list: NodeList,

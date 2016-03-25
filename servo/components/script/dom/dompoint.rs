@@ -2,11 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::DOMPointBinding::{DOMPointInit, DOMPointMethods};
-use dom::bindings::codegen::Bindings::DOMPointReadOnlyBinding::DOMPointReadOnlyMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::js::Root;
-
 use dom::bindings::inheritance::DOMPointReadOnlyTypeId;
 use dom::dompointreadonly::{DOMPointReadOnly, DOMPointWriteMethods};
 
@@ -33,10 +30,6 @@ impl DOMPoint {
                        w: f64)
                        -> Fallible<Root<DOMPoint>> {
         Ok(DOMPoint::new(x, y, z, w))
-    }
-
-    pub fn new_from_init(p: &DOMPointInit) -> Root<DOMPoint> {
-        DOMPoint::new(p.x, p.y, p.z, p.w)
     }
 
     // https://dev.w3.org/fxtf/geometry/Overview.html#dom-dompointreadonly-x

@@ -4,14 +4,11 @@
 
 use cssparser::RGBA;
 use dom::attr::AttrValue;
-
-use dom::bindings::codegen::Bindings::HTMLFontElementBinding::HTMLFontElementMethods;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::{LayoutJS, Root};
 use dom::document::Document;
 use dom::element::{Element, RawLayoutElementHelpers};
 use dom::htmlelement::HTMLElement;
-
 use dom::virtualmethods::VirtualMethods;
 use string_cache::Atom;
 use style::values::specified;

@@ -5,11 +5,6 @@
 
 use dom::activation::Activatable;
 use dom::attr::AttrValue;
-use dom::bindings::codegen::Bindings::AttrBinding::AttrMethods;
-
-use dom::bindings::codegen::Bindings::HTMLAnchorElementBinding::HTMLAnchorElementMethods;
-use dom::bindings::codegen::Bindings::MouseEventBinding::MouseEventMethods;
-use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::inheritance::{Castable,HTMLElementTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root};
 use dom::document::Document;

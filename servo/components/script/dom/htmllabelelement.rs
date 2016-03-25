@@ -4,8 +4,6 @@
 
 use dom::activation::{Activatable, ActivationSource, synthetic_click_activation};
 use dom::attr::AttrValue;
-
-use dom::bindings::codegen::Bindings::HTMLLabelElementBinding::HTMLLabelElementMethods;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::Root;
 use dom::document::Document;

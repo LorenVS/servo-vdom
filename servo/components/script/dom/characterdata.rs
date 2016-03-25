@@ -5,9 +5,7 @@
 //! DOM bindings for `CharacterData`.
 
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::CharacterDataBinding::CharacterDataMethods;
-use dom::bindings::codegen::Bindings::ProcessingInstructionBinding::ProcessingInstructionMethods;
-use dom::bindings::codegen::UnionTypes::NodeOrString;
+use dom::bindings::uniontypes::NodeOrString;
 use dom::bindings::error::{Error, ErrorResult, Fallible};
 use dom::bindings::inheritance::{Castable, CharacterDataTypeId, NodeTypeId};
 use dom::bindings::js::{LayoutJS, Root};
@@ -56,16 +54,6 @@ impl CharacterData {
         self.data.borrow().clone()
     }
 
-    // https://dom.spec.whatwg.org/#dom-characterdata-data
-    pub fn SetData(&self, data: DOMString) {
-        let old_length = self.Length();
-        let new_length = data.encode_utf16().count() as u32;
-        *self.data.borrow_mut() = data;
-        self.content_changed();
-        let node = self.upcast::<Node>();
-        node.ranges().replace_code_units(node, 0, old_length, new_length);
-    }
-
     // https://dom.spec.whatwg.org/#dom-characterdata-length
     pub fn Length(&self) -> u32 {
         self.data.borrow().encode_utf16().count() as u32
@@ -93,47 +81,6 @@ impl CharacterData {
     pub fn AppendData(&self, data: DOMString) {
         // FIXME(ajeffrey): Efficient append on DOMStrings?
         self.append_data(&*data);
-    }
-
-    // https://dom.spec.whatwg.org/#dom-characterdata-insertdataoffset-data
-    pub fn InsertData(&self, offset: u32, arg: DOMString) -> ErrorResult {
-        self.ReplaceData(offset, 0, arg)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-characterdata-deletedataoffset-count
-    pub fn DeleteData(&self, offset: u32, count: u32) -> ErrorResult {
-        self.ReplaceData(offset, count, DOMString::new())
-    }
-
-    // https://dom.spec.whatwg.org/#dom-characterdata-replacedata
-    pub fn ReplaceData(&self, offset: u32, count: u32, arg: DOMString) -> ErrorResult {
-        let new_data = {
-            let data = self.data.borrow();
-            let (prefix, data_from_offset) = match find_utf16_code_unit_offset(&data, offset) {
-                Some(offset_bytes) => data.split_at(offset_bytes),
-                // Step 2.
-                None => return Err(Error::IndexSize),
-            };
-            let suffix = match find_utf16_code_unit_offset(data_from_offset, count) {
-                // Steps 3.
-                None => "",
-                Some(count_bytes) => &data_from_offset[count_bytes..],
-            };
-            // Step 4: Mutation observers.
-            // Step 5 to 7.
-            let mut new_data = String::with_capacity(prefix.len() + arg.len() + suffix.len());
-            new_data.push_str(prefix);
-            new_data.push_str(&arg);
-            new_data.push_str(suffix);
-            new_data
-        };
-        *self.data.borrow_mut() = DOMString::from(new_data);
-        self.content_changed();
-        // Steps 8-11.
-        let node = self.upcast::<Node>();
-        node.ranges().replace_code_units(
-            node, offset, count, arg.encode_utf16().count() as u32);
-        Ok(())
     }
 
     // https://dom.spec.whatwg.org/#dom-nondocumenttypechildnode-previouselementsibling

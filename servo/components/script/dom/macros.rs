@@ -3,6 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #[macro_export]
+macro_rules! make_partial_eq(
+    ( $ty:ty ) => (
+        impl PartialEq for $ty {
+            fn eq(&self, other: &$ty) -> bool {
+                self as *const $ty == &*other
+            }
+        }
+    )
+);
+
+#[macro_export]
 macro_rules! make_getter(
     ( $attr:ident, $htmlname:tt ) => (
         pub fn $attr(&self) -> DOMString {

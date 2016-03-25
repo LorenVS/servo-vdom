@@ -3,9 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
-use dom::bindings::codegen::Bindings::EventHandlerBinding::OnErrorEventHandlerNonNull;
-use dom::bindings::codegen::Bindings::EventListenerBinding::EventListener;
+use dom::bindings::eventhandler::{EventHandlerNonNull, OnErrorEventHandlerNonNull};
 use dom::bindings::error::{Error, Fallible};
 use dom::bindings::inheritance::{EventTargetTypeId, TopTypeId};
 use dom::bindings::js::Root;
@@ -65,87 +63,16 @@ impl EventTargetTypeId {
     }
 }
 
-/// https://html.spec.whatwg.org/multipage/#internal-raw-uncompiled-handler
-#[derive(Clone, PartialEq)]
-pub struct InternalRawUncompiledHandler {
-    source: DOMString,
-    url: Url,
-    line: usize,
-}
-
-/// A representation of an event handler, either compiled or uncompiled raw source, or null.
-#[derive(PartialEq, Clone)]
-pub enum InlineEventListener {
-    Uncompiled(InternalRawUncompiledHandler),
-    Compiled(CommonEventHandler),
-    Null,
-}
-
-#[derive(Clone, PartialEq)]
-enum EventListenerType {
-    Additive(Rc<EventListener>)
-}
-
-impl HeapSizeOf for EventListenerType {
-    fn heap_size_of_children(&self) -> usize {
-        // FIXME: Rc<T> isn't HeapSizeOf and we can't ignore it due to #6870 and #6871
-        0
-    }
-}
-
-/// A representation of an EventListener/EventHandler object that has previously
-/// been compiled successfully, if applicable.
-pub enum CompiledEventListener {
-    Listener(Rc<EventListener>),
-    Handler(CommonEventHandler),
-}
-
-#[derive(Clone, PartialEq)]
-#[privatize]
-/// A listener in a collection of event listeners.
-struct EventListenerEntry {
-    phase: ListenerPhase,
-    listener: EventListenerType
-}
-
-
-/// A mix of potentially uncompiled and compiled event listeners of the same type.
-struct EventListeners(Vec<EventListenerEntry>);
-
-impl Deref for EventListeners {
-    type Target = Vec<EventListenerEntry>;
-    fn deref(&self) -> &Vec<EventListenerEntry> {
-        &self.0
-    }
-}
-
-impl DerefMut for EventListeners {
-    fn deref_mut(&mut self) -> &mut Vec<EventListenerEntry> {
-        &mut self.0
-    }
-}
-
-
-
 pub struct EventTarget {
     #[ignore_heap_size_of = "type_ids are new"]
     type_id: EventTargetTypeId,
-    handlers: DOMRefCell<HashMap<Atom, EventListeners, BuildHasherDefault<FnvHasher>>>,
 }
 
 impl EventTarget {
     pub fn new_inherited(type_id: EventTargetTypeId) -> EventTarget {
         EventTarget {
-            type_id: type_id,
-            handlers: DOMRefCell::new(Default::default()),
+            type_id: type_id
         }
-    }
-
-    pub fn get_listeners_for(&self,
-                             _type_: &Atom,
-                             _specific_phase: Option<ListenerPhase>)
-                             -> Vec<CompiledEventListener> {
-        Vec::new()
     }
 
     pub fn dispatch_event_with_target(&self,
@@ -160,12 +87,6 @@ impl EventTarget {
         //dispatch_event(self, None, event)
     }
 
-    /// https://html.spec.whatwg.org/multipage/#event-handler-attributes:event-handlers-11
-    pub fn set_inline_event_listener(&self,
-                                     _ty: Atom,
-                                     _listener: Option<InlineEventListener>) {
-    }
-
     /// Store the raw uncompiled event handler for on-demand compilation later.
     /// https://html.spec.whatwg.org/multipage/#event-handler-attributes:event-handler-content-attributes-3
     pub fn set_event_handler_uncompiled(&self,
@@ -173,15 +94,6 @@ impl EventTarget {
                                         _line: usize,
                                         _ty: &str,
                                         _source: DOMString) {
-    }
-
-    // https://html.spec.whatwg.org/multipage/#getting-the-current-value-of-the-event-handler
-    #[allow(unsafe_code)]
-    pub fn get_compiled_event_handler(&self,
-                                      _handler: InternalRawUncompiledHandler,
-                                      _ty: &Atom)
-                                      -> Option<CommonEventHandler> {
-        None
     }
 
     pub fn set_event_handler_common<T>(
@@ -218,58 +130,6 @@ impl EventTarget {
         event
     }
 
-    // https://dom.spec.whatwg.org/#dom-eventtarget-addeventlistener
-    fn AddEventListener(&self,
-                        ty: DOMString,
-                        listener: Option<Rc<EventListener>>,
-                        capture: bool) {
-        if let Some(listener) = listener {
-            let mut handlers = self.handlers.borrow_mut();
-            let entry = match handlers.entry(Atom::from(ty)) {
-                Occupied(entry) => entry.into_mut(),
-                Vacant(entry) => entry.insert(EventListeners(vec!())),
-            };
-
-            let phase = if capture { ListenerPhase::Capturing } else { ListenerPhase::Bubbling };
-            let new_entry = EventListenerEntry {
-                phase: phase,
-                listener: EventListenerType::Additive(listener)
-            };
-            if !entry.contains(&new_entry) {
-                entry.push(new_entry);
-            }
-        }
-    }
-
-    // https://dom.spec.whatwg.org/#dom-eventtarget-removeeventlistener
-    fn RemoveEventListener(&self,
-                           ty: DOMString,
-                           listener: Option<Rc<EventListener>>,
-                           capture: bool) {
-        if let Some(ref listener) = listener {
-            let mut handlers = self.handlers.borrow_mut();
-            let entry = handlers.get_mut(&Atom::from(ty));
-            for entry in entry {
-                let phase = if capture { ListenerPhase::Capturing } else { ListenerPhase::Bubbling };
-                let old_entry = EventListenerEntry {
-                    phase: phase,
-                    listener: EventListenerType::Additive(listener.clone())
-                };
-                if let Some(position) = entry.iter().position(|e| *e == old_entry) {
-                    entry.remove(position);
-                }
-            }
-        }
-    }
-
-    // https://dom.spec.whatwg.org/#dom-eventtarget-dispatchevent
-    fn DispatchEvent(&self, event: &Event) -> Fallible<bool> {
-        if event.dispatching() || !event.initialized() {
-            return Err(Error::InvalidState);
-        }
-        event.set_trusted(false);
-        Ok(self.dispatch_event(event))
-    }
 }
 
 impl Typed for EventTarget {

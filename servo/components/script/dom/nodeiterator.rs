@@ -2,16 +2,30 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
-use dom::bindings::codegen::Bindings::NodeFilterBinding::NodeFilter;
-use dom::bindings::codegen::Bindings::NodeFilterBinding::NodeFilterConstants;
-use dom::bindings::codegen::Bindings::NodeIteratorBinding::NodeIteratorMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::js::{JS, MutHeap, Root};
 use dom::node::Node;
 use std::cell::Cell;
 use std::rc::Rc;
 
+pub mod NodeFilterConstants {
+    pub const FILTER_ACCEPT: u16 = 1;
+    pub const FILTER_REJECT: u16 = 2;
+    pub const FILTER_SKIP: u16 = 3;
+    pub const SHOW_ALL: u32 = 4294967295;
+    pub const SHOW_ELEMENT: u32 = 1;
+    pub const SHOW_ATTRIBUTE: u32 = 2;
+    pub const SHOW_TEXT: u32 = 4;
+    pub const SHOW_CDATA_SECTION: u32 = 8;
+    pub const SHOW_ENTITY_REFERENCE: u32 = 16;
+    pub const SHOW_ENTITY: u32 = 32;
+    pub const SHOW_PROCESSING_INSTRUCTION: u32 = 64;
+    pub const SHOW_COMMENT: u32 = 128;
+    pub const SHOW_DOCUMENT: u32 = 256;
+    pub const SHOW_DOCUMENT_TYPE: u32 = 512;
+    pub const SHOW_DOCUMENT_FRAGMENT: u32 = 1024;
+    pub const SHOW_NOTATION: u32 = 2048;
+} // mod NodeFilterConstants
 
 pub struct NodeIterator {
     root_node: JS<Node>,
@@ -56,14 +70,6 @@ impl NodeIterator {
     // https://dom.spec.whatwg.org/#dom-nodeiterator-whattoshow
     fn WhatToShow(&self) -> u32 {
         self.what_to_show
-    }
-
-    // https://dom.spec.whatwg.org/#dom-nodeiterator-filter
-    fn GetFilter(&self) -> Option<Rc<NodeFilter>> {
-        match self.filter {
-            Filter::None => None,
-            Filter::Native(_) => panic!("Cannot convert native node filter to DOM NodeFilter")
-        }
     }
 
     // https://dom.spec.whatwg.org/#dom-nodeiterator-referencenode

@@ -9,17 +9,7 @@ use core::nonzero::NonZero;
 use devtools_traits::NodeInfo;
 use document_loader::DocumentLoader;
 use dom::attr::Attr;
-use dom::bindings::codegen::Bindings::AttrBinding::AttrMethods;
-use dom::bindings::codegen::Bindings::CharacterDataBinding::CharacterDataMethods;
-use dom::bindings::codegen::Bindings::DocumentBinding::DocumentMethods;
-use dom::bindings::codegen::Bindings::ElementBinding::ElementMethods;
-use dom::bindings::codegen::Bindings::HTMLCollectionBinding::HTMLCollectionMethods;
-use dom::bindings::codegen::Bindings::NamedNodeMapBinding::NamedNodeMapMethods;
-use dom::bindings::codegen::Bindings::NodeBinding::{NodeConstants, NodeMethods};
-use dom::bindings::codegen::Bindings::NodeListBinding::NodeListMethods;
-use dom::bindings::codegen::Bindings::ProcessingInstructionBinding::ProcessingInstructionMethods;
-use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
-use dom::bindings::codegen::UnionTypes::NodeOrString;
+use dom::bindings::uniontypes::NodeOrString;
 use dom::bindings::conversions::DerivedFrom;
 use dom::bindings::error::{Error, ErrorResult, Fallible};
 use dom::bindings::inheritance::{Castable, CharacterDataTypeId};
@@ -40,7 +30,6 @@ use dom::htmlcollection::HTMLCollection;
 use dom::htmlelement::HTMLElement;
 use dom::nodelist::NodeList;
 use dom::processinginstruction::ProcessingInstruction;
-use dom::range::WeakRangeVec;
 use dom::text::Text;
 use dom::virtualmethods::{VirtualMethods, vtable_for};
 use dom::window::Window;
@@ -68,12 +57,28 @@ use util::str::DOMString;
 use util::thread_state;
 use uuid::Uuid;
 
-//
-// The basic Node structure
-//
+pub mod NodeConstants {
+    pub const ELEMENT_NODE: u16 = 1;
+    pub const ATTRIBUTE_NODE: u16 = 2;
+    pub const TEXT_NODE: u16 = 3;
+    pub const CDATA_SECTION_NODE: u16 = 4;
+    pub const ENTITY_REFERENCE_NODE: u16 = 5;
+    pub const ENTITY_NODE: u16 = 6;
+    pub const PROCESSING_INSTRUCTION_NODE: u16 = 7;
+    pub const COMMENT_NODE: u16 = 8;
+    pub const DOCUMENT_NODE: u16 = 9;
+    pub const DOCUMENT_TYPE_NODE: u16 = 10;
+    pub const DOCUMENT_FRAGMENT_NODE: u16 = 11;
+    pub const NOTATION_NODE: u16 = 12;
+    pub const DOCUMENT_POSITION_DISCONNECTED: u16 = 1;
+    pub const DOCUMENT_POSITION_PRECEDING: u16 = 2;
+    pub const DOCUMENT_POSITION_FOLLOWING: u16 = 4;
+    pub const DOCUMENT_POSITION_CONTAINS: u16 = 8;
+    pub const DOCUMENT_POSITION_CONTAINED_BY: u16 = 16;
+    pub const DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: u16 = 32;
+}
 
 /// An HTML node.
-
 pub struct Node {
     /// The JavaScript reflector for this node.
     eventtarget: EventTarget,
@@ -110,12 +115,6 @@ pub struct Node {
 
     /// The maximum version of any inclusive descendant of this node.
     inclusive_descendants_version: Cell<u64>,
-
-    /// A vector of weak references to Range instances of which the start
-    /// or end containers are this node. No range should ever be found
-    /// twice in this vector, even if both the start and end containers
-    /// are this node.
-    ranges: WeakRangeVec,
 
     /// Style+Layout information. Only the layout thread may touch this data.
     ///
@@ -390,10 +389,6 @@ impl Node {
 
     pub fn children_count(&self) -> u32 {
         self.children_count.get()
-    }
-
-    pub fn ranges(&self) -> &WeakRangeVec {
-        &self.ranges
     }
 
     #[inline]
@@ -711,7 +706,7 @@ impl Node {
                     .GetDocumentElement()
                     .map_or(false, |elem| elem.upcast::<Node>() == self),
 
-            shortValue: self.GetNodeValue().map(String::from).unwrap_or_default(), //FIXME: truncate
+            shortValue: String::new(),
             incompleteValue: false, //FIXME: reflect truncation
         }
     }
@@ -1178,7 +1173,6 @@ impl Node {
             children_count: Cell::new(0u32),
             flags: Cell::new(flags),
             inclusive_descendants_version: Cell::new(0),
-            ranges: WeakRangeVec::new(),
 
             style_and_layout_data: Cell::new(None),
 
@@ -1364,14 +1358,7 @@ impl Node {
         } else {
             1
         };
-        // Step 2.
-        if let Some(child) = child {
-            if !parent.ranges.is_empty() {
-                let index = child.index();
-                // Steps 2.1-2.
-                parent.ranges.increase_above(parent, index, count);
-            }
-        }
+
         let mut new_nodes = RootedVec::new();
         let new_nodes = if let NodeTypeId::DocumentFragment = node.type_id() {
             // Step 3.
@@ -1461,21 +1448,7 @@ impl Node {
     // https://dom.spec.whatwg.org/#concept-node-remove
     fn remove(node: &Node, parent: &Node, suppress_observers: SuppressObserver) {
         assert!(node.GetParentNode().map_or(false, |node_parent| node_parent.r() == parent));
-        let cached_index = {
-            if parent.ranges.is_empty() {
-                None
-            } else {
-                // Step 1.
-                let index = node.index();
-                // Steps 2-3 are handled in Node::unbind_from_tree.
-                // Steps 4-5.
-                parent.ranges.decrease_above(parent, index, 1);
-                // Parent had ranges, we needed the index, let's keep track of
-                // it to avoid computing it for other ranges when calling
-                // unbind_from_tree recursively.
-                Some(index)
-            }
-        };
+        let cached_index = None;
         // Step 6. pre-removing steps for node iterators
         // Step 7.
         let old_previous_sibling = node.GetPreviousSibling();
@@ -1677,18 +1650,6 @@ impl Node {
         self.parent_node.get()
     }
 
-    // https://dom.spec.whatwg.org/#dom-node-nodevalue
-    fn GetNodeValue(&self) -> Option<DOMString> {
-        self.downcast::<CharacterData>().map(CharacterData::Data)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-node-nodevalue
-    fn SetNodeValue(&self, val: Option<DOMString>) {
-        if let Some(character_data) = self.downcast::<CharacterData>() {
-            character_data.SetData(val.unwrap_or_default());
-        }
-    }
-
     // https://dom.spec.whatwg.org/#dom-node-textcontent
     pub fn GetTextContent(&self) -> Option<DOMString> {
         match self.type_id() {
@@ -1858,32 +1819,6 @@ impl Node {
     pub fn RemoveChild(&self, node: &Node)
                        -> Fallible<Root<Node>> {
         Node::pre_remove(node, self)
-    }
-
-    // https://dom.spec.whatwg.org/#dom-node-normalize
-    fn Normalize(&self) {
-        let mut children = self.children().enumerate().peekable();
-        while let Some((_, node)) = children.next() {
-            if let Some(text) = node.downcast::<Text>() {
-                let cdata = text.upcast::<CharacterData>();
-                let mut length = cdata.Length();
-                if length == 0 {
-                    Node::remove(&node, self, SuppressObserver::Unsuppressed);
-                    continue;
-                }
-                while children.peek().map_or(false, |&(_, ref sibling)| sibling.is::<Text>()) {
-                    let (index, sibling) = children.next().unwrap();
-                    sibling.ranges.drain_to_preceding_text_sibling(&sibling, &node, length);
-                    self.ranges.move_to_text_child_at(self, index as u32, &node, length as u32);
-                    let sibling_cdata = sibling.downcast::<CharacterData>().unwrap();
-                    length += sibling_cdata.Length();
-                    cdata.append_data(&sibling_cdata.data());
-                    Node::remove(&sibling, self, SuppressObserver::Unsuppressed);
-                }
-            } else {
-                node.Normalize();
-            }
-        }
     }
 
     // https://dom.spec.whatwg.org/#dom-node-isequalnode
@@ -2129,7 +2064,6 @@ impl VirtualMethods for Node {
     // https://dom.spec.whatwg.org/#concept-node-remove
     fn unbind_from_tree(&self, context: &UnbindContext) {
         self.super_type().unwrap().unbind_from_tree(context);
-        self.ranges.drain_to_parent(context, self);
     }
 }
 

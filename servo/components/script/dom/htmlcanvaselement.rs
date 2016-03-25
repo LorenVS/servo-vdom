@@ -5,11 +5,8 @@
 use canvas_traits::{CanvasMsg};
 use dom::attr::Attr;
 use dom::attr::AttrValue;
-
-use dom::bindings::codegen::Bindings::HTMLCanvasElementBinding::HTMLCanvasElementMethods;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::{LayoutJS, Root};
-
 use dom::document::Document;
 use dom::element::{AttributeMutation, Element, RawLayoutElementHelpers};
 use dom::htmlelement::HTMLElement;
@@ -21,8 +18,6 @@ use util::str::DOMString;
 
 const DEFAULT_WIDTH: u32 = 300;
 const DEFAULT_HEIGHT: u32 = 150;
-
-
 
 pub struct HTMLCanvasElement {
     htmlelement: HTMLElement

@@ -3,12 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::KeyboardEventBinding::{KeyboardEventConstants};
-use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::inheritance::{Castable, UIEventTypeId};
 use dom::bindings::js::{Root, RootedReference};
-
 use dom::event::Event;
 use dom::uievent::UIEvent;
 use dom::window::Window;
@@ -17,7 +14,12 @@ use msg::constellation_msg::{Key, KeyModifiers};
 use std::cell::Cell;
 use util::str::DOMString;
 
-
+pub mod KeyboardEventConstants {
+    pub const DOM_KEY_LOCATION_STANDARD: u32 = 0;
+    pub const DOM_KEY_LOCATION_LEFT: u32 = 1;
+    pub const DOM_KEY_LOCATION_RIGHT: u32 = 2;
+    pub const DOM_KEY_LOCATION_NUMPAD: u32 = 3;
+}
 
 pub struct KeyboardEvent {
     uievent: UIEvent,

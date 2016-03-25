@@ -2,9 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-use dom::bindings::codegen::Bindings::DocumentTypeBinding::DocumentTypeMethods;
-use dom::bindings::codegen::UnionTypes::NodeOrString;
+use dom::bindings::uniontypes::NodeOrString;
 use dom::bindings::error::ErrorResult;
 use dom::bindings::inheritance::{Castable,NodeTypeId};
 use dom::bindings::js::Root;

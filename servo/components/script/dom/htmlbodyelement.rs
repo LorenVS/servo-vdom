@@ -4,12 +4,9 @@
 
 use cssparser::RGBA;
 use dom::attr::{Attr, AttrValue};
-use dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
-use dom::bindings::codegen::Bindings::HTMLBodyElementBinding::{HTMLBodyElementMethods};
-use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
+use dom::bindings::eventhandler::EventHandlerNonNull;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::{LayoutJS, Root};
-
 use dom::document::Document;
 use dom::element::{AttributeMutation, Element, RawLayoutElementHelpers};
 use dom::eventtarget::EventTarget;

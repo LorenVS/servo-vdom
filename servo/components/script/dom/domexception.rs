@@ -2,11 +2,36 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-use dom::bindings::codegen::Bindings::DOMExceptionBinding::DOMExceptionConstants;
-use dom::bindings::codegen::Bindings::DOMExceptionBinding::DOMExceptionMethods;
 use dom::bindings::js::Root;
 use util::str::DOMString;
+
+pub mod DOMExceptionConstants {
+    pub const INDEX_SIZE_ERR: u16 = 1;
+    pub const DOMSTRING_SIZE_ERR: u16 = 2;
+    pub const HIERARCHY_REQUEST_ERR: u16 = 3;
+    pub const WRONG_DOCUMENT_ERR: u16 = 4;
+    pub const INVALID_CHARACTER_ERR: u16 = 5;
+    pub const NO_DATA_ALLOWED_ERR: u16 = 6;
+    pub const NO_MODIFICATION_ALLOWED_ERR: u16 = 7;
+    pub const NOT_FOUND_ERR: u16 = 8;
+    pub const NOT_SUPPORTED_ERR: u16 = 9;
+    pub const INUSE_ATTRIBUTE_ERR: u16 = 10;
+    pub const INVALID_STATE_ERR: u16 = 11;
+    pub const SYNTAX_ERR: u16 = 12;
+    pub const INVALID_MODIFICATION_ERR: u16 = 13;
+    pub const NAMESPACE_ERR: u16 = 14;
+    pub const INVALID_ACCESS_ERR: u16 = 15;
+    pub const VALIDATION_ERR: u16 = 16;
+    pub const TYPE_MISMATCH_ERR: u16 = 17;
+    pub const SECURITY_ERR: u16 = 18;
+    pub const NETWORK_ERR: u16 = 19;
+    pub const ABORT_ERR: u16 = 20;
+    pub const URL_MISMATCH_ERR: u16 = 21;
+    pub const QUOTA_EXCEEDED_ERR: u16 = 22;
+    pub const TIMEOUT_ERR: u16 = 23;
+    pub const INVALID_NODE_TYPE_ERR: u16 = 24;
+    pub const DATA_CLONE_ERR: u16 = 25;
+}
 
 #[repr(u16)]
 #[derive(Copy, Clone, Debug)]

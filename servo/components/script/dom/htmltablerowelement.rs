@@ -4,8 +4,6 @@
 
 use cssparser::RGBA;
 use dom::attr::AttrValue;
-use dom::bindings::codegen::Bindings::HTMLTableRowElementBinding::{HTMLTableRowElementMethods};
-use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::error::{ErrorResult, Fallible};
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::{JS, LayoutJS, MutNullableHeap, Root, RootedReference};
@@ -19,8 +17,6 @@ use dom::node::{Node};
 use dom::virtualmethods::VirtualMethods;
 use string_cache::Atom;
 use util::str::DOMString;
-
-
 
 struct CellsFilter;
 impl CollectionFilter for CellsFilter {

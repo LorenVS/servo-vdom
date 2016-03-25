@@ -5,17 +5,14 @@
 use app_units::Au;
 use devtools_traits::{ScriptToDevtoolsControlMsg, TimelineMarker, TimelineMarkerType, WorkerId};
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::DocumentBinding::{DocumentMethods, DocumentReadyState};
-use dom::bindings::codegen::Bindings::EventHandlerBinding::{EventHandlerNonNull, OnErrorEventHandlerNonNull};
-use dom::bindings::codegen::Bindings::WindowBinding::{ScrollBehavior, ScrollToOptions};
-use dom::bindings::codegen::Bindings::WindowBinding::{WindowMethods};
+use dom::bindings::eventhandler::{EventHandlerNonNull,OnErrorEventHandlerNonNull};
 use dom::bindings::error::{Error, Fallible};
 use dom::bindings::inheritance::{Castable,EventTargetTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root};
 use dom::bindings::num::Finite;
 use dom::browsingcontext::BrowsingContext;
 use dom::cssstyledeclaration::{CSSModificationAccess, CSSStyleDeclaration};
-use dom::document::Document;
+use dom::document::{Document,DocumentReadyState};
 use dom::element::Element;
 use dom::eventtarget::EventTarget;
 use dom::node::{Node, TrustedNodeAddress, from_untrusted_node_address, window_from_node};
@@ -65,6 +62,26 @@ use url::Url;
 use util::geometry::{self, MAX_RECT};
 use util::str::{DOMString, HTML_SPACE_CHARACTERS};
 use util::{breakpoint, opts};
+
+#[repr(usize)]
+#[derive(PartialEq, Copy, Clone, HeapSizeOf, Debug)]
+pub enum ScrollBehavior {
+    Auto,
+    Instant,
+    Smooth
+}
+
+
+pub struct ScrollOptions {
+    pub behavior: ScrollBehavior,
+}
+
+
+pub struct ScrollToOptions {
+    pub parent: ScrollOptions,
+    pub left: Option<f64>,
+    pub top: Option<f64>,
+}
 
 /// Current state of the window object
 #[derive(Copy, Clone, Debug, PartialEq)]

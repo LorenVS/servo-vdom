@@ -7,15 +7,8 @@ use document_loader::{DocumentLoader, LoadType};
 use dom::activation::{ActivationSource, synthetic_click_activation};
 use dom::attr::{Attr, AttrValue};
 use dom::bindings::cell::DOMRefCell;
-
-use dom::bindings::codegen::Bindings::DocumentBinding::{DocumentMethods, DocumentReadyState};
-use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
-use dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
-use dom::bindings::codegen::Bindings::EventHandlerBinding::OnErrorEventHandlerNonNull;
-use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
-use dom::bindings::codegen::Bindings::TouchBinding::TouchMethods;
-use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
-use dom::bindings::codegen::UnionTypes::NodeOrString;
+use dom::bindings::eventhandler::{EventHandlerNonNull, OnErrorEventHandlerNonNull};
+use dom::bindings::uniontypes::NodeOrString;
 use dom::bindings::error::{Error, ErrorResult, Fallible};
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, ElementTypeId, HTMLElementTypeId, NodeTypeId};
@@ -58,7 +51,6 @@ use dom::mouseevent::MouseEvent;
 use dom::node::{self, CloneChildrenFlag, Node, NodeDamage, window_from_node};
 use dom::nodelist::NodeList;
 use dom::processinginstruction::ProcessingInstruction;
-use dom::range::Range;
 use dom::text::Text;
 use dom::touch::Touch;
 use dom::touchevent::TouchEvent;
@@ -97,6 +89,14 @@ use time;
 use url::percent_encoding::percent_decode;
 use url::{Host, Url};
 use util::str::{DOMString, split_html_space_chars, str_join};
+
+#[repr(usize)]
+#[derive(PartialEq, Copy, Clone, HeapSizeOf, Debug)]
+pub enum DocumentReadyState {
+    Loading,
+    Interactive,
+    Complete
+}
 
 #[derive(PartialEq)]
 pub enum IsHTMLDocument {
@@ -1675,11 +1675,6 @@ impl Document {
             Some(ref t) => DOMString::from(t.clone()),
             None => DOMString::from(time::now().strftime("%m/%d/%Y %H:%M:%S").unwrap().to_string()),
         }
-    }
-
-    // https://dom.spec.whatwg.org/#dom-document-createrange
-    fn CreateRange(&self) -> Root<Range> {
-        Range::new_with_doc(self)
     }
 
     // https://w3c.github.io/touch-events/#idl-def-Document

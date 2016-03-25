@@ -4,22 +4,6 @@
 
 //! The implementation of the DOM.
 //!
-//! The DOM is comprised of interfaces (defined by specifications using
-//! [WebIDL](https://heycam.github.io/webidl/)) that are implemented as Rust
-//! structs in submodules of this module. Its implementation is documented
-//! below.
-//!
-//! A DOM object and its reflector
-//! ==============================
-//!
-//! The implementation of an interface `Foo` in Servo's DOM involves two
-//! related but distinct objects:
-//!
-//! * the **DOM object**: an instance of the Rust struct `dom::foo::Foo`
-//!   (marked with the `` attribute) on the Rust heap;
-//! * the **reflector**: a `JSObject` allocated by SpiderMonkey, that owns the
-//!   DOM object.
-//!
 //! Memory management
 //! =================
 //!
@@ -101,24 +85,8 @@
 //! (The result of either method can be wrapped in `Result`, if that is
 //! appropriate for the type in question.)
 //!
-//! The latter calls the former, boxes the result, and creates a reflector
-//! corresponding to it by calling `dom::bindings::utils::reflect_dom_object`
-//! (which yields ownership of the object to the SpiderMonkey Garbage Collector).
-//! This is the API to use when creating a DOM object.
-//!
-//! The former should only be called by the latter, and by subclasses'
-//! `new_inherited` methods.
-//!
-//! DOM object constructors in JavaScript correspond to a `T::Constructor`
-//! static method. This method is always fallible.
-//!
-//! Destruction
-//! ===========
-//!
-//! When the SpiderMonkey Garbage Collector discovers that the reflector of a
-//! DOM object is garbage, it calls the reflector's finalization hook. This
-//! function deletes the reflector's DOM object, calling its destructor in the
-//! process.
+//! The latter calls the former and boxes the result. The former should
+//! only be called by the latter, and by subclasses' `new_inherited` methods.
 //!
 //! Mutability and aliasing
 //! =======================
@@ -127,28 +95,6 @@
 //! Rust does not allow mutable aliasing, mutable borrows of DOM objects are
 //! not allowed. In particular, any mutable fields use `Cell` or `DOMRefCell`
 //! to manage their mutability.
-//!
-//! `Reflector` and `Reflectable`
-//! =============================
-//!
-//! Every DOM object has a `Reflector` as its first (transitive) member field.
-//! This contains a `*mut JSObject` that points to its reflector.
-//!
-//! The `FooBinding::Wrap` function creates the reflector, stores a pointer to
-//! the DOM object in the reflector, and initializes the pointer to the reflector
-//! in the `Reflector` field.
-//!
-//! The `Reflectable` trait provides a `reflector()` method that returns the
-//! DOM object's `Reflector`. It is implemented automatically for DOM structs
-//! through the `` attribute.
-//!
-//! Implementing methods for a DOM object
-//! =====================================
-//!
-//! * `dom::bindings::codegen::Bindings::FooBindings::FooMethods` for methods
-//!   defined through IDL;
-//! * `&self` public methods for public helpers;
-//! * `&self` methods for private helpers.
 //!
 //! Accessing fields of a DOM object
 //! ================================
@@ -164,7 +110,7 @@
 //! to other types in the inheritance chain. For example:
 //!
 //! ```ignore
-//! # use script::dom::bindings::inheritance::{NodeCast, HTMLElementCast};
+//! # use script::dom::bindings::inheritance::{Castable};
 //! # use script::dom::element::Element;
 //! # use script::dom::node::Node;
 //! # use script::dom::htmlelement::HTMLElement;
@@ -173,25 +119,6 @@
 //!     let derived = element.downcast::<HTMLElement>();
 //! }
 //! ```
-//!
-//! Adding a new DOM interface
-//! ==========================
-//!
-//! Adding a new interface `Foo` requires at least the following:
-//!
-//! * adding the new IDL file at `components/script/dom/webidls/Foo.webidl`;
-//! * creating `components/script/dom/foo.rs`;
-//! * listing `foo.rs` in `components/script/dom/mod.rs`;
-//! * defining the DOM struct `Foo` with a `` attribute, a
-//!   superclass or `Reflector` member, and other members as appropriate;
-//! * implementing the
-//!   `dom::bindings::codegen::Bindings::FooBindings::FooMethods` trait for
-//!   `Foo`;
-//! * adding/updating the match arm in create_element in
-//!   `components/script/dom/create.rs` (only applicable to new types inheriting
-//!   from `HTMLElement`)
-//!
-//! More information is available in the [bindings module](bindings/index.html).
 //!
 //! Accessing DOM objects from layout
 //! =================================
@@ -207,15 +134,10 @@
 #[macro_use]
 pub mod macros;
 
-pub mod types {
-    include!(concat!(env!("OUT_DIR"), "/InterfaceTypes.rs"));
-}
-
 pub mod activation;
 pub mod attr;
 pub mod create;
 #[allow(unsafe_code)]
-#[deny(missing_docs, non_snake_case)]
 pub mod bindings;
 pub mod browsingcontext;
 pub mod characterdata;
@@ -323,7 +245,6 @@ pub mod nodelist;
 pub mod processinginstruction;
 pub mod progressevent;
 pub mod radionodelist;
-pub mod range;
 pub mod screen;
 pub mod text;
 pub mod touch;
@@ -333,3 +254,119 @@ pub mod uievent;
 pub mod values;
 pub mod virtualmethods;
 pub mod window;
+
+pub mod types {
+	pub use dom::attr::Attr;
+	pub use dom::cssstyledeclaration::CSSStyleDeclaration;
+	pub use dom::characterdata::CharacterData;
+	pub use dom::closeevent::CloseEvent;
+	pub use dom::comment::Comment;
+	pub use dom::customevent::CustomEvent;
+	pub use dom::domexception::DOMException;
+	pub use dom::domimplementation::DOMImplementation;
+	pub use dom::dompoint::DOMPoint;
+	pub use dom::dompointreadonly::DOMPointReadOnly;
+	pub use dom::domquad::DOMQuad;
+	pub use dom::domrect::DOMRect;
+	pub use dom::domrectlist::DOMRectList;
+	pub use dom::domrectreadonly::DOMRectReadOnly;
+	pub use dom::domtokenlist::DOMTokenList;
+	pub use dom::document::Document;
+	pub use dom::documentfragment::DocumentFragment;
+	pub use dom::documenttype::DocumentType;
+	pub use dom::element::Element;
+	pub use dom::errorevent::ErrorEvent;
+	pub use dom::event::Event;
+	pub use dom::eventsource::EventSource;
+	pub use dom::eventtarget::EventTarget;
+	pub use dom::focusevent::FocusEvent;
+	pub use dom::formdata::FormData;
+	pub use dom::htmlanchorelement::HTMLAnchorElement;
+	pub use dom::htmlappletelement::HTMLAppletElement;
+	pub use dom::htmlareaelement::HTMLAreaElement;
+	pub use dom::htmlaudioelement::HTMLAudioElement;
+	pub use dom::htmlbrelement::HTMLBRElement;
+	pub use dom::htmlbaseelement::HTMLBaseElement;
+	pub use dom::htmlbodyelement::HTMLBodyElement;
+	pub use dom::htmlbuttonelement::HTMLButtonElement;
+	pub use dom::htmlcanvaselement::HTMLCanvasElement;
+	pub use dom::htmlcollection::HTMLCollection;
+	pub use dom::htmldlistelement::HTMLDListElement;
+	pub use dom::htmldataelement::HTMLDataElement;
+	pub use dom::htmldatalistelement::HTMLDataListElement;
+	pub use dom::htmldetailselement::HTMLDetailsElement;
+	pub use dom::htmldialogelement::HTMLDialogElement;
+	pub use dom::htmldirectoryelement::HTMLDirectoryElement;
+	pub use dom::htmldivelement::HTMLDivElement;
+	pub use dom::htmlelement::HTMLElement;
+	pub use dom::htmlembedelement::HTMLEmbedElement;
+	pub use dom::htmlfieldsetelement::HTMLFieldSetElement;
+	pub use dom::htmlfontelement::HTMLFontElement;
+	pub use dom::htmlformcontrolscollection::HTMLFormControlsCollection;
+	pub use dom::htmlformelement::HTMLFormElement;
+	pub use dom::htmlframeelement::HTMLFrameElement;
+	pub use dom::htmlframesetelement::HTMLFrameSetElement;
+	pub use dom::htmlhrelement::HTMLHRElement;
+	pub use dom::htmlheadelement::HTMLHeadElement;
+	pub use dom::htmlheadingelement::HTMLHeadingElement;
+	pub use dom::htmlhtmlelement::HTMLHtmlElement;
+	pub use dom::htmlimageelement::HTMLImageElement;
+	pub use dom::htmlinputelement::HTMLInputElement;
+	pub use dom::htmllielement::HTMLLIElement;
+	pub use dom::htmllabelelement::HTMLLabelElement;
+	pub use dom::htmllegendelement::HTMLLegendElement;
+	pub use dom::htmllinkelement::HTMLLinkElement;
+	pub use dom::htmlmapelement::HTMLMapElement;
+	pub use dom::htmlmediaelement::HTMLMediaElement;
+	pub use dom::htmlmetaelement::HTMLMetaElement;
+	pub use dom::htmlmeterelement::HTMLMeterElement;
+	pub use dom::htmlmodelement::HTMLModElement;
+	pub use dom::htmlolistelement::HTMLOListElement;
+	pub use dom::htmlobjectelement::HTMLObjectElement;
+	pub use dom::htmloptgroupelement::HTMLOptGroupElement;
+	pub use dom::htmloptionelement::HTMLOptionElement;
+	pub use dom::htmloutputelement::HTMLOutputElement;
+	pub use dom::htmlparagraphelement::HTMLParagraphElement;
+	pub use dom::htmlparamelement::HTMLParamElement;
+	pub use dom::htmlpreelement::HTMLPreElement;
+	pub use dom::htmlprogresselement::HTMLProgressElement;
+	pub use dom::htmlquoteelement::HTMLQuoteElement;
+	pub use dom::htmlselectelement::HTMLSelectElement;
+	pub use dom::htmlsourceelement::HTMLSourceElement;
+	pub use dom::htmlspanelement::HTMLSpanElement;
+	pub use dom::htmlstyleelement::HTMLStyleElement;
+	pub use dom::htmltablecaptionelement::HTMLTableCaptionElement;
+	pub use dom::htmltablecellelement::HTMLTableCellElement;
+	pub use dom::htmltablecolelement::HTMLTableColElement;
+	pub use dom::htmltabledatacellelement::HTMLTableDataCellElement;
+	pub use dom::htmltableelement::HTMLTableElement;
+	pub use dom::htmltableheadercellelement::HTMLTableHeaderCellElement;
+	pub use dom::htmltablerowelement::HTMLTableRowElement;
+	pub use dom::htmltablesectionelement::HTMLTableSectionElement;
+	pub use dom::htmltemplateelement::HTMLTemplateElement;
+	pub use dom::htmltextareaelement::HTMLTextAreaElement;
+	pub use dom::htmltimeelement::HTMLTimeElement;
+	pub use dom::htmltitleelement::HTMLTitleElement;
+	pub use dom::htmltrackelement::HTMLTrackElement;
+	pub use dom::htmlulistelement::HTMLUListElement;
+	pub use dom::htmlunknownelement::HTMLUnknownElement;
+	pub use dom::htmlvideoelement::HTMLVideoElement;
+	pub use dom::imagedata::ImageData;
+	pub use dom::keyboardevent::KeyboardEvent;
+	pub use dom::messageevent::MessageEvent;
+	pub use dom::mouseevent::MouseEvent;
+	pub use dom::namednodemap::NamedNodeMap;
+	pub use dom::node::Node;
+	pub use dom::nodeiterator::NodeIterator;
+	pub use dom::nodelist::NodeList;
+	pub use dom::processinginstruction::ProcessingInstruction;
+	pub use dom::progressevent::ProgressEvent;
+	pub use dom::radionodelist::RadioNodeList;
+	pub use dom::screen::Screen;
+	pub use dom::text::Text;
+	pub use dom::touch::Touch;
+	pub use dom::touchevent::TouchEvent;
+	pub use dom::touchlist::TouchList;
+	pub use dom::uievent::UIEvent;
+	pub use dom::window::Window;
+}

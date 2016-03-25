@@ -6,9 +6,6 @@ use cssparser::Parser as CssParser;
 use document_loader::LoadType;
 use dom::attr::{Attr, AttrValue};
 use dom::bindings::cell::DOMRefCell;
-
-use dom::bindings::codegen::Bindings::HTMLLinkElementBinding::HTMLLinkElementMethods;
-use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root};
 use dom::bindings::js::{RootedReference};

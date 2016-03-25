@@ -32,6 +32,12 @@ macro_rules! make_typed(
                 }
             }
         }
+
+        impl PartialEq for $ty {
+        	fn eq(&self, other: &$ty) -> bool {
+        		self as *const $ty == &*other
+        	}
+        }
     );
 );
 

@@ -2,11 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::DOMPointBinding::{DOMPointInit, DOMPointMethods};
-use dom::bindings::codegen::Bindings::DOMPointReadOnlyBinding::DOMPointReadOnlyMethods;
-use dom::bindings::codegen::Bindings::DOMQuadBinding::{DOMQuadInit, DOMQuadMethods};
-use dom::bindings::codegen::Bindings::DOMRectBinding::DOMRectMethods;
-use dom::bindings::codegen::Bindings::DOMRectReadOnlyBinding::{DOMRectInit, DOMRectReadOnlyMethods};
 use dom::bindings::error::Fallible;
 use dom::bindings::js::{Root, JS};
 use dom::dompoint::DOMPoint;
@@ -41,33 +36,6 @@ impl DOMQuad {
                p3: &DOMPoint,
                p4: &DOMPoint) -> Root<DOMQuad> {
         Root::new_box(box DOMQuad::new_inherited(p1, p2, p3, p4))
-    }
-
-    pub fn Constructor(p1: &DOMPointInit,
-                       p2: &DOMPointInit,
-                       p3: &DOMPointInit,
-                       p4: &DOMPointInit)
-                       -> Fallible<Root<DOMQuad>> {
-        Ok(DOMQuad::new(&*DOMPoint::new_from_init(p1),
-                        &*DOMPoint::new_from_init(p2),
-                        &*DOMPoint::new_from_init(p3),
-                        &*DOMPoint::new_from_init(p4)))
-    }
-
-    // https://drafts.fxtf.org/geometry/#dom-domquad-fromrect
-    pub fn FromRect(other: &DOMRectInit) -> Root<DOMQuad> {
-        DOMQuad::new(&*DOMPoint::new(other.x, other.y, 0f64, 1f64),
-                     &*DOMPoint::new(other.x + other.width, other.y, 0f64, 1f64),
-                     &*DOMPoint::new(other.x + other.width, other.y + other.height, 0f64, 1f64),
-                     &*DOMPoint::new(other.x, other.y + other.height, 0f64, 1f64))
-    }
-
-    // https://drafts.fxtf.org/geometry/#dom-domquad-fromquad
-    pub fn FromQuad(other: &DOMQuadInit) -> Root<DOMQuad> {
-        DOMQuad::new(&DOMPoint::new_from_init(&other.p1),
-                     &DOMPoint::new_from_init(&other.p2),
-                     &DOMPoint::new_from_init(&other.p3),
-                     &DOMPoint::new_from_init(&other.p4))
     }
 
     // https://drafts.fxtf.org/geometry/#dom-domquad-p1

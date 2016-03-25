@@ -4,7 +4,6 @@
 
 use devtools_traits::AttrInfo;
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::AttrBinding::AttrMethods; 
 use dom::bindings::inheritance::Castable;
 use dom::bindings::js::{JS, MutNullableHeap};
 use dom::bindings::js::{LayoutJS, Root, RootedReference};
@@ -26,6 +25,8 @@ pub struct Attr {
     /// the element that owns this attribute.
     owner: MutNullableHeap<JS<Element>>,
 }
+
+make_partial_eq!(Attr);
 
 impl Attr {
     fn new_inherited(local_name: Atom,

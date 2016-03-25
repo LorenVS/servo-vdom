@@ -5,16 +5,11 @@
 use dom::activation::{ActivationSource, synthetic_click_activation};
 use dom::attr::Attr;
 use dom::attr::AttrValue;
-use dom::bindings::codegen::Bindings::ElementBinding::ElementMethods;
-use dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
-use dom::bindings::codegen::Bindings::EventHandlerBinding::OnErrorEventHandlerNonNull;
-use dom::bindings::codegen::Bindings::HTMLElementBinding::HTMLElementMethods;
-use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
+use dom::bindings::eventhandler::{EventHandlerNonNull,OnErrorEventHandlerNonNull};
 use dom::bindings::error::{Error, ErrorResult};
 use dom::bindings::inheritance::Castable;
 use dom::bindings::inheritance::{ElementTypeId, HTMLElementTypeId, NodeTypeId};
 use dom::bindings::js::{JS, MutNullableHeap, Root, RootedReference};
-
 use dom::cssstyledeclaration::{CSSModificationAccess, CSSStyleDeclaration};
 use dom::document::{Document, FocusType};
 use dom::element::{AttributeMutation, Element};

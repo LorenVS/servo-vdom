@@ -3,8 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::cell::DOMRefCell;
-
-use dom::bindings::codegen::Bindings::EventBinding::{EventConstants, EventMethods};
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{TopTypeId, EventTypeId};
@@ -17,9 +15,15 @@ use string_cache::Atom;
 use time;
 use util::str::DOMString;
 
+pub mod EventConstants {
+    pub const NONE: u16 = 0;
+    pub const CAPTURING_PHASE: u16 = 1;
+    pub const AT_TARGET: u16 = 2;
+    pub const BUBBLING_PHASE: u16 = 3;
+}
+
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[repr(u16)]
-
 pub enum EventPhase {
     None      = EventConstants::NONE,
     Capturing = EventConstants::CAPTURING_PHASE,

@@ -6,9 +6,6 @@ use app_units::Au;
 use dom::attr::Attr;
 use dom::attr::AttrValue;
 use dom::bindings::cell::DOMRefCell;
-
-use dom::bindings::codegen::Bindings::HTMLImageElementBinding::HTMLImageElementMethods;
-use dom::bindings::codegen::Bindings::WindowBinding::WindowMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};

@@ -3,21 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::attr::AttrValue;
-
-use dom::bindings::codegen::Bindings::HTMLAreaElementBinding::HTMLAreaElementMethods;
 use dom::bindings::inheritance::Castable;
 use dom::bindings::js::{JS, MutNullableHeap, Root};
 use dom::bindings::inheritance::HTMLElementTypeId;
-
 use dom::document::Document;
 use dom::domtokenlist::DOMTokenList;
 use dom::htmlelement::HTMLElement;
-
 use dom::virtualmethods::VirtualMethods;
 use std::default::Default;
 use string_cache::Atom;
 use util::str::DOMString;
-
 
 pub struct HTMLAreaElement {
     htmlelement: HTMLElement,

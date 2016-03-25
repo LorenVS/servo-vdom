@@ -2,9 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-use dom::bindings::codegen::Bindings::HTMLTitleElementBinding::HTMLTitleElementMethods;
-use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::Root;
 use dom::characterdata::CharacterData;
@@ -15,7 +12,6 @@ use dom::text::Text;
 use dom::virtualmethods::VirtualMethods;
 use string_cache::Atom;
 use util::str::DOMString;
-
 
 pub struct HTMLTitleElement {
     htmlelement: HTMLElement,

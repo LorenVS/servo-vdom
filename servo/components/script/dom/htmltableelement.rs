@@ -4,9 +4,6 @@
 
 use cssparser::RGBA;
 use dom::attr::{Attr, AttrValue};
-
-use dom::bindings::codegen::Bindings::HTMLTableElementBinding::HTMLTableElementMethods;
-use dom::bindings::codegen::Bindings::NodeBinding::NodeMethods;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::{LayoutJS, Root, RootedReference};
 use dom::document::Document;

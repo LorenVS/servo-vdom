@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable,EventTypeId};
@@ -12,7 +11,6 @@ use dom::event::{Event, EventBubbles, EventCancelable};
 use std::cell::Cell;
 use string_cache::Atom;
 use util::str::DOMString;
-
 
 pub struct ErrorEvent {
     event: Event,

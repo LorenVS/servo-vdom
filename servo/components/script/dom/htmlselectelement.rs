@@ -3,11 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::attr::{Attr, AttrValue};
-use dom::bindings::codegen::Bindings::HTMLOptionElementBinding::HTMLOptionElementMethods;
-
-use dom::bindings::codegen::Bindings::HTMLSelectElementBinding::HTMLSelectElementMethods;
-use dom::bindings::codegen::UnionTypes::HTMLElementOrLong;
-use dom::bindings::codegen::UnionTypes::HTMLOptionElementOrHTMLOptGroupElement;
+use dom::bindings::uniontypes::HTMLElementOrLong;
+use dom::bindings::uniontypes::HTMLOptionElementOrHTMLOptGroupElement;
 use dom::bindings::inheritance::{Castable, HTMLElementTypeId};
 use dom::bindings::js::Root;
 use dom::document::Document;
