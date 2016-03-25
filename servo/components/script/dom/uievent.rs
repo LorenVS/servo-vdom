@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
-use dom::bindings::codegen::Bindings::UIEventBinding::{UIEventMethods, UIEventInit};
+use dom::bindings::codegen::Bindings::UIEventBinding::{UIEventMethods};
 use dom::bindings::error::Fallible;
 use dom::bindings::inheritance::{Castable, EventTypeId, UIEventTypeId};
 use dom::bindings::js::Root;
@@ -45,20 +45,6 @@ impl UIEvent {
         ev.InitUIEvent(type_, can_bubble == EventBubbles::Bubbles,
                        cancelable == EventCancelable::Cancelable, view, detail);
         ev
-    }
-
-    pub fn Constructor(type_: DOMString,
-                       init: &UIEventInit) -> Fallible<Root<UIEvent>> {
-        let bubbles = if init.parent.bubbles { EventBubbles::Bubbles } else { EventBubbles::DoesNotBubble };
-        let cancelable = if init.parent.cancelable {
-            EventCancelable::Cancelable
-        } else {
-            EventCancelable::NotCancelable
-        };
-        let event = UIEvent::new(type_,
-                                 bubbles, cancelable,
-                                 init.view.r(), init.detail);
-        Ok(event)
     }
 
     // https://w3c.github.io/uievents/#widl-UIEvent-view

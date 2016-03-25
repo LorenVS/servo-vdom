@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
-use dom::bindings::codegen::Bindings::MessageEventBinding::{MessageEventMethods, MessageEventInit};
 use dom::bindings::error::Fallible;
 use dom::bindings::inheritance::{Castable, EventTypeId};
 use dom::bindings::js::Root;
@@ -46,16 +44,6 @@ impl MessageEvent {
             event.init_event(type_, bubbles, cancelable);
         }
         ev
-    }
-
-    pub fn Constructor(type_: DOMString,
-                       init: &MessageEventInit)
-                       -> Fallible<Root<MessageEvent>> {
-        // Dictionaries need to be rooted
-        // https://github.com/servo/servo/issues/6381
-        let ev = MessageEvent::new(Atom::from(type_), init.parent.bubbles, init.parent.cancelable,
-                                   init.origin.clone(), init.lastEventId.clone());
-        Ok(ev)
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-messageevent-origin

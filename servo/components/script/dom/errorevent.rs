@@ -3,8 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::cell::DOMRefCell;
-
-use dom::bindings::codegen::Bindings::ErrorEventBinding::{ErrorEventMethods, ErrorEventInit};
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
@@ -57,39 +55,6 @@ impl ErrorEvent {
             ev.colno.set(colno);
         }
         ev
-    }
-
-    pub fn Constructor(type_: DOMString,
-                       init: &ErrorEventInit) -> Fallible<Root<ErrorEvent>>{
-        let msg = match init.message.as_ref() {
-            Some(message) => message.clone(),
-            None => DOMString::new(),
-        };
-
-        let file_name = match init.filename.as_ref() {
-            Some(filename) => filename.clone(),
-            None => DOMString::new(),
-        };
-
-        let line_num = init.lineno.unwrap_or(0);
-
-        let col_num = init.colno.unwrap_or(0);
-
-        let bubbles = if init.parent.bubbles { EventBubbles::Bubbles } else { EventBubbles::DoesNotBubble };
-
-        let cancelable = if init.parent.cancelable {
-            EventCancelable::Cancelable
-        } else {
-            EventCancelable::NotCancelable
-        };
-
-        // Dictionaries need to be rooted
-        // https://github.com/servo/servo/issues/6381
-        let event = ErrorEvent::new(Atom::from(type_),
-                                bubbles, cancelable,
-                                msg, file_name,
-                                line_num, col_num);
-        Ok(event)
     }
     
     // https://html.spec.whatwg.org/multipage/#dom-errorevent-lineno

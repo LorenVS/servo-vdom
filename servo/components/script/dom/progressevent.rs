@@ -2,9 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
-
-use dom::bindings::codegen::Bindings::ProgressEventBinding::{ProgressEventMethods, ProgressEventInit};
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{Castable, EventTypeId};
@@ -39,17 +36,6 @@ impl ProgressEvent {
             event.init_event(type_, can_bubble == EventBubbles::Bubbles, cancelable == EventCancelable::Cancelable);
         }
         ev
-    }
-    pub fn Constructor(_global: GlobalRef,
-                       type_: DOMString,
-                       init: &ProgressEventInit)
-                       -> Fallible<Root<ProgressEvent>> {
-        let bubbles = if init.parent.bubbles { EventBubbles::Bubbles } else { EventBubbles::DoesNotBubble };
-        let cancelable = if init.parent.cancelable { EventCancelable::Cancelable }
-                         else { EventCancelable::NotCancelable };
-        let ev = ProgressEvent::new(Atom::from(type_), bubbles, cancelable,
-                                    init.lengthComputable, init.loaded, init.total);
-        Ok(ev)
     }
     
     // https://xhr.spec.whatwg.org/#dom-progressevent-lengthcomputable

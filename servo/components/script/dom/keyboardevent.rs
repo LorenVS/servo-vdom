@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use dom::bindings::cell::DOMRefCell;
-use dom::bindings::codegen::Bindings::KeyboardEventBinding::{KeyboardEventConstants, KeyboardEventMethods, KeyboardEventInit};
+use dom::bindings::codegen::Bindings::KeyboardEventBinding::{KeyboardEventConstants};
 use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::inheritance::{Castable, UIEventTypeId};
@@ -88,20 +88,6 @@ impl KeyboardEvent {
         ev.key_code.set(key_code);
         ev.is_composing.set(isComposing);
         ev
-    }
-
-    pub fn Constructor(type_: DOMString,
-                       init: &KeyboardEventInit) -> Fallible<Root<KeyboardEvent>> {
-        let event = KeyboardEvent::new(type_,
-                                       init.parent.parent.parent.bubbles,
-                                       init.parent.parent.parent.cancelable,
-                                       init.parent.parent.view.r(),
-                                       init.parent.parent.detail, key_from_string(&init.key, init.location),
-                                       init.key.clone(), init.code.clone(), init.location,
-                                       init.repeat, init.isComposing, init.parent.ctrlKey,
-                                       init.parent.altKey, init.parent.shiftKey, init.parent.metaKey,
-                                       None, 0);
-        Ok(event)
     }
 
     pub fn key_properties(key: Key, mods: KeyModifiers)

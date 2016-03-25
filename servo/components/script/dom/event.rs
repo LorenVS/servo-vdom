@@ -4,7 +4,7 @@
 
 use dom::bindings::cell::DOMRefCell;
 
-use dom::bindings::codegen::Bindings::EventBinding::{EventConstants, EventMethods, EventInit};
+use dom::bindings::codegen::Bindings::EventBinding::{EventConstants, EventMethods};
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::{TopTypeId, EventTypeId};
@@ -88,14 +88,6 @@ impl Event {
         let event = Event::new_uninitialized();
         event.init_event(type_, bubbles == EventBubbles::Bubbles, cancelable == EventCancelable::Cancelable);
         event
-    }
-
-    pub fn Constructor(_global: GlobalRef,
-                       type_: DOMString,
-                       init: &EventInit) -> Fallible<Root<Event>> {
-        let bubbles = if init.bubbles { EventBubbles::Bubbles } else { EventBubbles::DoesNotBubble };
-        let cancelable = if init.cancelable { EventCancelable::Cancelable } else { EventCancelable::NotCancelable };
-        Ok(Event::new(Atom::from(type_), bubbles, cancelable))
     }
 
     pub fn init_event(&self, type_: Atom, bubbles: bool, cancelable: bool) {

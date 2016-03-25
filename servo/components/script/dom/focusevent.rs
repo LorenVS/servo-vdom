@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-use dom::bindings::codegen::Bindings::FocusEventBinding::{FocusEventMethods, FocusEventInit};
 use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::inheritance::{Castable, UIEventTypeId};
@@ -43,27 +41,6 @@ impl FocusEvent {
                                            view, detail);
         ev.related_target.set(related_target);
         ev
-    }
-
-    pub fn Constructor(type_: DOMString,
-                       init: &FocusEventInit) -> Fallible<Root<FocusEvent>> {
-        let bubbles = if init.parent.parent.bubbles {
-            EventBubbles::Bubbles
-        } else {
-            EventBubbles::DoesNotBubble
-        };
-        let cancelable = if init.parent.parent.cancelable {
-            EventCancelable::Cancelable
-        } else {
-            EventCancelable::NotCancelable
-        };
-        let event = FocusEvent::new(type_,
-                                    bubbles,
-                                    cancelable,
-                                    init.parent.view.r(),
-                                    init.parent.detail,
-                                    init.relatedTarget.r());
-        Ok(event)
     }
     
     // https://w3c.github.io/uievents/#widl-FocusEvent-relatedTarget

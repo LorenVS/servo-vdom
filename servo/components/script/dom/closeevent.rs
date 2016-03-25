@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-use dom::bindings::codegen::Bindings::CloseEventBinding::{CloseEventInit,CloseEventMethods};
 use dom::bindings::codegen::Bindings::EventBinding::EventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::global::GlobalRef;
@@ -48,28 +47,6 @@ impl CloseEvent {
                              cancelable == EventCancelable::Cancelable);
         }
         ev
-    }
-
-    pub fn Constructor(_global: GlobalRef,
-                       type_: DOMString,
-                       init: &CloseEventInit)
-                       -> Fallible<Root<CloseEvent>> {
-        let bubbles = if init.parent.bubbles {
-            EventBubbles::Bubbles
-        } else {
-            EventBubbles::DoesNotBubble
-        };
-        let cancelable = if init.parent.cancelable {
-            EventCancelable::Cancelable
-        } else {
-            EventCancelable::NotCancelable
-        };
-        Ok(CloseEvent::new(Atom::from(type_),
-                           bubbles,
-                           cancelable,
-                           init.wasClean,
-                           init.code,
-                           init.reason.clone()))
     }
     
     // https://html.spec.whatwg.org/multipage/#dom-closeevent-wasclean

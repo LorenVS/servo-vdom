@@ -2,9 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-use dom::bindings::codegen::Bindings::TouchEventBinding::TouchEventMethods;
-use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::inheritance::{Castable, UIEventTypeId};
 use dom::bindings::js::{JS, MutHeap, Root};
 

@@ -4,7 +4,6 @@
 
 use dom::bindings::cell::DOMRefCell;
 use dom::bindings::codegen::Bindings::EventHandlerBinding::EventHandlerNonNull;
-use dom::bindings::codegen::Bindings::EventSourceBinding::{EventSourceInit, EventSourceMethods};
 use dom::bindings::error::{Error, Fallible};
 use dom::bindings::global::GlobalRef;
 use dom::bindings::inheritance::EventTargetTypeId;
@@ -45,29 +44,6 @@ impl EventSource {
 
     fn new(url: Url, with_credentials: bool) -> Root<EventSource> {
         Root::new_box(box EventSource::new_inherited(url, with_credentials))
-    }
-
-    pub fn Constructor(global: GlobalRef,
-                       url_str: DOMString,
-                       event_source_init: &EventSourceInit) -> Fallible<Root<EventSource>> {
-        // Steps 1-2
-        let base_url = global.get_url();
-        let url = match base_url.join(&*url_str) {
-            Ok(u) => u,
-            Err(_) => return Err(Error::Syntax)
-        };
-        // Step 3
-        let event_source = EventSource::new(url, event_source_init.withCredentials);
-        // Step 4
-        // Step 5
-        // Step 6
-        // Step 7
-        // Step 8
-        // Step 9
-        // Step 10
-        // Step 11
-        Ok(event_source)
-        // Step 12
     }
     
     // https://html.spec.whatwg.org/multipage/#handler-eventsource-onopen

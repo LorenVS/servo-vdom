@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
-use dom::bindings::codegen::Bindings::MouseEventBinding::{MouseEventMethods, MouseEventInit};
 use dom::bindings::codegen::Bindings::UIEventBinding::UIEventMethods;
 use dom::bindings::error::Fallible;
 use dom::bindings::inheritance::{Castable, UIEventTypeId};
@@ -75,30 +73,6 @@ impl MouseEvent {
                           ctrlKey, altKey, shiftKey, metaKey,
                           button, relatedTarget);
         ev
-    }
-
-    pub fn Constructor(type_: DOMString,
-                       init: &MouseEventInit) -> Fallible<Root<MouseEvent>> {
-        let bubbles = if init.parent.parent.parent.bubbles {
-            EventBubbles::Bubbles
-        } else {
-            EventBubbles::DoesNotBubble
-        };
-        let cancelable = if init.parent.parent.parent.cancelable {
-            EventCancelable::Cancelable
-        } else {
-        EventCancelable::NotCancelable
-        };
-        let event = MouseEvent::new(type_,
-                                    bubbles,
-                                    cancelable,
-                                    init.parent.parent.view.r(),
-                                    init.parent.parent.detail,
-                                    init.screenX, init.screenY,
-                                    init.clientX, init.clientY, init.parent.ctrlKey,
-                                    init.parent.altKey, init.parent.shiftKey, init.parent.metaKey,
-                                    init.button, init.relatedTarget.r());
-        Ok(event)
     }
 
     // https://w3c.github.io/uievents/#widl-MouseEvent-screenX
