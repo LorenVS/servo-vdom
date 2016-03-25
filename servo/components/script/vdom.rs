@@ -39,7 +39,7 @@ pub fn read_element<T:Read>(reader: &mut T, doc: &Document) -> Result<Root<Eleme
 	let (id,name) = try!(reader.read_el());
 	let element = create_element_named(id, name, doc, ElementCreator::ParserCreated);
 
-	read_attrs_into(reader, &*element);
+	try!(read_attrs_into(reader, &*element));
 
 	while let Some(child) = try!(read_node(reader, doc)) {
 		element.upcast::<Node>().AppendChild(&*child);
@@ -74,6 +74,19 @@ pub fn apply_patches<T:Read>(reader: &mut T, doc: &Document) -> Result<()> {
 			PatchType::ModifyAttrs => {
 				if let Some(el) = target.downcast::<Element>() {
 					try!(read_attrs_into(reader, el));
+				}
+			},
+			PatchType::Remove => {
+				let parent = target.GetParent().unwrap();
+				parent.RemoveChild(&*target);
+			},
+			PatchType::Append => {
+				let new = try!(read_node(reader, doc)).unwrap();
+				target.AppendChild(&*new);
+			},
+			PatchType::AppendMultiple => {
+				while let Some(new) = try!(read_node(reader, doc)) {
+					target.AppendChild(&*new);
 				}
 			}
 		}
