@@ -87,7 +87,7 @@ use util::opts;
 use util::str::DOMString;
 use util::thread;
 use util::thread_state;
-use vdom::read_node;
+use vdom::apply_patches;
 
 thread_local!(static SCRIPT_THREAD_ROOT: RefCell<Option<*const ScriptThread>> = RefCell::new(None));
 
@@ -940,18 +940,14 @@ impl ScriptThread {
         msg.responder.unwrap().respond(msg.image_response);
     }
 
-    fn try_apply_patch(&self, cursor: &mut Cursor<Vec<u8>>) -> io::Result<()> {
+    fn try_apply_patches(&self, cursor: &mut Cursor<Vec<u8>>) -> io::Result<()> {
+        // assume MessageType == Patch for now
         let _ = try!(cursor.read_msg_type());
 
         let page = self.page.borrow();
         if let Some(page) = page.as_ref() {
             let doc = page.document();
-
-            while let Some(node) = try!(read_node(cursor, &*doc)) {
-                let existing = doc.get_node_by_id(node.get_id()).unwrap();
-                let parent = existing.GetParent().unwrap();
-                parent.ReplaceChild(&*node, &*existing);
-            }
+            apply_patches(cursor, &*doc);
         }
 
         Ok(())
@@ -959,7 +955,7 @@ impl ScriptThread {
 
     fn handle_msg_from_vdom(&self, msg: Vec<u8>) {
         let mut cursor = Cursor::new(msg);
-        self.try_apply_patch(&mut cursor).unwrap();
+        self.try_apply_patches(&mut cursor).unwrap();
     }
 
     fn handle_resize(&self, id: PipelineId, size: WindowSizeData) {
