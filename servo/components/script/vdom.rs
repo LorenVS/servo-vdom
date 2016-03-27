@@ -28,6 +28,9 @@ pub fn read_attrs_into<T:Read>(reader: &mut T, el: &Element) -> Result<()> {
 				if let Some(htmlel) = el.downcast::<HTMLElement>() {
 					htmlel.Style().SetPropertyValue(DOMString::from(key), DOMString::from(val));
 				}
+			},
+			AttributeVal::Event(_,_) => {
+				// ignore for now
 			}
 		}
 	}
