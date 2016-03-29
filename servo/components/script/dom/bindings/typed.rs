@@ -53,29 +53,14 @@ make_typed!(DOMRect, DOMRectReadOnly,
 
 // Event Subtypes
 
-make_typed!(CloseEvent, Event,
-	TopTypeId::Event(EventTypeId::CloseEvent));
-
-make_typed!(CustomEvent, Event,
-	TopTypeId::Event(EventTypeId::CustomEvent));
-
-make_typed!(ErrorEvent, Event,
-	TopTypeId::Event(EventTypeId::ErrorEvent));
-
 make_typed!(FocusEvent, Event,
 	TopTypeId::Event(EventTypeId::UIEvent(UIEventTypeId::FocusEvent)));
 
 make_typed!(KeyboardEvent, Event,
 	TopTypeId::Event(EventTypeId::UIEvent(UIEventTypeId::KeyboardEvent)));
 
-make_typed!(MessageEvent, Event,
-	TopTypeId::Event(EventTypeId::MessageEvent));
-
 make_typed!(MouseEvent, Event,
 	TopTypeId::Event(EventTypeId::UIEvent(UIEventTypeId::MouseEvent)));
-
-make_typed!(ProgressEvent, Event,
-	TopTypeId::Event(EventTypeId::ProgressEvent));
 
 make_typed!(TouchEvent, Event,
 	TopTypeId::Event(EventTypeId::UIEvent(UIEventTypeId::TouchEvent)));

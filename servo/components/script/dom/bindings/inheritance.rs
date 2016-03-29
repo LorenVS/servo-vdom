@@ -257,11 +257,6 @@ impl NodeList {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum EventTypeId {
     Event,
-    CloseEvent,
-    CustomEvent,
-    ErrorEvent,
-    MessageEvent,
-    ProgressEvent,
     UIEvent(UIEventTypeId)
 }
 
@@ -280,16 +275,10 @@ impl DerivedFrom<EventTarget> for CharacterData {}
 impl DerivedFrom<Node> for CharacterData {}
 impl DerivedFrom<CharacterData> for CharacterData {}
 
-impl Castable for CloseEvent {}
-impl DerivedFrom<Event> for CloseEvent {}
-
 impl Castable for Comment {}
 impl DerivedFrom<EventTarget> for Comment {}
 impl DerivedFrom<Node> for Comment {}
 impl DerivedFrom<CharacterData> for Comment {}
-
-impl Castable for CustomEvent {}
-impl DerivedFrom<Event> for CustomEvent {}
 
 impl Castable for DOMPoint {}
 impl DerivedFrom<DOMPointReadOnly> for DOMPoint {}
@@ -319,9 +308,6 @@ impl Castable for Element {}
 impl DerivedFrom<EventTarget> for Element {}
 impl DerivedFrom<Node> for Element {}
 impl DerivedFrom<Element> for Element {}
-
-impl Castable for ErrorEvent {}
-impl DerivedFrom<Event> for ErrorEvent {}
 
 impl Castable for Event {}
 impl DerivedFrom<Event> for Event {}
@@ -760,9 +746,6 @@ impl Castable for KeyboardEvent {}
 impl DerivedFrom<Event> for KeyboardEvent {}
 impl DerivedFrom<UIEvent> for KeyboardEvent {}
 
-impl Castable for MessageEvent {}
-impl DerivedFrom<Event> for MessageEvent {}
-
 impl Castable for MouseEvent {}
 impl DerivedFrom<Event> for MouseEvent {}
 impl DerivedFrom<UIEvent> for MouseEvent {}
@@ -778,9 +761,6 @@ impl Castable for ProcessingInstruction {}
 impl DerivedFrom<EventTarget> for ProcessingInstruction {}
 impl DerivedFrom<Node> for ProcessingInstruction {}
 impl DerivedFrom<CharacterData> for ProcessingInstruction {}
-
-impl Castable for ProgressEvent {}
-impl DerivedFrom<Event> for ProgressEvent {}
 
 impl Castable for RadioNodeList {}
 impl DerivedFrom<NodeList> for RadioNodeList {}

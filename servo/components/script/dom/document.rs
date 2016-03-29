@@ -21,7 +21,6 @@ use dom::bindings::xmlname::XMLName::InvalidXMLName;
 use dom::bindings::xmlname::{validate_and_extract, namespace_from_domstring, xml_name_type};
 use dom::browsingcontext::BrowsingContext;
 use dom::comment::Comment;
-use dom::customevent::CustomEvent;
 use dom::documentfragment::DocumentFragment;
 use dom::documenttype::DocumentType;
 use dom::domimplementation::DOMImplementation;
@@ -46,7 +45,6 @@ use dom::htmlmetaelement::HTMLMetaElement;
 use dom::htmlstyleelement::HTMLStyleElement;
 use dom::htmltitleelement::HTMLTitleElement;
 use dom::keyboardevent::KeyboardEvent;
-use dom::messageevent::MessageEvent;
 use dom::mouseevent::MouseEvent;
 use dom::node::{self, CloneChildrenFlag, Node, NodeDamage, window_from_node};
 use dom::nodelist::NodeList;
@@ -1638,35 +1636,6 @@ impl Document {
 
         // Step 3.
         Ok(Root::from_ref(node))
-    }
-
-    // https://dom.spec.whatwg.org/#dom-document-createevent
-    fn CreateEvent(&self, mut interface: DOMString) -> Fallible<Root<Event>> {
-        interface.make_ascii_lowercase();
-        match &*interface {
-            "uievents" | "uievent" =>
-                Ok(Root::upcast(UIEvent::new_uninitialized())),
-            "mouseevents" | "mouseevent" =>
-                Ok(Root::upcast(MouseEvent::new_uninitialized())),
-            "customevent" =>
-                Ok(Root::upcast(CustomEvent::new_uninitialized())),
-            "htmlevents" | "events" | "event" =>
-                Ok(Event::new_uninitialized()),
-            "keyboardevent" | "keyevents" =>
-                Ok(Root::upcast(KeyboardEvent::new_uninitialized())),
-            "messageevent" =>
-                Ok(Root::upcast(MessageEvent::new_uninitialized())),
-            "touchevent" =>
-                Ok(Root::upcast(
-                    TouchEvent::new_uninitialized(
-                        &TouchList::new(&[]),
-                        &TouchList::new(&[]),
-                        &TouchList::new(&[]),
-                    )
-                )),
-            _ =>
-                Err(Error::NotSupported),
-        }
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-document-lastmodified
